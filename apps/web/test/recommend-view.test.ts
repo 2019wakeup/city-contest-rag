@@ -8,6 +8,7 @@ import { getCases, postChat, postRecommend } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
+import CandidateCard from '@/components/CandidateCard.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
 
@@ -300,6 +301,21 @@ describe('RecommendView 推荐工作台', () => {
     expect(text).toContain('相关度（归一化）：2')
     expect(text).not.toContain('0.020')
     expect(text).not.toContain('0.900')
+  })
+
+  it('CandidateCard 预测项显示中文键名（UI#5）', () => {
+    const wrapper = mount(CandidateCard, {
+      props: {
+        candidate: makeCandidate('cand-1'),
+        index: 0,
+        adapterMode: { a: 'mock', c: 'mock' },
+        evidence: [],
+      },
+    })
+
+    const text = wrapper.text()
+    expect(text).toContain('高温性能')
+    expect(text).not.toContain('highTemp')
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

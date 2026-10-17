@@ -6,11 +6,29 @@ import type { CaseSeed } from '@road-rec/contracts'
 const props = defineProps<{ item: CaseSeed }>()
 const emit = defineEmits<{ load: [id: string] }>()
 
+// 场景内部英文标签 → 中文（面向用户不出现内部键名，UI#11）。
+const TAG_LABELS: Record<string, string> = {
+  heavy: '重交通',
+  medium: '中交通',
+  light: '轻交通',
+  rutting: '车辙',
+  shoving: '推挤',
+  'transverse-crack': '横向裂缝',
+  'fatigue-crack': '疲劳裂缝',
+  raveling: '松散',
+  pothole: '坑槽',
+  'water-damage': '水损害',
+  skid: '抗滑不足',
+  noise: '降噪要求',
+}
+
+const labelOf = (tag: string): string => TAG_LABELS[tag] ?? tag
+
 const sceneSummary = computed(() => {
   const scene = props.item?.scene
-  if (!scene) return props.item?.summary ?? ''
-  const distress = (scene.distresses ?? []).map((d) => d.type).join('、') || '无病害'
-  return `${scene.climate?.zone ?? ''} · ${scene.traffic?.level ?? ''} · ${distress}`
+  if (!scene) return ''
+  const distress = (scene.distresses ?? []).map((d) => labelOf(d.type)).join('、') || '无病害'
+  return `${scene.climate?.zone ?? ''} · ${labelOf(scene.traffic?.level ?? '')} · ${distress}`
 })
 
 function onLoad(): void {
@@ -21,8 +39,8 @@ function onLoad(): void {
 <template>
   <el-card shadow="hover" data-testid="case-card" class="case-card" @click="onLoad">
     <h4 class="case-title">{{ item.title }}</h4>
-    <p class="case-summary">{{ item.summary }}</p>
-    <p class="case-scene">{{ sceneSummary }}</p>
+    <p data-testid="case-summary" class="case-summary">{{ item.summary }}</p>
+    <p v-if="sceneSummary" data-testid="case-scene" class="case-scene">{{ sceneSummary }}</p>
     <el-button type="primary" size="small" data-testid="case-load" @click.stop="onLoad">
       载入工作台
     </el-button>
@@ -39,7 +57,7 @@ function onLoad(): void {
 }
 
 .case-summary {
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   color: var(--el-text-color-regular);
 }
 

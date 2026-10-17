@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getCases, kbRebuild, kbSearch, kbStats, kbUpload, kbUploadFile } from '@/api/client'
 import type { CaseSeed, SceneInput, SearchHit } from '@road-rec/contracts'
+import CaseCard from '@/components/CaseCard.vue'
 import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
 
@@ -122,6 +123,51 @@ describe('CasesView 典型案例页', () => {
 
     expect(router.currentRoute.value.path).toBe('/recommend')
     expect(router.currentRoute.value.query.case).toBe('case-01')
+  })
+})
+
+describe('CaseCard 场景行中文标签（UI#11）', () => {
+  const caseWithEnTags: CaseSeed = {
+    schemaVersion: '1',
+    id: 'case-01',
+    title: '华南高温重载车辙',
+    summary: '1-4 华南湿热区 · heavy · rutting、shoving',
+    scene: {
+      schemaVersion: '1',
+      climate: { zone: '1-4 华南湿热区', pgHigh: 76, pgLow: -10 },
+      traffic: { level: 'heavy', esal: 30000000 },
+      pavement: { layer: 'surface', structure: '半刚性基层沥青路面' },
+      distresses: [
+        { type: 'rutting', severity: '高' },
+        { type: 'shoving', severity: '中' },
+      ],
+      constraints: { budget: 500, schedule: 30, env: '高', noise: '低' },
+      notes: '',
+    },
+    expected: { formulas: [] },
+  }
+
+  it('场景行标签映射为中文，summary 与场景行各司其职且各出现一次', () => {
+    const wrapper = mount(CaseCard, { props: { item: caseWithEnTags } })
+
+    const summaryEl = wrapper.find('[data-testid="case-summary"]')
+    const sceneEl = wrapper.find('[data-testid="case-scene"]')
+    expect(summaryEl.exists()).toBe(true)
+    expect(sceneEl.exists()).toBe(true)
+
+    // summary 行保留原始文案且只出现一次（不复读进场景行）
+    expect(summaryEl.text()).toContain('华南湿热区')
+    const summaryCount = wrapper.text().split('heavy · rutting、shoving').length - 1
+    expect(summaryCount).toBe(1)
+
+    // 场景行：英文标签全部映射为中文
+    const sceneText = sceneEl.text()
+    expect(sceneText).toContain('重交通')
+    expect(sceneText).toContain('车辙')
+    expect(sceneText).toContain('推挤')
+    expect(sceneText).not.toContain('heavy')
+    expect(sceneText).not.toContain('rutting')
+    expect(sceneText).not.toContain('shoving')
   })
 })
 

@@ -20,6 +20,20 @@ const isMock = computed(
 const formula = computed(() => props.candidate?.formula)
 const radar = computed(() => props.candidate?.radar)
 const explanations = computed(() => props.candidate?.explanations ?? [])
+
+// 预测项英文键名 → 中文（与雷达图 8 维口径一致，UI#5）。
+const PERF_LABELS: Record<string, string> = {
+  highTemp: '高温性能',
+  lowTemp: '低温性能',
+  fatigue: '疲劳',
+  waterStability: '水稳TSR',
+  lcc: 'LCC',
+  carbon: '碳排',
+  expectedLife: '预期寿命',
+  constructability: '施工可行性',
+}
+
+const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 </script>
 
 <template>
@@ -50,7 +64,7 @@ const explanations = computed(() => props.candidate?.explanations ?? [])
 
     <ul class="candidate-predictions">
       <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`">
-        {{ p.perf }}：{{ p.value }}<template v-if="p.ciLow != null && p.ciHigh != null">
+        {{ perfLabel(p.perf) }}：{{ p.value }}<template v-if="p.ciLow != null && p.ciHigh != null">
           （{{ p.ciLow }} ~ {{ p.ciHigh }}）</template> {{ p.unit ?? '' }}
       </li>
       <li class="candidate-kpis">
