@@ -87,6 +87,28 @@ const weightOf = (perf: string): string => {
   const p = report.value?.targets?.priorities?.find((x) => x.perf === perf)
   return p?.weight != null ? String(p.weight) : '—'
 }
+
+// ---- 候选卡折叠（UI#1）：默认只展开 top-1，其余折叠为摘要行 ----
+const expandedIds = shallowRef<Set<string>>(new Set())
+
+watch(
+  () => report.value?.candidates,
+  (candidates) => {
+    const firstId = candidates?.[0]?.id
+    expandedIds.value = firstId ? new Set([firstId]) : new Set()
+  },
+  { immediate: true },
+)
+
+function toggleCandidate(id: string): void {
+  const next = new Set(expandedIds.value)
+  if (next.has(id)) {
+    next.delete(id)
+  } else {
+    next.add(id)
+  }
+  expandedIds.value = next
+}
 </script>
 
 <template>
@@ -198,6 +220,12 @@ const weightOf = (perf: string): string => {
 
           <BenchmarkTable :rows="report.benchmark ?? []" class="panel" />
 
+          <ReportSection
+            :sections="report.sections ?? []"
+            :llm-status="report.llmStatus ?? 'degraded'"
+            class="panel"
+          />
+
           <CandidateCard
             v-for="(c, i) in report.candidates ?? []"
             :key="c.id"
@@ -205,12 +233,8 @@ const weightOf = (perf: string): string => {
             :index="i"
             :adapter-mode="report.adapterMode ?? { a: 'mock', c: 'mock' }"
             :evidence="report.evidence ?? []"
-          />
-
-          <ReportSection
-            :sections="report.sections ?? []"
-            :llm-status="report.llmStatus ?? 'degraded'"
-            class="panel"
+            :expanded="expandedIds.has(c.id)"
+            @toggle="toggleCandidate(c.id)"
           />
 
           <ChatPanel :report="report" class="panel" />

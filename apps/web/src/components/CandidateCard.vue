@@ -11,7 +11,9 @@ const props = defineProps<{
   index: number
   adapterMode: AdapterMode
   evidence: EvidenceRef[]
+  expanded: boolean
 }>()
+const emit = defineEmits<{ toggle: [] }>()
 
 const isMock = computed(
   () => props.adapterMode?.a === 'mock' || props.adapterMode?.c === 'mock',
@@ -37,54 +39,70 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 </script>
 
 <template>
-  <el-card shadow="never" data-testid="candidate-card" class="candidate-card">
+  <el-card shadow="hover" data-testid="candidate-card" class="candidate-card">
     <template #header>
-      <div class="candidate-header">
-        <span class="candidate-title">方案 {{ index + 1 }}（{{ candidate?.id ?? '未知' }}）</span>
-        <span class="candidate-score">综合得分 {{ (candidate?.score ?? 0).toFixed(3) }}</span>
+      <div
+        class="candidate-header"
+        data-testid="candidate-toggle"
+        role="button"
+        :aria-expanded="expanded"
+        @click="emit('toggle')"
+      >
+        <span class="candidate-title">
+          方案 {{ index + 1 }}（{{ candidate?.id ?? '未知' }}）
+          <span class="candidate-mix">
+            {{ formula?.binder?.type ?? '—' }} + {{ formula?.gradation?.type ?? '—' }}
+          </span>
+        </span>
+        <span class="candidate-score tabular">综合得分 {{ (candidate?.score ?? 0).toFixed(3) }}</span>
         <el-tag v-if="isMock" type="warning" data-testid="mock-badge">模拟数据</el-tag>
+        <span class="candidate-toggle-hint">{{ expanded ? '收起' : '展开' }}</span>
       </div>
     </template>
 
-    <el-descriptions :column="2" size="small" border class="candidate-formula">
-      <el-descriptions-item label="沥青">
-        {{ formula?.binder?.type ?? '—' }}（{{ formula?.binder?.grade ?? '—' }}）
-      </el-descriptions-item>
-      <el-descriptions-item label="改性剂">
-        {{ formula?.modifier?.type || '无' }}
-        <template v-if="formula?.modifier?.type"> · 掺量 {{ formula?.modifier?.dosage ?? '—' }}%</template>
-      </el-descriptions-item>
-      <el-descriptions-item label="级配">
-        {{ formula?.gradation?.type ?? '—' }}
-      </el-descriptions-item>
-      <el-descriptions-item label="油石比 / 空隙率">
-        {{ formula?.oilStoneRatio ?? '—' }}% / {{ formula?.airVoids ?? '—' }}%
-      </el-descriptions-item>
-    </el-descriptions>
+    <template v-if="expanded">
+      <el-descriptions :column="2" size="small" border class="candidate-formula">
+        <el-descriptions-item label="沥青">
+          {{ formula?.binder?.type ?? '—' }}（{{ formula?.binder?.grade ?? '—' }}）
+        </el-descriptions-item>
+        <el-descriptions-item label="改性剂">
+          {{ formula?.modifier?.type || '无' }}
+          <template v-if="formula?.modifier?.type">
+            · 掺量 {{ formula?.modifier?.dosage ?? '—' }}%
+          </template>
+        </el-descriptions-item>
+        <el-descriptions-item label="级配">
+          {{ formula?.gradation?.type ?? '—' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="油石比 / 空隙率">
+          {{ formula?.oilStoneRatio ?? '—' }}% / {{ formula?.airVoids ?? '—' }}%
+        </el-descriptions-item>
+      </el-descriptions>
 
-    <ul class="candidate-predictions">
-      <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`">
-        {{ perfLabel(p.perf) }}：{{ p.value }}<template v-if="p.ciLow != null && p.ciHigh != null">
-          （{{ p.ciLow }} ~ {{ p.ciHigh }}）</template> {{ p.unit ?? '' }}
-      </li>
-      <li class="candidate-kpis">
-        LCC {{ candidate?.lcc ?? '—' }} 万元 · 碳排 {{ candidate?.carbon ?? '—' }} tCO2e
-        · 预期寿命 {{ candidate?.expectedLife ?? '—' }} 年
-      </li>
-    </ul>
+      <ul class="candidate-predictions">
+        <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`" class="tabular">
+          {{ perfLabel(p.perf) }}：{{ p.value }}<template v-if="p.ciLow != null && p.ciHigh != null">
+            （{{ p.ciLow }} ~ {{ p.ciHigh }}）</template> {{ p.unit ?? '' }}
+        </li>
+        <li class="candidate-kpis tabular">
+          LCC {{ candidate?.lcc ?? '—' }} 万元 · 碳排 {{ candidate?.carbon ?? '—' }} tCO2e
+          · 预期寿命 {{ candidate?.expectedLife ?? '—' }} 年
+        </li>
+      </ul>
 
-    <RadarChart v-if="radar" :radar="radar" />
+      <RadarChart v-if="radar" :radar="radar" />
 
-    <WaterfallChart
-      v-if="explanations.length > 0"
-      :explanations="explanations"
-      class="candidate-waterfall"
-    />
+      <WaterfallChart
+        v-if="explanations.length > 0"
+        :explanations="explanations"
+        class="candidate-waterfall"
+      />
 
-    <EvidencePanel
-      :evidence="evidence ?? []"
-      :ids="candidate?.evidenceIds ?? []"
-    />
+      <EvidencePanel
+        :evidence="evidence ?? []"
+        :ids="candidate?.evidenceIds ?? []"
+      />
+    </template>
   </el-card>
 </template>
 
@@ -97,14 +115,28 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .candidate-title {
   font-weight: 600;
 }
 
+.candidate-mix {
+  margin-left: 8px;
+  font-weight: 400;
+  color: var(--el-text-color-regular);
+}
+
 .candidate-score {
   color: var(--el-color-primary);
+}
+
+.candidate-toggle-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 
 .candidate-formula {

@@ -237,7 +237,9 @@ describe('RecommendView 推荐工作台', () => {
 
   it('WaterfallChart 仅在候选带 explanations 时渲染', async () => {
     const wrapper = await mountView()
-    // fixture：cand-1 无 explanations、cand-2 有 → 只渲染一个瀑布图
+    // fixture：cand-1 无 explanations、cand-2 有；cand-2 默认折叠 → 先展开再断言
+    await wrapper.findAll('[data-testid="candidate-toggle"]')[1].trigger('click')
+    await flushPromises()
     expect(wrapper.findAllComponents(WaterfallChart)).toHaveLength(1)
   })
 
@@ -310,12 +312,33 @@ describe('RecommendView 推荐工作台', () => {
         index: 0,
         adapterMode: { a: 'mock', c: 'mock' },
         evidence: [],
+        expanded: true,
       },
     })
 
     const text = wrapper.text()
     expect(text).toContain('高温性能')
     expect(text).not.toContain('highTemp')
+  })
+
+  it('报告位于候选卡列表之前（UI#1）', async () => {
+    const wrapper = await mountView()
+    const els = wrapper.findAll('[data-testid="report-section"], [data-testid="candidate-card"]')
+    expect(els.length).toBe(3) // 1 报告 + 2 候选卡
+    expect(els[0].attributes('data-testid')).toBe('report-section')
+  })
+
+  it('候选卡默认仅展开 top-1，点击折叠卡可展开（UI#1）', async () => {
+    const wrapper = await mountView()
+    const cards = wrapper.findAll('[data-testid="candidate-card"]')
+    expect(cards).toHaveLength(2)
+    expect(cards[0].find('[data-testid="evidence-panel"]').exists()).toBe(true)
+    expect(cards[1].find('[data-testid="evidence-panel"]').exists()).toBe(false)
+
+    await wrapper.findAll('[data-testid="candidate-toggle"]')[1].trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists()).toBe(true)
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

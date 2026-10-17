@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <el-card shadow="never" class="report-section">
+  <el-card shadow="hover" data-testid="report-section" class="report-section">
     <template #header>推荐报告</template>
     <el-alert
       v-if="llmStatus === 'degraded'"

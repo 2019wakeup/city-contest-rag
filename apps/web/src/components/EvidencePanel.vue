@@ -28,7 +28,7 @@ const docTypeLabel = (docType: string): string => DOC_TYPE_LABELS[docType] ?? do
 </script>
 
 <template>
-  <el-card shadow="never" class="evidence-panel">
+  <el-card shadow="never" data-testid="evidence-panel" class="evidence-panel">
     <template #header>证据链（点击展开原文与来源）</template>
     <el-empty
       v-if="(evidence ?? []).length === 0"
