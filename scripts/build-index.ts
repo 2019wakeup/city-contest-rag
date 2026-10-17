@@ -32,7 +32,10 @@ async function main(): Promise<void> {
     throw new Error(`不支持的 backend: ${backend}（可选 sqlite|lancedb）`);
   }
 
-  const embedder = await createEmbedder({ model });
+  const embedder = await createEmbedder({
+    model,
+    cacheDir: process.env.EMBEDDING_CACHE_DIR ?? path.join(indexDir, 'hf-cache'),
+  });
   let store: VectorStore;
   if (backend === 'sqlite') {
     store = new SqliteVectorStore(path.join(indexDir, 'app.db'));
