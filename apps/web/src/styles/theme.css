@@ -1,0 +1,98 @@
+/* ==========================================================================
+ * 主题 Token（UI 二轮）：Dark-first 科技风 + 靛蓝 #6E7BF2
+ * 亮色模式：浅灰底 #F5F6F8 + 白面板（Vercel 式白底克制）
+ * 色彩纪律：颜色只表达状态，装饰零彩色
+ * ========================================================================== */
+
+:root {
+  /* 页面基底（亮色） */
+  --app-page-bg: #f5f6f8;
+  --app-panel-bg: #ffffff;
+  --app-border: #e5e7eb;
+  --app-border-strong: #d5d8df;
+
+  /* 靛蓝主色全套（10 级） */
+  --el-color-primary: #6e7bf2;
+  --el-color-primary-light-3: #8b95f5;
+  --el-color-primary-light-5: #a6aef8;
+  --el-color-primary-light-7: #c1c7fa;
+  --el-color-primary-light-8: #cfd3fb;
+  --el-color-primary-light-9: #ebedfd;
+  --el-color-primary-dark-2: #5863c2;
+
+  /* 圆角：卡片外层 10px */
+  --app-radius-card: 10px;
+  --app-radius-inner: 6px;
+}
+
+/* ===== 暗色模式（默认） ===== */
+html.dark {
+  color-scheme: dark;
+
+  --app-page-bg: #0b0e14;
+  --app-panel-bg: #11151c;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Element Plus 变量覆盖 */
+  --el-bg-color: #11151c;
+  --el-bg-color-overlay: #161b24;
+  --el-bg-color-page: #0b0e14;
+  --el-fill-color-blank: #11151c;
+  --el-fill-color: #161b24;
+  --el-fill-color-light: #161b24;
+  --el-fill-color-lighter: #13171f;
+  --el-fill-color-extra-light: #10141b;
+  --el-fill-color-dark: #1c222d;
+  --el-fill-color-darker: #232a37;
+
+  --el-border-color: rgba(255, 255, 255, 0.08);
+  --el-border-color-light: rgba(255, 255, 255, 0.08);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.06);
+  --el-border-color-extra-light: rgba(255, 255, 255, 0.04);
+
+  --el-text-color-primary: #e6e8ee;
+  --el-text-color-regular: #c6cad4;
+  --el-text-color-secondary: #8a90a0;
+  --el-text-color-placeholder: #5c6270;
+  --el-text-color-disabled: #454a56;
+
+  --el-mask-color: rgba(11, 14, 20, 0.7);
+  --el-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --el-box-shadow-light: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+html.dark body {
+  background: var(--app-page-bg);
+  color: var(--el-text-color-primary);
+}
+
+/* ===== 卡片：外层 10px、内层 6px；暗色阴影仅悬浮层 ===== */
+.el-card {
+  border-radius: var(--app-radius-card);
+  background: var(--app-panel-bg);
+  border: 1px solid var(--app-border);
+}
+
+.el-card__header {
+  border-bottom: 1px solid var(--app-border);
+}
+
+.el-card :is(.el-table, .el-descriptions, .el-collapse, .el-input, .el-textarea) {
+  border-radius: var(--app-radius-inner);
+}
+
+html.dark .el-card {
+  box-shadow: none;
+}
+
+html.dark .el-card.is-hover-shadow:hover,
+html.dark .el-card.is-always-shadow {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* 暗色下弱化表格网格线 */
+html.dark .el-table--border,
+html.dark .el-table--group {
+  border-color: var(--app-border);
+}

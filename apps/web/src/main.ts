@@ -8,6 +8,7 @@ import { router } from './router'
 
 import 'element-plus/dist/index.css'
 import './assets/base.css'
+import './styles/theme.css'
 
 const app = createApp(App)
 

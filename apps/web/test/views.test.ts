@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { ElMenu } from 'element-plus'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -169,6 +170,58 @@ describe('CaseCard 场景行中文标签（UI#11）', () => {
     expect(sceneText).not.toContain('heavy')
     expect(sceneText).not.toContain('rutting')
     expect(sceneText).not.toContain('shoving')
+  })
+})
+
+describe('App 主题切换与侧栏折叠（UI二轮）', () => {
+  const mountApp = async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', component: { template: '<div />' } }],
+    })
+    await router.push('/')
+    await router.isReady()
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    await flushPromises()
+    return wrapper
+  }
+
+  beforeEach(() => {
+    localStorage.clear()
+    document.documentElement.classList.remove('dark')
+  })
+
+  it('默认暗色：挂载后 html 带 dark 类', async () => {
+    await mountApp()
+    expect(document.documentElement.classList.contains('dark')).toBe(true)
+  })
+
+  it('点击主题切换 → 切到亮色并持久化到 localStorage', async () => {
+    const wrapper = await mountApp()
+    expect(document.documentElement.classList.contains('dark')).toBe(true)
+
+    await wrapper.find('[data-testid="theme-toggle"]').trigger('click')
+
+    expect(document.documentElement.classList.contains('dark')).toBe(false)
+    expect(localStorage.getItem('theme')).toBe('light')
+  })
+
+  it('localStorage 记录 light 时挂载不启用暗色', async () => {
+    localStorage.setItem('theme', 'light')
+    await mountApp()
+    expect(document.documentElement.classList.contains('dark')).toBe(false)
+  })
+
+  it('侧栏折叠切换：菜单 collapse 与宽度 200↔64', async () => {
+    const wrapper = await mountApp()
+    const aside = wrapper.find('[data-testid="app-aside"]')
+    expect(wrapper.findComponent(ElMenu).props('collapse')).toBe(false)
+    expect((aside.element as HTMLElement).style.getPropertyValue('--el-aside-width')).toBe('200px')
+
+    await wrapper.find('[data-testid="collapse-toggle"]').trigger('click')
+
+    expect(wrapper.findComponent(ElMenu).props('collapse')).toBe(true)
+    expect((aside.element as HTMLElement).style.getPropertyValue('--el-aside-width')).toBe('64px')
   })
 })
 
