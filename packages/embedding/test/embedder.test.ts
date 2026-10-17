@@ -69,6 +69,22 @@ describe('createEmbedder（stub pipeline，不下载真实模型）', () => {
     ]);
   });
 
+  it('批量 Tensor（dims=[n, dim]）按行拆分为 n 个向量', async () => {
+    const dim = MODEL_REGISTRY['bge-m3'].dim;
+    // 真实 transformers.js 批量输出：单个 Tensor，data 为拼接的 n×dim 平铺数组
+    const createPipeline = async (): Promise<TransformerPipeline> =>
+      (async () => ({
+        data: new Float32Array(Array.from({ length: 3 * dim }, (_, i) => i + 1)),
+        dims: [3, dim],
+      })) as TransformerPipeline;
+    const e = await createEmbedder({}, makeDeps({ createPipeline }));
+    const out = await e.embed(['t1', 't2', 't3']);
+    expect(out).toHaveLength(3);
+    expect(out[0]).toEqual(Array.from({ length: dim }, (_, i) => i + 1));
+    expect(out[1]).toEqual(Array.from({ length: dim }, (_, i) => dim + i + 1));
+    expect(out[2]).toEqual(Array.from({ length: dim }, (_, i) => 2 * dim + i + 1));
+  });
+
   it('dim 与 modelName 取自模型注册表', async () => {
     for (const model of ['bge-m3', 'multilingual-e5-small'] as EmbedderModel[]) {
       const e = await createEmbedder({ model }, makeDeps());

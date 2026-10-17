@@ -43,8 +43,9 @@ export interface EmbedderDeps {
 
 async function defaultCreatePipeline(modelId: string, cacheDir?: string): Promise<TransformerPipeline> {
   const { pipeline } = await import('@huggingface/transformers');
-  if (cacheDir) env.cacheDir = cacheDir;
-  const pipe = await pipeline('feature-extraction', modelId);
+  // cache_dir 以 pipeline options 传递（v3 的 FileCache 读取 options.cache_dir ?? env.cacheDir，
+  // 仅改 env.cacheDir 在部分加载路径不生效，曾导致 CLI 误用包内默认缓存的截断模型）
+  const pipe = await pipeline('feature-extraction', modelId, cacheDir ? { cache_dir: cacheDir } : {});
   return pipe as unknown as TransformerPipeline;
 }
 
@@ -55,15 +56,27 @@ const defaultDeps: EmbedderDeps = {
 
 type VectorLike = number[] | { data: Float32Array | number[]; dims?: number[] };
 
-function flattenVector(v: unknown): number[] {
+function isTensorLike(v: unknown): v is { data: Float32Array | number[]; dims?: number[] } {
+  return typeof v === 'object' && v !== null && 'data' in (v as object);
+}
+
+/** 把 pipeline 输出单元展平为若干行向量（支持 [n,dim] 批量 Tensor 与 Tensor 数组按行拆分） */
+function flattenVectors(v: unknown): number[][] {
   if (Array.isArray(v)) {
-    // 可能是一维向量，也可能是 [1, n] 形状的嵌套数组
-    if (v.length > 0 && Array.isArray(v[0])) return flattenVector(v[0]);
-    return v as number[];
+    if (v.length > 0 && (Array.isArray(v[0]) || isTensorLike(v[0]))) {
+      return (v as unknown[]).flatMap((row) => flattenVectors(row));
+    }
+    return [v as number[]];
   }
-  if (v && typeof v === 'object' && 'data' in (v as object)) {
-    const data = (v as { data: Float32Array | number[] }).data;
-    return Array.from(data);
+  if (isTensorLike(v)) {
+    const flat = Array.from(v.data);
+    if (v.dims && v.dims.length === 2 && typeof v.dims[0] === 'number' && typeof v.dims[1] === 'number') {
+      const [n, d] = v.dims as [number, number];
+      const rows: number[][] = [];
+      for (let i = 0; i < n; i++) rows.push(flat.slice(i * d, (i + 1) * d));
+      return rows;
+    }
+    return [flat];
   }
   throw new Error(`embedding pipeline 输出形态无法识别: ${String(v).slice(0, 80)}`);
 }
@@ -91,8 +104,10 @@ export async function createEmbedder(
       if (texts.length === 0) return [];
       // 文档侧嵌入：mean 池化 + L2 归一化（bge-m3 推荐；e5 系列的 query/passage 前缀由调用方决定）
       const outputs = await pipe(texts, { pooling: 'mean', normalize: true });
-      const arr = Array.isArray(outputs) ? outputs : [outputs];
-      const vectors = arr.map(flattenVector);
+      const vectors = flattenVectors(outputs);
+      if (vectors.length !== texts.length) {
+        throw new Error(`embedding 输出行数与输入不一致：期望 ${texts.length}，实际 ${vectors.length}`);
+      }
       for (const [i, vec] of vectors.entries()) {
         if (vec.length !== dim) {
           throw new Error(
