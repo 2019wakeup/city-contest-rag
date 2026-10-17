@@ -34,7 +34,12 @@ export const recommendRoute = createRoute({
 export function registerRecommend(app: OpenAPIHono, deps: AppDeps): void {
   app.openapi(recommendRoute, async (c) => {
     const scene = SceneInputSchema.parse(c.req.valid('json'));
-    const report = await recommend(scene, deps);
+    const report = await recommend(scene, {
+      store: deps.store,
+      embedder: deps.embedder,
+      relationDb: deps.relationDb,
+      llmCall: deps.llmCall,
+    });
     return c.json(report, 200);
   });
 }

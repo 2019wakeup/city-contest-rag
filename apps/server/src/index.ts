@@ -7,6 +7,7 @@ import type { VectorStore } from '@road-rec/retrieval';
 import { initRelationDb } from './relation/db';
 import { seedFromCorpus } from './relation/seed';
 import { createApp } from './app';
+import { streamChat } from './llm/client';
 import type { EmbedderLike } from './orchestrator';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -52,11 +53,13 @@ async function main(): Promise<void> {
     );
   }
 
+  const llmConfigured = Boolean(process.env.DEEPSEEK_API_KEY && process.env.LLM_OFF !== '1');
   const app = createApp({
     store,
     embedder,
     relationDb,
     backend: store instanceof SqliteVectorStore ? 'sqlite' : 'lancedb',
+    chatResponder: llmConfigured ? streamChat : undefined,
   });
 
   const port = Number(process.env.PORT ?? 3000);

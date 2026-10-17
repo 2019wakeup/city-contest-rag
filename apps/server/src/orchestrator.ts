@@ -22,6 +22,10 @@ import type { RelationDb } from './relation/db';
 import { mapSceneToTargets } from './adapters/a';
 import { predictFormulas } from './adapters/c';
 import type { AdapterMode } from './adapters/a';
+import { generateStructured, readPrompt } from './llm/client';
+import type { LlmCall } from './llm/client';
+import { buildReportSections } from './report/fallback';
+import type { ReportBase } from './report/fallback';
 
 export interface EmbedderLike {
   dim: number;
@@ -34,6 +38,8 @@ export interface RecommendDeps {
   store: VectorStore;
   embedder: EmbedderLike | null;
   relationDb: RelationDb;
+  /** 测试注入：fake LLM；缺省走 env 配置（DEEPSEEK_API_KEY/LLM_OFF） */
+  llmCall?: LlmCall;
 }
 
 // ===== 规则估算常量（演示假设，注释即依据）=====
@@ -77,8 +83,20 @@ export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise
   const startedAt = performance.now();
   const mark = (name: string) => steps.push({ name, ms: Math.round(performance.now() - startedAt) });
 
-  // ① 场景解析（zod 校验；notes 的 LLM 抽取 T9 接入，当前 LLM_OFF 语义=忽略 notes）
-  const parsedScene = SceneInputSchema.parse(scene);
+  // ① 场景解析（zod 校验；notes 非空且 LLM 可用 → 自由文本抽取成同构 JSON，LLM_OFF 时忽略 notes）
+  let parsedScene = SceneInputSchema.parse(scene);
+  const llmEnabled =
+    deps.llmCall != null ||
+    Boolean(process.env.DEEPSEEK_API_KEY && process.env.LLM_OFF !== '1');
+  if (parsedScene.notes.trim() && llmEnabled) {
+    const extraction = await generateStructured({
+      prompt: readPrompt('extract-scene.md').replace('{{notes}}', parsedScene.notes),
+      schema: SceneInputSchema,
+      temperature: 0,
+      llm: deps.llmCall,
+    });
+    if (extraction.data) parsedScene = mergeExtracted(parsedScene, SceneInputSchema.parse(extraction.data));
+  }
   mark('parse');
 
   // ② 模块 A：目标性能 + 优先级权重
@@ -102,29 +120,66 @@ export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise
   const ranked = rankCandidates(parsedScene, assembled, [...predictionsWithMode], targets);
   mark('rank');
 
-  // ⑥ 证据检索（每候选按类型标签 search top3）+ 报告组装
+  // ⑥ 证据检索（每候选按类型标签 search top3）+ 报告文案（LLM ok/模板降级）+ 组装
   const { evidence, byCandidate, retrievalWarnings } = await retrieveEvidence(ranked, deps);
   for (const cand of ranked) {
     cand.evidenceIds = byCandidate.get(cand.id) ?? [];
   }
   const warnings = [...retrievalWarnings];
   if (evidence.length === 0) warnings.push('知识库为空，请执行 pnpm build:index');
-  const report = RecommendationReportSchema.parse({
-    schemaVersion: '1',
+  const base: ReportBase = {
     scene: parsedScene,
     targets,
     candidates: ranked,
     evidence,
     benchmark: buildBenchmark(ranked, targets),
-    sections: [], // T9 接入 LLM 文案占位
+  };
+  const sectionsWithStatus = await buildReportSections(base, deps.llmCall);
+  const report = RecommendationReportSchema.parse({
+    schemaVersion: '1',
+    ...base,
+    sections: [...sectionsWithStatus],
     charts: {},
-    llmStatus: 'degraded', // T8 占位（T9 接入真实 LLM 后按结果更新）
+    llmStatus: sectionsWithStatus.llmStatus,
     adapterMode: { a: adapterModeA, c: adapterModeC },
     warnings,
     steps,
   });
   mark('report');
   return report;
+}
+
+/** 抽取结果合并：提取值非空才覆盖原表单（notes 保留原文）。 */
+function mergeExtracted(base: SceneInput, extracted: SceneInput): SceneInput {
+  const pick = <T>(value: T, fallback: T): T => (value ? value : fallback);
+  return SceneInputSchema.parse({
+    ...base,
+    climate: {
+      ...base.climate,
+      zone: pick(extracted.climate.zone, base.climate.zone),
+      pgHigh: pick(extracted.climate.pgHigh, base.climate.pgHigh),
+      pgLow: pick(extracted.climate.pgLow, base.climate.pgLow),
+    },
+    traffic: {
+      ...base.traffic,
+      level: pick(extracted.traffic.level, base.traffic.level),
+      esal: pick(extracted.traffic.esal, base.traffic.esal),
+    },
+    pavement: {
+      ...base.pavement,
+      layer: pick(extracted.pavement.layer, base.pavement.layer),
+      structure: pick(extracted.pavement.structure, base.pavement.structure),
+    },
+    distresses: extracted.distresses.length > 0 ? extracted.distresses : base.distresses,
+    constraints: {
+      ...base.constraints,
+      budget: pick(extracted.constraints.budget, base.constraints.budget),
+      schedule: pick(extracted.constraints.schedule, base.constraints.schedule),
+      env: pick(extracted.constraints.env, base.constraints.env),
+      noise: pick(extracted.constraints.noise, base.constraints.noise),
+    },
+    notes: base.notes,
+  });
 }
 
 // ---------------------------------------------------------------------------
