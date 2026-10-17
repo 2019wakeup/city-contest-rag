@@ -1,0 +1,316 @@
+{
+ "10.1016/j.jclepro.2023.136994": {
+  "status": "doi_resolves",
+  "evidence": "https://linkinghub.elsevier.com/retrieve/pii/S0959652623011526",
+  "title_seen": "Redirecting",
+  "similarity": 0.148
+ },
+ "公路工程沥青及沥青混合料试验规程（JTG 3410-2025）": {
+  "status": "source_url_confirmed",
+  "evidence": "https://xxgk.mot.gov.cn/jigou/glj/202508/t20250822_4175218.html",
+  "title_seen": "交通运输部关于发布《公路工程沥青及沥青混合料试验规程》的公告-政府信息公开-交通运输部",
+  "similarity": 0.521
+ },
+ "中国沥青路面气候影响分区方案 (Zoning scheme of climatic influence for asphalt pavement in Chin": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "公路沥青路面设计规范 (JTG D50—2017)": {
+  "status": "source_url_confirmed",
+  "evidence": "https://xxgk.mot.gov.cn/2020/jigou/glj/202006/t20200623_3312563.html",
+  "title_seen": "交通运输部关于发布《公路沥青路面设计规范》的公告-政府信息公开-交通运输部",
+  "similarity": 0.433
+ },
+ "公路技术状况评定标准 (JTG 5210—2018)": {
+  "status": "source_url_confirmed",
+  "evidence": "https://xxgk.mot.gov.cn/2020/jigou/glj/202006/t20200623_3313114.html",
+  "title_seen": "交通运输部关于发布《公路技术状况评定标准》的公告-政府信息公开-交通运输部",
+  "similarity": 0.426
+ },
+ "公路沥青路面养护技术规范 (JTG 5142—2019)": {
+  "status": "source_url_confirmed",
+  "evidence": "https://xxgk.mot.gov.cn/jigou/glj/202006/t20200623_3313189.html",
+  "title_seen": "交通运输部关于发布《公路沥青路面养护技术规范》的公告-政府信息公开-交通运输部",
+  "similarity": 0.462
+ },
+ "JTG F40-2004 公路沥青路面施工技术规范（强制性行业标准，现行）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG D50-2017 公路沥青路面设计规范（现行，替代 JTG D50-2006）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG 3410-2025 公路工程沥青及沥青混合料试验规程（强制性行业标准，2025-10-01 施行，替代 JTG E20-2011）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG 5142-2019 公路沥青路面养护技术规范（现行，替代 JTJ 073.2-2001）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG 5421-2018 公路沥青路面养护设计规范（现行，2019-03-01 施行）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG/T 5142-01-2021 公路沥青路面预防养护技术规范（推荐性行业标准，2021-12-01 施行）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG/T 5521-2019 公路沥青路面再生技术规范（推荐性行业标准，2019-11-01 施行，替代 JTG F41-2008）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "JTG 5210-2018 公路技术状况评定标准（现行，替代 JTG H20-2007，注意 H20 已废止）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "2024年交通运输行业发展统计公报（全国公路 549.04 万公里、高速 19.07 万公里）": {
+  "status": "source_url_confirmed",
+  "evidence": "https://www.gov.cn/lianbo/bumen/202506/content_7027415.htm",
+  "title_seen": "2024年交通运输行业发展统计公报_部门动态_中国政府网",
+  "similarity": 0.514
+ },
+ "AASHTO M 320 / T 283 / T 324 / R 35（PG 分级沥青结合料规范、抗水损害试验、汉堡车辙试验与 Superpave 体积设计方法": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "ASTM D6373-21 Standard Specification for Performance-Graded Asphalt Binder": {
+  "status": "source_url_confirmed",
+  "evidence": "https://store.astm.org/d6373-21.html",
+  "title_seen": "D6373 Standard Specification for Performance-Graded Asphalt Binder",
+  "similarity": 0.943
+ },
+ "NCHRP 1-37A Guide for Mechanistic-Empirical Design of New and Rehabilitated Pave": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "NCHRP Report 547: Simple Performance Tests: Summary of Recommended Methods and D": {
+  "status": "source_url_confirmed",
+  "evidence": "https://www.nationalacademies.org/publications/13949",
+  "title_seen": "Simple Performance Tests: Summary of Recommended Methods and Database | The National Academies Press",
+  "similarity": 0.67
+ },
+ "Long-Term Pavement Performance (LTPP) 长期路面性能数据库": {
+  "status": "source_url_confirmed",
+  "evidence": "https://catalog.data.gov/dataset/long-term-pavement-performance-ltpp",
+  "title_seen": "Department of Transportation - Long-Term Pavement Performance (LTPP)",
+  "similarity": 0.642
+ },
+ "LTPP InfoPave 数据平台（LTPP Standard Data Release / NALS 等）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "High-Resolution Texture/Friction Dataset: Characterizing Asphalt Pavements and A": {
+  "status": "source_url_confirmed",
+  "evidence": "https://data.mendeley.com/datasets/kkcztnxzph/1",
+  "title_seen": "High-Resolution Texture/Friction Dataset: Characterizing Asphalt Pavements and Aggregate Mosaics at Varied Polishing Stages for Measured Friction Analysis - Men",
+  "similarity": 0.956
+ },
+ "Pavement Performance Data（Utah Hive 研究数据仓储）": {
+  "status": "source_url_confirmed",
+  "evidence": "https://hive.utah.edu/records/g15zy-0x872",
+  "title_seen": "Pavement Performance Data | The Hive Research Data Repository",
+  "similarity": 0.673
+ },
+ "10.24432/c5pk67": {
+  "status": "doi_resolves",
+  "evidence": "https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength",
+  "title_seen": "UCI Machine Learning Repository",
+  "similarity": 0.674
+ },
+ "中国统计年鉴（国家统计局，交通运输章节：公路里程、等级公路与养护数据）": {
+  "status": "source_url_confirmed",
+  "evidence": "https://www.stats.gov.cn/sj/ndsj/",
+  "title_seen": "中国统计年鉴 - 国家统计局",
+  "similarity": 0.522
+ },
+ "交通运输部政府信息公开平台（统计与公路养护相关公开数据）": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "LightGBM: A Highly Efficient Gradient Boosting Decision Tree": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/lightgbm-org/LightGBM",
+  "title_seen": "GitHub - lightgbm-org/LightGBM: A fast, distributed, high performance gradient boosting (GBT, GBDT, GBRT, GBM or MART) framework based on decision tree algorith",
+  "similarity": 0.014
+ },
+ "PyCaret: An open source, low-code machine learning library in Python": {
+  "status": "source_url_confirmed",
+  "evidence": "https://pypi.org/project/pycaret/",
+  "title_seen": "pycaret · PyPI",
+  "similarity": 0.256
+ },
+ "SHAP (SHapley Additive exPlanations)": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/shap/shap",
+  "title_seen": "GitHub - shap/shap: A game theoretic approach to explain the output of any machine learning model. · GitHub",
+  "similarity": 0.326
+ },
+ "InterpretML: A Unified Framework for Machine Learning Interpretability": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/interpretml/interpret",
+  "title_seen": "GitHub - interpretml/interpret: Fit interpretable models. Explain blackbox machine learning. · GitHub",
+  "similarity": 0.491
+ },
+ "MAPIE: A scikit-learn-compatible module for estimating prediction intervals": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/scikit-learn-contrib/MAPIE",
+  "title_seen": "GitHub - scikit-learn-contrib/MAPIE: A scikit-learn-compatible library for estimating prediction intervals and controlling risks, based on conformal predictions",
+  "similarity": 0.582
+ },
+ "arxiv:1809.11165": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/cornellius-gp/gpytorch",
+  "title_seen": "GitHub - cornellius-gp/gpytorch: A highly efficient implementation of Gaussian Processes in PyTorch · GitHub",
+  "similarity": 0.481
+ },
+ "DEAP: Evolutionary Algorithms Made Easy": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/DEAP/deap",
+  "title_seen": "GitHub - DEAP/deap: Distributed Evolutionary Algorithms in Python · GitHub",
+  "similarity": 0.579
+ },
+ "LangChain: Building applications with LLMs through composability": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0
+ },
+ "arxiv:2105.08195": {
+  "status": "source_url_confirmed",
+  "evidence": "https://arxiv.org/abs/2105.08195",
+  "title_seen": "[2105.08195] Parallel Bayesian Optimization of Multiple Noisy Objectives with Expected Hypervolume Improvement",
+  "similarity": 0.946
+ },
+ "arxiv:2006.05078": {
+  "status": "source_url_confirmed",
+  "evidence": "https://arxiv.org/abs/2006.05078",
+  "title_seen": "[2006.05078] Differentiable Expected Hypervolume Improvement for Parallel Multi-Objective Bayesian Optimization",
+  "similarity": 0.947
+ },
+ "arxiv:1910.06403": {
+  "status": "source_url_confirmed",
+  "evidence": "https://arxiv.org/abs/1910.06403",
+  "title_seen": "[1910.06403] BoTorch: A Framework for Efficient Monte-Carlo Bayesian Optimization",
+  "similarity": 0.924
+ },
+ "10.11896/cldb.24010230": {
+  "status": "doi_resolves",
+  "evidence": "https://www.mater-rep.com/CN/10.11896/cldb.24010230",
+  "title_seen": "数据驱动下的沥青混合料材料组成设计方法",
+  "similarity": 1.0
+ },
+ "10.1080/10298436.2026.2668561": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0,
+  "retry_note": "Crossref 重查仍未收录"
+ },
+ "10.3390/ma19163408": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0,
+  "retry_note": "Crossref 重查仍未收录"
+ },
+ "10.1145/3397271.3401075": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0,
+  "retry_note": "Crossref 重查仍未收录"
+ },
+ "10.1145/3448016.3457550": {
+  "status": "crossref_retry",
+  "evidence": "https://api.crossref.org/works/10.1145/3448016.3457550",
+  "title_seen": "Milvus",
+  "container": "Proceedings of the 2021 International Conference on Management of Data",
+  "year": "2021",
+  "similarity": 0.207,
+  "note": "注册标题与检索标题不一致，建议人工确认"
+ },
+ "10.1145/1571941.1572114": {
+  "status": "crossref_retry",
+  "evidence": "https://api.crossref.org/works/10.1145/1571941.1572114",
+  "title_seen": "Reciprocal rank fusion outperforms condorcet and individual rank learning methods",
+  "container": "Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval",
+  "year": "2009",
+  "similarity": 1.0,
+  "note": ""
+ },
+ "10.1145/3038912.3052569": {
+  "status": "source_url_confirmed",
+  "evidence": "https://github.com/hexiangnan/neural_collaborative_filtering",
+  "title_seen": "GitHub - hexiangnan/neural_collaborative_filtering: Neural Collaborative Filtering · GitHub",
+  "similarity": 0.517
+ },
+ "10.1016/j.conbuildmat.2021.125165": {
+  "status": "doi_resolves",
+  "evidence": "https://linkinghub.elsevier.com/retrieve/pii/S0950061821029093",
+  "title_seen": "Redirecting",
+  "similarity": 0.088
+ },
+ "10.3390/ma12081285": {
+  "status": "crossref_retry",
+  "evidence": "https://api.crossref.org/works/10.3390/ma12081285",
+  "title_seen": "Evaluation of the Potential of Sasobit REDUX Additive to Lower Warm-Mix Asphalt Production Temperature",
+  "container": "Materials",
+  "year": "2019",
+  "similarity": 1.0,
+  "note": ""
+ },
+ "10.3390/ma13071556": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0,
+  "retry_note": "Crossref 重查仍未收录"
+ },
+ "10.3390/su15043539": {
+  "status": "still_unverified",
+  "evidence": "",
+  "title_seen": "",
+  "similarity": 0.0,
+  "retry_note": "Crossref 重查仍未收录"
+ },
+ "10.1016/j.conbuildmat.2022.128152": {
+  "status": "doi_resolves",
+  "evidence": "https://linkinghub.elsevier.com/retrieve/pii/S0950061822018165",
+  "title_seen": "Redirecting",
+  "similarity": 0.168
+ },
+ "10.1016/j.cscm.2023.e01931": {
+  "status": "doi_resolves",
+  "evidence": "https://linkinghub.elsevier.com/retrieve/pii/S2214509523001109",
+  "title_seen": "Redirecting",
+  "similarity": 0.081
+ }
+}

@@ -1,0 +1,74 @@
+[
+ [
+  "github.com",
+  "OK",
+  200,
+  4000
+ ],
+ [
+  "api.github.com",
+  "OK",
+  200,
+  424
+ ],
+ [
+  "raw.githubusercontent.com",
+  "FAIL",
+  "URLError",
+  "<urlopen error _ssl.c:993: The handshake operation timed out>"
+ ],
+ [
+  "zenodo.org",
+  "FAIL",
+  "URLError",
+  "<urlopen error [Errno 11004] getaddrinfo failed>"
+ ],
+ [
+  "data.mendeley.com",
+  "OK",
+  200,
+  4000
+ ],
+ [
+  "hive.utah.edu",
+  "OK",
+  200,
+  3988
+ ],
+ [
+  "infopave.fhwa.dot.gov",
+  "FAIL",
+  "URLError",
+  "<urlopen error timed out>"
+ ],
+ [
+  "catalog.data.gov",
+  "OK",
+  200,
+  4000
+ ],
+ [
+  "pypi.org",
+  "OK",
+  200,
+  3036
+ ],
+ [
+  "paperswithcode.com",
+  "FAIL",
+  "URLError",
+  "<urlopen error [Errno 11001] getaddrinfo failed>"
+ ],
+ [
+  "doi.org",
+  "OK",
+  200,
+  2679
+ ],
+ [
+  "openalex",
+  "FAIL",
+  "URLError",
+  "<urlopen error _ssl.c:993: The handshake operation timed out>"
+ ]
+]

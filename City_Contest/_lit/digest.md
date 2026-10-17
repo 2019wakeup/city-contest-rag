@@ -1,0 +1,449 @@
+# 原始检索结果速览（核验前）
+
+共 151 条（去重后）
+
+## 背景知识（40 条）
+
+- **The Structure of Bitumen: Conceptual Models and Experimental Evidences** (2022, Materials) DOI:10.3390/ma15030905
+  - 任务: 系统综述沥青SARA四组分、胶体结构模型与沥青质聚集行为的实验证据与理论模型。
+  - 备注: 四组分、胶体结构向量库字段的权威定义来源。
+- **The preparation process, service performances and interaction mechanisms of crumb rubber modified asphalt (CRM** (2022, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2022.129168
+  - 任务: 综述湿法橡胶粉改性沥青的制备工艺、路用性能与橡胶-沥青溶胀降解交互机理。
+  - 备注: 废轮胎橡胶改性机理与微观形貌字段来源。
+- **Evaluation on the rejuvenation and diffusion characteristics of waste cooking oil on aged SBS asphalt based on** (2023, Journal of Cleaner Production) DOI:10.1016/j.jclepro.2023.136998
+  - 任务: 用分子动力学模拟废弃食用油再生剂在老化SBS沥青中的扩散速率与再生恢复效果。
+  - 备注: 再生剂选型与再生扩散机理的数据支撑。
+- **Influence of Three Different Antistripping Agents on Moisture Susceptibility, Stiffness, and Rutting Resistanc** (2024, Buildings) DOI:10.3390/buildings14082458
+  - 任务: 对比消石灰、胺类液体与硅烷类抗剥落剂对水稳定性、刚度与抗车辙性能的影响。
+  - 备注: 抗剥落剂类型比选与掺量建议参考。
+- **A review of phase structure of SBS modified asphalt: Affecting factors, analytical methods, phase models and i** (2021, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2021.123610
+  - 任务: 综述SBS改性沥青相结构的影响因素、荧光显微与流变表征方法及相形态模型。
+  - 备注: SBS改性机理与微观形貌字段的核心依据。
+- **Application of Epoxy-Asphalt Composite in Asphalt Paving Industry: A Review with Emphasis on Physicochemical P** (2021, Advances in Materials Science and Engineerin) DOI:10.1155/2021/3454029
+  - 任务: 综述环氧沥青复合材料的固化机理、理化性能与钢桥面等路面应用性能。
+  - 备注: 环氧沥青等特种改性方案的性能参数来源。
+- **Use of the multiple stress creep recovery (MSCR) test to characterize the rutting potential of asphalt binders** (2021, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2020.121320
+  - 任务: 综述MSCR试验参数Jnr与恢复率表征沥青高温抗车辙能力的方法、限值与发展。
+  - 备注: MSCR指标与PG高温分级字段定义依据。
+- **Towards sustainable roads: A State-of-the-art review on the use of recycling agents in recycled asphalt mixtur** (2023, Journal of Cleaner Production) DOI:10.1016/j.jclepro.2023.136994
+  - 任务: 综述再生剂类型、掺量设计与RAP高掺量混合料性能平衡的最新方法。
+  - 备注: 再生剂推荐规则与RAP掺量策略的决策依据。
+- **Recent Advances in Basalt Fiber Reinforced Asphalt Mixture for Pavement Applications** (2022, Materials) DOI:10.3390/ma15196826
+  - 任务: 综述玄武岩纤维增强沥青混合料的增强增韧机理、最佳掺量与路用性能进展。
+  - 备注: 纤维类添加剂字段与推荐逻辑参考。
+- **A comprehensive review of warm-mix asphalt mixtures: mix design, construction temperatures determination, perf** (2023, Road Materials and Pavement Design) DOI:10.1080/14680629.2023.2268194
+  - 任务: 综述温拌沥青混合料配合比设计、施工温度确定方法、路用性能与生命周期评价。
+  - 备注: 温拌添加剂方案与减排效益评价依据。
+- **Review on the diffusive and interfacial performance of bituminous materials: From a perspective of molecular d** (2022, Journal of Molecular Liquids) DOI:10.1016/j.molliq.2022.120363
+  - 任务: 综述分子动力学在沥青自愈合扩散、集料界面黏附与相容性研究中的建模方法。
+  - 备注: 微观机理解释与仿真数据字段的参考。
+- **Performance evaluation of petroleum bitumen binders and mixtures modified by natural rock asphalt from Xinjian** (2017, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2017.07.182
+  - 任务: 评价新疆天然岩沥青改性基质沥青及混合料的高温性能与改性效果。
+  - 备注: 天然岩沥青改性方案的本土性能数据。
+- **Ultraviolet ageing of bituminous materials: A comprehensive literature review from 2011 to 2022** (2022, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2022.128889
+  - 任务: 系统综述沥青紫外老化的化学机理、影响因素、室内模拟方法与性能评价指标。
+  - 备注: 老化（RTFO/PAV/UV）字段与性能衰减特征来源。
+- **A comprehensive review on the plant-mixed cold recycling technology of emulsified asphalt: Raw materials and f** (2024, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2024.137344
+  - 任务: 综述厂拌乳化沥青冷再生技术的原材料要求、破乳机理与性能影响因素。
+  - 备注: 乳化沥青冷再生养护方案的设计参考。
+- **Review of the Superpave performance grading system and recent developments in the performance-based test metho** (2022, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2021.126063
+  - 任务: 回顾Superpave PG分级体系及DSR车辙因子、BBR、MSCR等性能分级试验的新进展。
+  - 备注: PG分级与沥青性能试验字段的核心依据。
+- **Evaluation of the Properties of Asphalt Mixes Modified with Diatomite and Lignin Fiber: A Review** (2019, Materials) DOI:10.3390/ma12030400
+  - 任务: 综述木质素纤维与硅藻土改性沥青混合料的性能改善效果、机理与最佳掺量。
+  - 备注: 木质素纤维等添加剂性能与掺量数据来源。
+- **High-viscosity modified asphalt mixtures for double-layer porous asphalt pavement: Design optimization and eva** (2021, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2020.121893
+  - 任务: 研究双层排水沥青路面用高粘改性沥青混合料的配比优化与性能评价指标体系。
+  - 备注: 高粘高弹沥青与排水路面养护方案参考。
+- **公路工程沥青及沥青混合料试验规程（JTG 3410-2025）** (2025, 中华人民共和国交通运输部行业标准（强制性）) DOI:
+  - 任务: 规定针入度、软化点、延度、60℃动力粘度、135℃布氏粘度、RTFO/PAV老化等沥青试验方法。
+  - 数据:https://xxgk.mot.gov.cn/jigou/glj/202508/t20250822_4175218.html
+  - 备注: 中国沥青试验与分级字段依据；无DOI，来源URL见下载地址。
+- **中国沥青路面气候影响分区方案 (Zoning scheme of climatic influence for asphalt pavement in China)** (2007, 交通运输工程学报) DOI:
+  - 任务: 以739个气象站1971-2000年数据，用≥20℃积温、降水温度指数、降水冰冻指数与极端最低气温指标，提出中国沥青路面气候影响8个一级区、39个二级区分区方案。
+  - 备注: 无DOI，来源URL：https://transport.chd.edu.cn/article/id/200706013 。中国气候分区字段权威依据。
+- **公路沥青路面设计规范 (JTG D50—2017)** (2017, 中华人民共和国交通运输部行业标准) DOI:
+  - 任务: 规定沥青路面结构组合(上面层/中面层/下面层/基层/垫层)设计方法、交通荷载等级、材料与结构验算指标。
+  - 备注: 无DOI，来源URL：https://xxgk.mot.gov.cn/2020/jigou/glj/202006/t20200623_3312563.html 。层次结构定义来源。
+- **Design of High-Modulus Asphalt Concrete for the Middle Layer of Asphalt Pavement** (2024, Coatings) DOI:10.3390/coatings14020185
+  - 任务: 针对沥青路面中面层抗车辙需求，设计高模量沥青混凝土并评价其高温稳定性与力学性能。
+  - 备注: 中面层材料方案设计的直接参考。
+- **A review of rutting in asphalt concrete pavement** (2023, Open Engineering) DOI:10.1515/eng-2022-0463
+  - 任务: 系统综述沥青路面车辙的类型(失稳型/磨耗型/结构型)、成因机理、影响因素与处治措施。
+  - 备注: 车辙病害机理与对策的总览背景。
+- **Initiation and Propagation of Top-Down Cracking in Asphalt Pavement** (2018, Applied Sciences) DOI:10.3390/app8050774
+  - 任务: 通过加速加载与力学分析揭示沥青路面自上而下裂缝(纵向裂缝/龟裂)的起裂位置与扩展路径。
+  - 备注: 纵向裂缝/网裂成因机理输入字段依据。
+- **State-of-the-Art Review of the Evaluation of Asphalt Mixtures' Resistance to Reflective Cracking in Laboratory** (2020, Journal of Materials in Civil Engineering) DOI:10.1061/(ASCE)MT.1943-5533.0003254
+  - 任务: 综述沥青加铺层反射裂缝的室内评价方法、试验装置与指标，评述各类方法的适用性与局限。
+  - 备注: 反射裂缝与加铺层材料选择的评价指标。
+- **The effect of using anti-stripping additives on moisture damage of hot mix asphalt** (2018, International Journal of Adhesion and Adhesi) DOI:10.1016/j.ijadhadh.2017.03.016
+  - 任务: 通过表面自由能与力学试验量化抗剥落剂对热拌沥青混合料水损害(剥落)的改善效果。
+  - 备注: 水损害/剥落病害与抗剥落材料方案依据。
+- **Automatic Detection of Pothole Distress in Asphalt Pavement Using Improved Convolutional Neural Networks** (2022, Remote Sensing) DOI:10.3390/rs14163892
+  - 任务: 改进卷积神经网络实现沥青路面坑槽病害的自动检测与定位，提升小目标与复杂背景下的识别精度。
+  - 备注: 病害图像自动识别，支撑路况数据采集环节。
+- **Pavement skid resistance as a function of pavement surface and aggregate texture properties** (2018, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2018.1525489
+  - 任务: 建立路面抗滑值(摩阻/摆值)与路面表面构造深度、集料纹理特性之间的定量关系模型。
+  - 备注: 抗滑(BPN/构造深度)指标与上面层材料需求映射。
+- **Climate zoning of asphalt pavement based on spatial interpolation and Fuzzy C-Means algorithm** (2022, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2022.2072498
+  - 任务: 用空间插值结合模糊C均值聚类对沥青路面进行气候分区，为分区沥青胶结料与混合料选型提供依据。
+  - 备注: 气候分区与沥青选型的可迁移方法。
+- **Machine learning-based climate zoning and asphalt selection for pavement infrastructure under changing climate** (2025, International Journal of Transportation Scie) DOI:10.1016/j.ijtst.2024.10.001
+  - 任务: 以机器学习开展气候变化情景下的沥青路面气候分区与沥青PG等级选择，给出宁夏地区分区选材结果。
+  - 备注: 直接对应本课题 气候到材料 的智能选材。
+- **The impact of climate change on variations in rutting resilience of asphalt pavement across the climate zones ** (2024, Journal of Cleaner Production) DOI:10.1016/j.jclepro.2024.144016
+  - 任务: 评估气候变化下中国各气候区沥青路面抗车辙能力的时空变化，识别高温高风险区域。
+  - 备注: 极端高温荷载输入字段与分区需求映射。
+- **Consideration of dynamic loads in the determination of axle load spectra for pavement design** (2019, Road Materials and Pavement Design) DOI:10.1080/14680629.2019.1687006
+  - 任务: 将车辆动态荷载效应纳入轴载谱测定与建模，改进沥青路面设计中交通荷载参数的确定方法。
+  - 备注: 轴载谱/ESAL与重载交通输入字段依据。
+- **Traffic channelisation and pavement deterioration: an investigation of the role of lateral wander on asphalt p** (2022, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2022.2118272
+  - 任务: 研究车道渠化交通与轮迹横向摆动对沥青路面车辙发展的影响，量化渠化对车辙的加速作用。
+  - 备注: 渠化交通/重载车道车辙需求字段依据。
+- **公路技术状况评定标准 (JTG 5210—2018)** (2018, 中华人民共和国交通运输部行业标准) DOI:
+  - 任务: 规定路面状况指数PCI、行驶质量指数RQI、车辙深度指数RDI、抗滑指数SRI、路面破损率DR与结构强度PSSI的检测与评定方法及优/良/中/次/差分级阈值。
+  - 备注: 无DOI，来源URL：https://xxgk.mot.gov.cn/2020/jigou/glj/202006/t20200623_3313114.html 。评价指标字段定义权威来源。
+- **公路沥青路面养护技术规范 (JTG 5142—2019)** (2019, 中华人民共和国交通运输部行业标准) DOI:
+  - 任务: 规定沥青路面各类病害(裂缝、车辙、坑槽、松散、泛油等)的判定与处治要求，以及预防性养护、微表处、稀浆封层、罩面、再生等养护措施适用条件。
+  - 备注: 无DOI，来源URL：https://xxgk.mot.gov.cn/jigou/glj/202006/t20200623_3313189.html 。措施-病害匹配规则依据。
+- **Optimization for Asphalt Pavement Maintenance Plans at Network Level: Integrating Maintenance Funds, Pavement ** (2023, Applied Sciences) DOI:10.3390/app13158842
+  - 任务: 构建路网级沥青路面养护方案多目标优化模型，同时考虑养护资金、路面性能、道路用户与碳排放。
+  - 备注: 养护决策与方案排序的多目标约束范式。
+- **Review of methodology for life cycle assessment and life cycle cost analysis of asphalt pavements** (2023, Road Materials and Pavement Design) DOI:10.1080/14680629.2023.2278149
+  - 任务: 综述沥青路面寿命周期评价(LCA)与寿命周期成本分析(LCCA)的方法框架、边界设定、清单数据与评价指标。
+  - 备注: LCA/LCCA核算方法与碳足迹字段依据。
+- **Effectiveness Evaluation of Preventive Maintenance Treatments on Asphalt Pavement Performance Using LTPP Data** (2021, International Journal of Pavement Research a) DOI:10.1007/s42947-021-00078-2
+  - 任务: 基于LTPP长期性能数据定量评价雾封层、碎石封层、微表处等预防性养护措施对路面性能的改善效果与时机。
+  - 数据:https://infopave.fhwa.dot.gov/
+  - 备注: 预防性养护措施效果与时机量化证据。
+- **Prediction of highway asphalt pavement performance based on Markov chain and artificial neural network approac** (2020, The Journal of Supercomputing) DOI:10.1007/s11227-020-03329-4
+  - 任务: 将马尔可夫链与人工神经网络结合预测高速公路沥青路面性能衰变，比较状态转移与数据驱动方法的效果。
+  - 备注: 性能预测模型(概率型+神经网络)方法参考。
+- **Prediction of network level pavement treatment types using multi-classification machine learning algorithms** (2022, Road Materials and Pavement Design) DOI:10.1080/14680629.2021.2019091
+  - 任务: 用多种多分类机器学习算法由路网路况数据预测应采取的养护措施类型，替代传统决策树/决策矩阵。
+  - 备注: 场景→措施推荐算法的直接方法学参考。
+- **An Overview of Pavement Degradation Prediction Models** (2022, Journal of Advanced Transportation) DOI:10.1155/2022/7783588
+  - 任务: 系统梳理以PCI与IRI为指标的路面性能衰变预测模型，比较确定性、概率型与机器学习/神经网络方法的优缺点及影响参数。
+  - 备注: 性能预测模型选型的综述性总览。
+
+## 规范标准（13 条）
+
+- **JTG F40-2004 公路沥青路面施工技术规范（强制性行业标准，现行）** (2004, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定各等级公路沥青路面施工的材料要求、配合比设计、拌和摊铺碾压工艺与质量控制，是沥青混合料选材与施工工艺的强制性依据。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=da416e53e4fc222e26c31ddea128a5bf
+- **JTG D50-2017 公路沥青路面设计规范（现行，替代 JTG D50-2006）** (2017, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定沥青路面结构组合设计、交通荷载分级、材料设计参数与结构验算指标，为路面结构与材料方案匹配提供设计准则。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=70cff2c6471d4c227c7ad82bc367dcd1
+- **JTG 3410-2025 公路工程沥青及沥青混合料试验规程（强制性行业标准，2025-10-01 施行，替代 JTG E20-2011）** (2025, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 统一沥青与沥青混合料全部试验方法（针入度/软化点、PG 分级、车辙、水稳定性、低温性能等），是材料性能数据采集与机器学习特征工程的试验依据。
+  - 备注: 无DOI，来源URL：https://xxgk.mot.gov.cn/jigou/glj/202508/t20250822_4175218.html ；标准库页：https://jtst.mot.gov.cn/hb/se
+- **JTG 5142-2019 公路沥青路面养护技术规范（现行，替代 JTJ 073.2-2001）** (2019, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定沥青路面养护检查、病害判定、养护对策选择与养护工程质量要求，是养护决策规则库与处治方案推荐的核心条文来源。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=c8b8502fb537e912b2aa714c312c3597
+- **JTG 5421-2018 公路沥青路面养护设计规范（现行，2019-03-01 施行）** (2018, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定沥青路面养护设计流程、路况调查与评价、养护方案比选及加铺/翻修结构设计，为项目级养护方案智能推荐提供规范约束。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=2116d5c618b5d7b49b8bb5953f539847
+- **JTG/T 5142-01-2021 公路沥青路面预防养护技术规范（推荐性行业标准，2021-12-01 施行）** (2021, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定预防性养护的适用条件、时机判定、技术措施（雾封层、微表处、超薄罩面等）与效果评价，支撑预防性养护时机与措施推荐模型。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=fd4994f22d5174b83ac4a4e16c803846
+- **JTG/T 5521-2019 公路沥青路面再生技术规范（推荐性行业标准，2019-11-01 施行，替代 JTG F41-2008）** (2019, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定厂拌/就地热再生、冷再生与全深式再生的材料要求、配合比设计与施工控制，是再生沥青材料方案推荐的直接依据。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=e26d1c32b914bc17e2c0fe95f4c2566d
+- **JTG 5210-2018 公路技术状况评定标准（现行，替代 JTG H20-2007，注意 H20 已废止）** (2018, 中华人民共和国交通运输部行业标准（工程建设标准）) DOI:
+  - 任务: 规定路面 PCI、RQI、RDI、SRI 等指标的检测与计算方法及优次等级评定标准，是路面性能标签构造与养护优先排序的基准。
+  - 备注: 无DOI，来源URL：https://jtst.mot.gov.cn/hb/search/stdHBDetailed?id=1feb12eee26948912a9d0aaea9ba5891
+- **2024年交通运输行业发展统计公报（全国公路 549.04 万公里、高速 19.07 万公里）** (2025, 交通运输部年度统计公报（中国政府网发布）) DOI:
+  - 任务: 公布全国公路里程、等级构成、养护与投资规模等年度基础数据，为课题立项依据中的路网规模与养护需求测算提供权威数据源。
+  - 数据:https://www.gov.cn/lianbo/bumen/202506/content_7027415.htm
+  - 备注: 无DOI，来源URL：https://www.gov.cn/lianbo/bumen/202506/content_7027415.htm
+- **AASHTO M 320 / T 283 / T 324 / R 35（PG 分级沥青结合料规范、抗水损害试验、汉堡车辙试验与 Superpave 体积设计方法）** (, AASHTO Standard Specifications for Transport) DOI:
+  - 任务: 给出 PG 分级沥青结合料技术要求、混合料抗水损害与车辙性能试验方法及 Superpave 体积设计流程，是沥青材料方案推荐中性能门槛的国际对标依据。
+  - 备注: 无DOI，来源URL：https://store.transportation.org/（AASHTO 官方标准库，各版年份以现行版为准）
+- **ASTM D6373-21 Standard Specification for Performance-Graded Asphalt Binder** (2021, ASTM Annual Book of Standards) DOI:
+  - 任务: 规定按使用温度等级（PG XX-YY）对沥青结合料进行性能分级的技术要求与试验方法，是改性沥青选材与跨国产学研数据对齐的基准。
+  - 备注: 无DOI，来源URL：https://store.astm.org/d6373-21.html
+- **NCHRP 1-37A Guide for Mechanistic-Empirical Design of New and Rehabilitated Pavement Structures（MEPDG，后发展为 AAS** (2004, NCHRP Project 1-37A 最终报告（TRB 存档）) DOI:
+  - 任务: 提出力学-经验法路面设计体系与性能预测模型（车辙、疲劳开裂、IRI 等），是数据驱动路面性能预测模型的机理对照与特征设计来源。
+  - 备注: 无DOI，来源URL：https://onlinepubs.trb.org/onlinepubs/archive/mepdg/home.htm
+- **NCHRP Report 547: Simple Performance Tests: Summary of Recommended Methods and Database（NCHRP 9-19 Superpave 性** (2005, NCHRP Report 547（TRB 出版）) DOI:
+  - 任务: 总结 Superpave 混合料性能模型所需的简单性能试验方法与配套试验数据库，为沥青混合料性能指标选取与数据建模提供方法学基础。
+  - 备注: 无DOI，来源URL：https://www.trb.org/Publications/Blurbs/157541.aspx
+
+## 综述（8 条）
+
+- **Pavement asset management systems and technologies: A review** (2020, Automation in Construction) DOI:10.1016/j.autcon.2020.103336
+  - 任务: 系统梳理路面资产管理系统的数据采集技术、性能预测模型与养护决策优化方法，明确数据驱动养护决策的技术路线与瓶颈。
+  - 备注: 养护决策模块方法论总纲，确立数据驱动决策的引用框架。
+- **Review on Machine Learning Techniques for Developing Pavement Performance Prediction Models** (2021, Sustainability) DOI:10.3390/su13095248
+  - 任务: 综述用于路面性能预测的机器学习算法（回归、树模型、神经网络等）及其输入特征与精度表现，为性能预测模型选型提供依据。
+  - 数据:https://infopave.fhwa.dot.gov/
+  - 备注: AI 性能预测模块直接对标，算法与特征工程参考价值最高。
+- **Deep Learning in Data-Driven Pavement Image Analysis and Automated Distress Detection: A Review** (2018, Data) DOI:10.3390/data3030028
+  - 任务: 综述深度学习在路面图像分析与病害自动识别中的应用，比较 CNN 等模型在裂缝、坑槽检测上的数据集与精度，支撑病害多模态感知。
+  - 备注: 病害检测与视觉数据模态的经典综述，支撑多模态数据层设计。
+- **Warm mix asphalt technology: An up to date review** (2020, Journal of Cleaner Production) DOI:10.1016/j.jclepro.2020.122128
+  - 任务: 综述各类温拌沥青技术（有机添加剂、发泡、化学添加剂）的降黏机理、流变与路用性能及环境效益，支撑温拌材料方案推荐。
+  - 备注: 温拌技术选材规则库的核心综述，被引高、覆盖面全。
+- **A comprehensive review on the blending condition between virgin and RAP asphalt binders in hot recycled asphal** (2023, Journal of Cleaner Production) DOI:10.1016/j.jclepro.2023.136515
+  - 任务: 综述新旧沥青混融机理、混融度评价方法与影响因素，为再生沥青混合料中 RAP 掺量与再生剂方案的智能推荐提供机理支撑。
+  - 备注: 再生材料方案推荐的关键机理文献，决定 RAP 掺量约束。
+- **A review of polymer-modified asphalt binder: Modification mechanisms and mechanical properties** (2024, Cleaner Materials) DOI:10.1016/j.clema.2024.100255
+  - 任务: 综述 SBS、SBR、EVA 等聚合物改性沥青的改性机理与力学性能提升规律，为改性沥青类型与掺量方案推荐提供定量参考。
+  - 备注: 改性沥青选材知识库核心综述，2024 年新文、时效性好。
+- **Taking the Human Out of the Loop: A Review of Bayesian Optimization** (2016, Proceedings of the IEEE) DOI:10.1109/JPROC.2015.2494218
+  - 任务: 系统综述贝叶斯优化的概率代理模型、采集函数（EI/UCB/ES/Knowledge Gradient）与收敛理论，是黑箱昂贵函数优化的方法总纲。
+  - 备注: 模块B贝叶斯优化基座，给出采集函数选型与探索-利用权衡依据
+- **Machine learning-based inverse design methods considering data characteristics and design space size in materi** (2023, Materials Horizons) DOI:10.1039/D3MH00039G
+  - 任务: 按数据量与设计空间规模把机器学习逆向设计方法分为优化型、生成型与判别型三类，并给出方法选型指南与挑战梳理。
+  - 备注: 模块B逆向设计方法选型总图：小数据选代理+优化，大空间选生成模型
+
+## 推荐算法（2 条）
+
+- **Deep Learning Based Recommender System: A Survey and New Perspectives** (2019, ACM Computing Surveys) DOI:10.1145/3285029
+  - 任务: 综述基于深度学习的推荐系统模型、评测体系与研究挑战
+  - 备注: 深度推荐模型谱系，为材料方案推荐算法选型提供依据
+- **Neural Collaborative Filtering** (2017, Proceedings of the 26th International Confer) DOI:10.1145/3038912.3052569
+  - 任务: 用神经网络替代内积建模用户与物品交互，提出NCF协同过滤框架
+  - 代码:https://github.com/hexiangnan/neural_collaborative_filtering | 数据:https://grouplens.org/datasets/movielens/1m/
+  - 备注: 协同过滤基线；工程选材缺少交互数据时可作对照
+
+## 评估方法（30 条）
+
+- **Enhancing asphalt mix design with transfer learning and hybrid artificial intelligence** (2025, Case Studies in Construction Materials) DOI:10.1016/j.cscm.2025.e05258
+  - 任务: 用迁移学习与混合人工智能（集成多种机器学习模型）提升沥青混合料配合比设计的性能预测精度，缓解配合比试验数据小样本问题。
+  - 备注: 团队已下载全文（ref/ 目录），作为迁移学习小样本建模的首篇精读与对标基线。
+- **Bayesian Optimization for Materials Design** (2015, Information Science for Materials Discovery ) DOI:10.1007/978-3-319-23871-5_3
+  - 任务: 面向材料设计的贝叶斯优化工作流：以高斯过程为代理、以采集函数指导下一组实验，在实验昂贵稀少时高效逼近最优材料配方。
+  - 备注: 性能→配方反向寻优经典范式，书籍ISBN 978-3-319-23870-8
+- **Parallel Bayesian Optimization of Multiple Noisy Objectives with Expected Hypervolume Improvement** (2021, Advances in Neural Information Processing Sy) DOI:arXiv:2105.08195
+  - 任务: 提出 qNEHVI，用蒙特卡洛样本近似期望超体积改进，解决多目标、带观测噪声、可批量并行下料的贝叶斯优化难题。
+  - 代码:https://github.com/pytorch/botorch
+  - 备注: 预印本 https://arxiv.org/abs/2105.08195 ；qNEHVI已在BoTorch落地，直配性能-成本-碳排三目标
+- **Differentiable Expected Hypervolume Improvement for Parallel Multi-Objective Bayesian Optimization** (2020, Proceedings of the 37th International Confer) DOI:arXiv:2006.05078
+  - 任务: 提出可微分的期望超体积改进 qEHVI 及其精确梯度，使多目标贝叶斯优化能一次推荐一批候选配比并高效优化采集函数。
+  - 代码:https://github.com/pytorch/botorch
+  - 备注: 预印本 https://arxiv.org/abs/2006.05078 ；与qNEHVI配套，构成模块B批量多目标推荐内核
+- **Evolution-guided Bayesian optimization for constrained multi-objective optimization in self-driving labs** (2024, npj Computational Materials) DOI:10.1038/s41524-024-01274-x
+  - 任务: 把进化算法与批量贝叶斯优化耦合，在硬约束下做多目标优化，并把该策略用于自驱动实验室的自动化材料/配方探索闭环。
+  - 备注: 约束+多目标+批量实验完整闭环，最贴合模块B『性能目标→配方』自动化推荐
+- **A fast and elitist multiobjective genetic algorithm: NSGA-II** (2002, IEEE Transactions on Evolutionary Computatio) DOI:10.1109/4235.996017
+  - 任务: 提出快速非支配排序与拥挤度距离的精英保留多目标遗传算法，无需指定权重即可一次性获得均匀Pareto最优解集。
+  - 代码:https://github.com/anyoptimization/pymoo | 数据:https://pymoo.org/problems/index.html
+  - 备注: Pareto前沿生成主力算法；开源实现见pymoo（仓库经PyPI README核实）
+- **An Evolutionary Many-Objective Optimization Algorithm Using Reference-Point-Based Nondominated Sorting Approac** (2014, IEEE Transactions on Evolutionary Computatio) DOI:10.1109/TEVC.2013.2281535
+  - 任务: 提出基于参考点的非支配排序（NSGA-III），用均匀参考点维持多样性，解决4个及以上目标时Pareto解退化的问题。
+  - 代码:https://github.com/anyoptimization/pymoo | 数据:https://pymoo.org/problems/index.html
+  - 备注: 性能-成本-碳排-耐久≥4目标时替代NSGA-II，开源实现见pymoo
+- **MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition** (2007, IEEE Transactions on Evolutionary Computatio) DOI:10.1109/TEVC.2007.892759
+  - 任务: 把多目标问题分解为一组单目标子问题并用邻域协同进化求解，权重向量扫描即可得到分布均匀的Pareto解集。
+  - 代码:https://github.com/anyoptimization/pymoo | 数据:https://pymoo.org/problems/index.html
+  - 备注: 适合做加权偏好扫描，输出『性能-成本-碳排』权衡曲线供决策
+- **Particle swarm optimization** (1995, Proceedings of ICNN'95 - International Confe) DOI:10.1109/ICNN.1995.488968
+  - 任务: 提出粒子群优化算法，用个体最优与群体最优引导速度更新，实现连续空间全局搜索，参数少、收敛快。
+  - 备注: 油石比、掺量等连续变量寻优快；可与代理模型耦合做配比PSO搜索
+- **Sample-efficient Multi-objective Molecular Optimization with GFlowNets** (2023, Advances in Neural Information Processing Sy) DOI:10.52202/075280-3487
+  - 任务: 用超网络条件化的GFlowNet（HN-GFN）充当多目标贝叶斯优化的采集函数优化器，一次采样即给出覆盖整个Pareto前沿的多样化候选分子。
+  - 代码:https://github.com/violet-sto/HN-GFN | 数据:https://github.com/violet-sto/HN-GFN
+  - 备注: 预印本 https://arxiv.org/abs/2302.04040 ；『一次生成多样配方候选』思路可迁移到沥青配比
+- **Physics-guided neural network for predicting asphalt mixture rutting with balanced accuracy, stability and rat** (2024, Neural Networks) DOI:10.1016/j.neunet.2023.12.039
+  - 任务: 输入级配、沥青与体积参数，用物理引导（PINN思路）神经网络预测车辙深度，在精度、单调稳定性与外推合理性上取得平衡，优于纯数据驱动模型。
+  - 备注: 课题点名的PINN车辙工作，模块C小样本物理引导代理模型首选范式
+- **Physics-informed machine learning for asphalt mixture dynamic modulus: Balancing high accuracy with stability ** (2026, Engineering Applications of Artificial Intel) DOI:10.1016/j.engappai.2026.115997
+  - 任务: 以级配、沥青PG等级、体积参数及加载频率/温度为输入预测动态模量E*，把主曲线/黏弹机理约束嵌入损失函数，提升外推稳定性与合理性。
+  - 备注: 物理信息机器学习预测E*，与PINN车辙工作互补，可作模块C物理约束范式
+- **Coupled prediction of viscoelastic properties of asphalt mixtures using a multi-task physics-constrained neura** (2026, Advanced Engineering Informatics) DOI:10.1016/j.aei.2026.104437
+  - 任务: 多任务物理约束神经网络一次前向同时输出动态模量与相位角，共享表征并施加黏弹一致性约束，实现耦合高精度预测。
+  - 代码:https://github.com/Robin0111/Asphalt-MT-PCNN
+  - 备注: 多任务+物理约束，直接对应模块C“一次输入多指标输出”需求
+- **Enhancing understanding of asphalt mixture dynamic modulus prediction through interpretable machine learning m** (2025, Advanced Engineering Informatics) DOI:10.1016/j.aei.2025.103111
+  - 任务: 对比多种机器学习模型预测E*，并用SHAP等可解释方法量化级配、沥青与体积参数的贡献，给出高精度且可解释的E*代理模型。
+  - 备注: 可解释E*建模，其SHAP方案可移植到模块C的推荐理由生成
+- **Predicting the dynamic modulus of asphalt mixture using hybridized artificial neural network and grey wolf opt** (2021, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2021.2005056
+  - 任务: 用灰狼优化器自动搜索ANN超参数预测E*，精度显著优于传统回归与Witczak类经验模型，给出可用的元启发式-神经网络混合流程。
+  - 备注: ANN+元启发式调参范式，模块C超参数自动优化可借鉴
+- **Developing a prediction model for rutting depth of asphalt mixtures using gene expression programming** (2021, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2020.120543
+  - 任务: 用基因表达式编程(GEP)直接从胶结料PG、级配、沥青用量与试验条件生成车辙深度显式预测公式，精度高且形式透明可审查。
+  - 备注: GEP显式公式路线，可为模块C提供白箱对照模型
+- **Predicting the Fatigue Life of Asphalt Concrete Using Neural Networks** (2026, Journal of Materials in Civil Engineering) DOI:10.1061/jmcee7.mteng-20929
+  - 任务: 以应变水平、沥青用量与空隙率为输入，用ANN（2隐层×200神经元、MSLE损失、四折交叉验证）预测四点弯曲疲劳寿命，全数据集R²约0.90，并给出部分依赖图。
+  - 代码:https://github.com/VaclavNezerka/AsphaltFatigueANN | 数据:https://github.com/VaclavNezerka/AsphaltFatigueANN
+  - 备注: 疲劳寿命小样本ANN基线，代码与数据全开源，可直接复现
+- **Prediction of moisture susceptibility of asphalt mixtures containing RAP materials using machine learning algo** (2024, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2024.2431610
+  - 任务: 输入RAP掺量、级配与体积参数，用多种机器学习算法预测水稳定性指标TSR，树类集成模型精度最高。
+  - 备注: 水稳定性TSR预测，补齐模块C的耐久性输出维度
+- **Physics-informed TVAE and probabilistic learning for uncertainty-aware prediction of tensile strength and mois** (2026, Cleaner Materials) DOI:10.1016/j.clema.2026.100404
+  - 任务: 用物理信息约束的表格变分自编码器(TVAE)扩充小样本，再以概率学习同时预测抗拉强度与水稳定性(TSR)，并输出不确定性区间而非点值。
+  - 备注: 小样本+概率输出，正中模块C数据稀缺与置信区间痛点
+- **Data-driven generative adversarial network and machine learning hybrid framework for predicting rutting depth ** (2026, International Journal of Pavement Engineerin) DOI:10.1080/10298436.2026.2668561
+  - 任务: 用GAN生成合成样本增强稀缺数据，再以机器学习预测含再生沥青瓦(RAS)路面的车辙深度，显著缓解样本不足导致的精度下降。
+  - 备注: GAN数据增强路线，可用于模块C小样本扩增
+- **Machine Learning-Driven Prediction and Design Guidance for Asphalt Concrete Using Marshall Stability and Indir** (2026, Materials) DOI:10.3390/ma19163408
+  - 任务: 以沥青性质、矿料级配与纤维参数为输入预测马歇尔稳定度与劈裂强度，量化有利参数区间并开发GUI，形成“预测+设计指导”闭环。
+  - 备注: 输入=组成参数、输出=稳定度/强度，字段设计最贴近模块C
+- **Regression-Based Performance Prediction in Asphalt Mixture Design and Input Analysis with SHAP** (2025, Applied Sciences) DOI:10.3390/app151910779
+  - 任务: 用回归与集成学习预测马歇尔试件力学性能，并以SHAP量化各组成输入对性能的贡献与方向，服务于配合比设计输入筛选。
+  - 备注: SHAP输入分析流程，可作模块C特征筛选与解释模板
+- **Uncertainty-aware prediction of asphalt pavement roughness using probabilistic machine learning** (2026, Engineering Applications of Artificial Intel) DOI:10.1016/j.engappai.2026.116515
+  - 任务: 用概率机器学习预测路面平整度IRI，同时给出预测区间以量化认知与数据不确定性，而非单一确定值。
+  - 代码:https://github.com/AbolfazlAfshin/Uncertainty-Aware-Asphalt-Pavement-Modeling
+  - 备注: 带置信区间的开源实现，可作模块C不确定性模块模板
+- **XGBoost-SHAP framework for asphalt pavement condition evaluation** (2024, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2024.136182
+  - 任务: 以XGBoost建模路面状况并耦合SHAP解释，识别主导影响因素，预测精度显著优于传统回归基线。
+  - 备注: 高被引XGBoost+SHAP范式，模块C特征归因基线首选
+- **Data-driven efficient prediction and design optimisation for high-temperature performance of asphalt mixture** (2026, Road Materials and Pavement Design) DOI:10.1080/14680629.2026.2669991
+  - 任务: 建立数据驱动模型预测沥青混合料高温性能（车辙类指标），并反向优化组成设计，形成“高效预测→配比寻优”闭环。
+  - 代码:https://github.com/JHTanChris/AC-HP-P-DO
+  - 备注: 预测+优化闭环，与模块C“智能推荐材料方案”目标一致
+- **Asphalt Pavement Performance Prediction Using Ensemble Learning Methods** (2025, Lecture Notes in Mobility (Transport Transit) DOI:10.1007/978-3-032-04774-8_23
+  - 任务: 用随机森林/梯度提升等树集成模型预测路面性能（平整度IRI等），配合特征重要性分析支撑养护管理决策。
+  - 代码:https://github.com/tamagusko/predict-iri-ensemble
+  - 备注: 代码仓库自标为该论文配套代码，含完整Notebook，标题与会议版略有差异
+- **Research on prediction models for low-temperature cracking characteristics of asphalt mixtures by integrating ** (2026, Construction and Building Materials) DOI:10.1016/j.conbuildmat.2026.146545
+  - 任务: 融合室内低温试验数据与机器学习，预测低温开裂特征指标（低温弯曲应变/劲度类），支撑低温环境下的材料选型。
+  - 备注: 补齐低温开裂输出维度，模块C寒冷地区方案可用
+- **Revised Predictive Model for Dynamic (Complex) Modulus of Asphalt Mixtures** (1996, Transportation Research Record) DOI:10.1177/0361198196154000103
+  - 任务: 提出（修正）Witczak动态模量经验预测模型：以级配、沥青黏度/复数模量与体积参数回归E*主曲线，是后续所有ML代理模型的标准对比基线。
+  - 备注: Bari-Witczak修正版沿用同一框架，模块C必须设置的机理基线
+- **Accuracy of Dynamic Modulus Models of Asphalt Mixtures Containing Reclaimed Asphalt (RA)** (2024, Applied Sciences) DOI:10.3390/app142210505
+  - 任务: 以0%/30%/40%/50%再生料混合料的室内试验为基准，评估Witczak sigmoid主曲线模型与广义Huet-Sayegh(2S2P1D)流变模型的E*预测精度，结论为Witczak精度最佳而2S2P1D在低频/高频段偏差较大。
+  - 备注: 给出Witczak类基线在含再生料场景的真实误差量级，便于模块C对比
+- **Modeling the rutting performance of asphalt pavements: a review** (2023, Journal of Infrastructure Preservation and R) DOI:10.1186/s43065-023-00082-9
+  - 任务: 系统综述车辙性能建模方法（经验模型、力学-经验模型到数据驱动/机器学习模型），梳理输入变量体系、精度水平与适用局限。
+  - 备注: 车辙建模综述，可作模块C文献综述与变量选择的骨架
+
+## 数据集（9 条）
+
+- **Long-Term Pavement Performance (LTPP) 长期路面性能数据库** (2026, ) DOI:
+  - 任务: 美国/加拿大2500余个沥青与水泥路面试验段的长期性能、交通、气候、结构与养护数据，用于路面性能衰变建模与养护决策。
+  - 数据:https://catalog.data.gov/dataset/long-term-pavement-performance-ltpp
+  - 备注: data.gov目录页可访问；原始数据经InfoPave下载，本环境访问infopave.fhwa.dot.gov失败，需联网自测
+- **LTPP InfoPave 数据平台（LTPP Standard Data Release / NALS 等）** (2026, ) DOI:
+  - 任务: 提供LTPP分段、材料试验、FWD弯沉、平整度IRI、车辙、交通WIM等标准数据发布包与在线查询的官方平台。
+  - 数据:https://infopave.fhwa.dot.gov/
+  - 备注: 官方平台；本环境web_fetch无法连通该域名，需用户浏览器确认，注册后免费下载
+- **Dataset used to develop soft computing models that predict the stiffness modulus of bituminous mixtures** (2024, Data in Brief) DOI:10.1016/j.dib.2024.110382
+  - 任务: 360组沥青混合料（HMA/SMA）刚度模量数据集，含沥青黏度、沥青含量、温度、体积指标等，用于模量预测建模。
+  - 代码: | 数据:https://data.mendeley.com/datasets/yb4brz3sdx/3
+  - 备注: Mendeley Data开放下载(DOI 10.17632/yb4brz3sdx)；论文DOI经Crossref核验，可直接建模量预测基线
+- **High-Resolution Texture/Friction Dataset: Characterizing Asphalt Pavements and Aggregate Mosaics at Varied Pol** (2024, ) DOI:
+  - 任务: 不同抛光阶段沥青路面与集料马赛克的高分辨率表面纹理与摩擦系数数据集，用于抗滑性能与表面功能评价。
+  - 代码: | 数据:https://data.mendeley.com/datasets/kkcztnxzph/1
+  - 备注: Mendeley Data可访问开放下载；图像/纹理型数据，可作为抗滑耐久性辅助依据
+- **Pavement Performance Data（Utah Hive 研究数据仓储）** (2025, ) DOI:
+  - 任务: 11种沥青混合料低温（0至-24℃）BBR动态模量与胶结料性能、RAP掺量、体积参数数据集，含Hirsch模型对比。
+  - 数据:https://hive.utah.edu/records/g15zy-0x872
+  - 备注: 开放获取(Open)，含xlsx/dgpx，476MB可打包下载；直接支撑低温性能与RAP选材
+- **Factors affecting asphalt concrete permanent deformation: Experimental dataset for uniaxial repeated load test** (2024, Data in Brief) DOI:
+  - 任务: 沥青混凝土单轴重复加载永久变形（车辙）试验数据集，覆盖级配、胶结料与荷载条件，用于车辙本构与预测。
+  - 数据:https://www.sciencedirect.com/science/article/pii/S2352340924001951
+  - 备注: ScienceDirect返回403需订阅/登录；可先读OA预览，正文含Mendeley数据DOI链接
+- **Concrete Compressive Strength（UCI Machine Learning Repository）** (2007, UCI Machine Learning Repository) DOI:10.24432/C5PK67
+  - 任务: 1030条混凝土抗压强度记录，8个配合比与龄期特征，是材料信息学与配合比-性能回归的经典基准数据。
+  - 数据:https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength
+  - 备注: CC BY 4.0免费下载，含Python导入代码；可迁移材料配合比-性能建模方法论
+- **中国统计年鉴（国家统计局，交通运输章节：公路里程、等级公路与养护数据）** (2025, ) DOI:
+  - 任务: 全国及分省公路总里程、等级公路构成、路网密度等年度统计，用于养护需求规模测算与区域选材决策背景数据。
+  - 数据:https://www.stats.gov.cn/sj/ndsj/
+  - 备注: 官网可访问，年鉴在线免费阅读/下载；宏观统计非路段级数据，仅作背景与需求侧佐证
+- **交通运输部政府信息公开平台（统计与公路养护相关公开数据）** (2026, ) DOI:
+  - 任务: 发布公路养护统计、交通行业发展统计公报等官方口径数据，用于中国养护规模与政策依据引用。
+  - 数据:https://xxgk.mot.gov.cn/
+  - 备注: 官网可访问(HTTP200)，公报刊载年度养护投资与里程；无路段级路面性能字段
+
+## 开源代码（14 条）
+
+- **XGBoost: A Scalable Tree Boosting System** (2016, KDD 2016) DOI:10.1145/2939672.2939785
+  - 任务: 梯度提升树工具箱，用于由配合比/体积参数/气候特征回归预测模量、车辙与疲劳寿命并做特征重要性分析。
+  - 代码:https://github.com/dmlc/xgboost | 数据:https://pypi.org/project/xgboost/
+  - 备注: PyPI页验证可访问(3.4.1, Apache-2.0)；GitHub在本环境被拦截，需用户浏览器确认仓库
+- **LightGBM: A Highly Efficient Gradient Boosting Decision Tree** (2017, NeurIPS 2017) DOI:
+  - 任务: 高效梯度提升框架，适合中小规模路面/材料表格数据的高精度建模与超参数调优，作为推荐系统核心回归器。
+  - 代码:https://github.com/lightgbm-org/LightGBM | 数据:https://pypi.org/project/lightgbm/
+  - 备注: PyPI页验证可访问(4.7.0, MIT)；含GPU/CUDA构建，GitHub链接需用户自测
+- **PyCaret: An open source, low-code machine learning library in Python** (2024, ) DOI:
+  - 任务: 低代码AutoML库，可一键完成多模型对比、调参与部署，用于快速筛选最优沥青性能预测模型。
+  - 代码:https://github.com/pycaret/pycaret | 数据:https://pypi.org/project/pycaret/
+  - 备注: PyPI页验证可访问(3.3.2, MIT)；适合作为课题一模型选型与基线对比工具
+- **Optuna: A Next-generation Hyperparameter Optimization Framework** (2019, KDD 2019) DOI:
+  - 任务: 定义-运行式超参数优化框架，支持TPE剪枝与并行调参，用于材料性能模型与推荐策略的自动寻优。
+  - 代码:https://github.com/optuna/optuna | 数据:https://optuna.readthedocs.io/en/stable/
+  - 备注: 官方文档验证可访问(Optuna 5.0.0, MIT)；论文DOI(10.1145/3292500.3330701)本轮未能连通Crossref核验故留空
+- **SHAP (SHapley Additive exPlanations)** (2017, NeurIPS 2017) DOI:
+  - 任务: 基于Shapley值的模型可解释性工具，输出各配合比/环境特征对性能预测的贡献，支撑养护决策可解释性与方案溯源。
+  - 代码:https://github.com/shap/shap | 数据:https://shap.readthedocs.io/en/latest/
+  - 备注: 官方文档验证可访问(HTTP200)；含表格/文本/图像示例，MIT许可
+- **InterpretML: A Unified Framework for Machine Learning Interpretability** (2019, arXiv / Microsoft Research) DOI:
+  - 任务: 统一可解释机器学习框架，含EBM玻璃盒模型与SHAP/LIME解释器，可与黑盒推荐模型对比以提升决策可信度。
+  - 代码:https://github.com/interpretml/interpret | 数据:https://pypi.org/project/interpret/
+  - 备注: PyPI页验证可访问(0.7.8, MIT)；提供自带高精度可解释模型，适合科研评审答辩
+- **MAPIE: A scikit-learn-compatible module for estimating prediction intervals** (2022, Journal of Open Source Software) DOI:
+  - 任务: 符合预测(conformal prediction)与预测区间估计库，为路面性能预测与养护时机决策提供不确定性量化。
+  - 代码:https://github.com/scikit-learn-contrib/MAPIE | 数据:https://mapie.readthedocs.io/en/latest/
+  - 备注: 论文DOI未能通过Crossref核验故留空；链接待用户浏览器复核，对决策风险控制价值高
+- **GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference with GPU Acceleration** (2018, NeurIPS 2018) DOI:
+  - 任务: GPU加速高斯过程库，用于小样本沥青性能建模与贝叶斯优化代理模型，输出带方差的预测。
+  - 代码:https://github.com/cornellius-gp/gpytorch | 数据:https://gpytorch.ai/
+  - 备注: 官网验证可访问(HTTP200)；MIT许可，与BoTorch同源，适合主动试验设计
+- **pymoo: Multi-Objective Optimization in Python** (2020, IEEE Access) DOI:10.1109/ACCESS.2020.2990567
+  - 任务: 多目标进化优化框架（NSGA-II/III、MOEA/D等），用于在造价、路用性能、碳排放之间做沥青方案Pareto优选。
+  - 代码:https://github.com/anyoptimization/pymoo | 数据:https://pymoo.org/
+  - 备注: 官网验证可访问(0.6.2)；含MCDM与约束处理，直接支撑“多目标选材”
+- **DEAP: Evolutionary Algorithms Made Easy** (2012, Journal of Machine Learning Research) DOI:
+  - 任务: 进化算法框架，支持遗传算法/遗传编程与NSGA-II，用于养护方案组合优化与材料配比搜索。
+  - 代码:https://github.com/DEAP/deap | 数据:https://pypi.org/project/deap/
+  - 备注: PyPI页验证可访问(1.4.4, LGPL)；适合养护计划离散组合优化
+- **LangChain: Building applications with LLMs through composability** (2026, ) DOI:
+  - 任务: 大模型应用编排框架，用于构建“规范-材料-案例”知识库检索问答与养护方案智能推荐的解释生成链路。
+  - 代码:https://github.com/langchain-ai/langchain | 数据:https://pypi.org/project/langchain/
+  - 备注: PyPI页验证可访问(1.4.5, MIT)；作为RAG与Agent层底座，可接入FAISS/Chroma向量库
+- **BoTorch: A Framework for Efficient Monte-Carlo Bayesian Optimization** (2020, Advances in Neural Information Processing Sy) DOI:arXiv:1910.06403
+  - 任务: 发布开源蒙特卡洛贝叶斯优化框架 BoTorch，统一提供批量、多目标、约束采集函数（含 qEHVI/qNEHVI）与自动微分优化器。
+  - 代码:https://github.com/pytorch/botorch | 数据:https://botorch.org/docs/tutorials
+  - 备注: 预印本 https://arxiv.org/abs/1910.06403 ；仓库经PyPI与botorch.org双证（现meta-pytorch/botorch），上层为Ax
+- **GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference with GPU Acceleration** (2018, Advances in Neural Information Processing Sy) DOI:arXiv:1809.11165
+  - 任务: 提出用黑箱矩阵-矩阵运算（Lanczos/共轭梯度）实现GPU加速的高斯过程推断库 GPyTorch，使大样本、高维GP代理模型可实用。
+  - 代码:https://github.com/cornellius-gp/gpytorch | 数据:https://docs.gpytorch.ai
+  - 备注: 预印本 https://arxiv.org/abs/1809.11165 ；模块B代理模型计算内核，仓库经PyPI Source字段核实
+- **Optuna: A Next-generation Hyperparameter Optimization Framework** (2019, Proceedings of the 25th ACM SIGKDD Internati) DOI:10.1145/3292500.3330701
+  - 任务: 发布define-by-run式黑箱优化框架Optuna，提供TPE、CMA-ES采样器、多目标MOTPE与剪枝、分布式并行试验管理。
+  - 代码:https://github.com/optuna/optuna | 数据:https://github.com/optuna/optuna-examples
+  - 备注: 轻量接入：把『配方→性能』预测器当目标函数即可做多目标搜索
+
+## 其他类型（35 条）
+
+- **数据驱动下的沥青混合料材料组成设计方法** [类型:应用研究] DOI:10.11896/cldb.24010230
+- **Optimization of asphalt mix design considering mixture performance, environmental impact, and life cycle cost** [类型:应用研究] DOI:10.1016/j.jclepro.2025.145618
+- **A mix design–supporting multi-objective optimization framework for ultra-high-performance concrete balancing m** [类型:应用研究] DOI:10.1016/j.cscm.2026.e06043
+- **Graph Retrieval-Augmented Generation: A Survey** [类型:RAG与检索] DOI:10.1145/3777378
+- **Dense Passage Retrieval for Open-Domain Question Answering** [类型:RAG与检索] DOI:10.18653/v1/2020.emnlp-main.550
+- **ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT** [类型:RAG与检索] DOI:10.1145/3397271.3401075
+- **Milvus: A Purpose-Built Vector Data Management System** [类型:RAG与检索] DOI:10.1145/3448016.3457550
+- **Reciprocal rank fusion outperforms condorcet and individual rank learning methods** [类型:RAG与检索] DOI:10.1145/1571941.1572114
+- **A survey on large language model based autonomous agents** [类型:RAG与检索] DOI:10.1007/s11704-024-40231-1
+- **A Survey on Knowledge Graphs: Representation, Acquisition, and Applications** [类型:知识图谱] DOI:10.1109/TNNLS.2021.3070843
+- **A Comprehensive Survey on Automatic Knowledge Graph Construction** [类型:知识图谱] DOI:10.1145/3618295
+- **Text-based automatic knowledge graph construction for road infrastructure operations management** [类型:知识图谱] DOI:10.1016/j.autcon.2025.106733
+- **Exploring bridge maintenance knowledge graph by leveraging GrapshSAGE and text encoding** [类型:知识图谱] DOI:10.1016/j.autcon.2024.105634
+- **BERT and hierarchical cross attention-based question answering over bridge inspection knowledge graph** [类型:知识图谱] DOI:10.1016/j.eswa.2023.120896
+- **Knowledge graph and CBR-based approach for automated analysis of bridge operational accidents: Case representa** [类型:案例推理] DOI:10.1371/journal.pone.0294130
+- **MatKG: An autonomously generated knowledge graph in Material Science** [类型:知识图谱] DOI:10.1038/s41597-024-03039-z
+- **Large language models for knowledge graph extraction from tables in materials science** [类型:知识图谱] DOI:10.1039/d4dd00362d
+- **Multi-Criteria Decision-Making Framework (AHP-TOPSIS): Pavement Preventive Maintenance Case Study for Ordinary** [类型:多准则决策] DOI:10.3390/buildings14103048
+- **A Novel Multi-Criteria Decision-Making Model for Building Material Supplier Selection Based on Entropy-AHP Wei** [类型:多准则决策] DOI:10.3390/e22020259
+- **Evaluation of open-grade friction course (OGFC) mixtures with high content SBS polymer modified asphalt** [类型:实验研究（掺量-性能）] DOI:10.1016/j.conbuildmat.2020.121374
+- **Performance evaluation of asphalt mixtures containing warm mix asphalt (WMA) additives and reclaimed asphalt p** [类型:实验研究（掺量-性能）] DOI:10.1016/j.conbuildmat.2020.121200
+- **Laboratory investigation and statistical analysis of the rutting and fatigue resistance of asphalt mixtures co** [类型:实验研究（掺量-性能）] DOI:10.1016/j.conbuildmat.2021.125165
+- **Fatigue performance characterization of styrene-butadiene-styrene and crumb rubber composite modified asphalt ** [类型:实验研究（改性机理-疲劳）] DOI:10.1016/j.jclepro.2021.129979
+- **Evaluation of the Potential of Sasobit REDUX Additive to Lower Warm-Mix Asphalt Production Temperature** [类型:实验研究（温拌降温定量）] DOI:10.3390/ma12081285
+- **Analysis of Modulus Properties of High-Modulus Asphalt Mixture and Its New Evaluation Index of Rutting Resista** [类型:实验研究（材料-模量-车辙）] DOI:10.3390/su15097574
+- **Effects of In-Place Volumetric Properties on Field Rutting and Cracking Performance of Asphalt Pavement** [类型:现场统计研究（体积参数-路况）] DOI:10.1061/(ASCE)MT.1943-5533.0002767
+- **Evaluation of the Effect of Fiber Type, Length, and Content on Asphalt Properties and Asphalt Mixture Performa** [类型:实验研究（纤维类型/长度/掺量）] DOI:10.3390/ma13071556
+- **Laboratory Performance of Hot Mix Asphalt with High Reclaimed Asphalt Pavement (RAP) and Fine Reclaimed Asphal** [类型:实验研究（RAP掺量-性能权衡）] DOI:10.3390/ma12162536
+- **Enhancing Moisture Damage Resistance in Asphalt Concrete: The Role of Mix Variables, Hydrated Lime and Nanomat** [类型:实验研究（抗剥落剂/纳米材料掺量）] DOI:10.3390/infrastructures9100173
+- **Predicting rutting performance of asphalt mixture from binder properties and mixture design variables** [类型:经验回归建模（胶结料-配合比→车辙）] DOI:10.1080/14680629.2020.1820890
+- **Effects of Rejuvenator Dosage, Temperature, RAP Content and Rejuvenation Process on the Road Performance of Re** [类型:实验研究（再生剂掺量-工艺）] DOI:10.3390/su15043539
+- **Performance evaluation of lignin-fibre reinforced asphalt mixture modified by anti-rutting agent** [类型:实验研究（纤维+抗车辙剂复配）] DOI:10.1016/j.conbuildmat.2022.128152
+- **Optimization design of rubberized porous asphalt mixture based on noise reduction and pavement performance** [类型:多目标优化设计（降噪-性能）] DOI:10.1016/j.conbuildmat.2023.131551
+- **Mechanistic Fatigue Performance Evaluation of Stone Mastic Asphalt Mixtures: Effect of Asphalt Performance Gra** [类型:机理实验研究（PG等级-疲劳）] DOI:10.3390/polym16172414
+- **The effect of mix design method on performance of asphalt mixtures containing reclaimed asphalt pavement and r** [类型:设计方法对比研究] DOI:10.1016/j.cscm.2023.e01931

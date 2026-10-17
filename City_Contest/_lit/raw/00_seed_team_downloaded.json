@@ -1,0 +1,20 @@
+[
+ {
+  "类型": "评估方法",
+  "有无代码": "无",
+  "论文标题": "Enhancing asphalt mix design with transfer learning and hybrid artificial intelligence",
+  "作者": "Ming-Der Yang, Yared Bitew Kebede, Henok Desalegn Shikur",
+  "期刊/会议名": "Case Studies in Construction Materials",
+  "JCR/CCF": "JCR Q1",
+  "IF": "",
+  "发表时间": "2025",
+  "引用率": "",
+  "任务（中文）": "用迁移学习与混合人工智能（集成多种机器学习模型）提升沥青混合料配合比设计的性能预测精度，缓解配合比试验数据小样本问题。",
+  "DOI": "10.1016/j.cscm.2025.e05258",
+  "代码链接": "",
+  "数据模态": "表格/数值",
+  "所用数据集": "自建沥青混合料配合比-性能试验数据集",
+  "数据集下载地址": "",
+  "备注": "团队已下载全文（ref/ 目录），作为迁移学习小样本建模的首篇精读与对标基线。"
+ }
+]

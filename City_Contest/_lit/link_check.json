@@ -1,0 +1,820 @@
+{
+ "http://corpus-texmex.irisa.fr/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "http://corpus-texmex.irisa.fr/",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Milvus: A Purpose-Built Vector Data Management System"
+   ]
+  ],
+  "note": ""
+ },
+ "https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Concrete Compressive Strength（UCI Machine Learning Repositor"
+   ]
+  ],
+  "note": ""
+ },
+ "https://botorch.org/docs/tutorials": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://botorch.org/docs/tutorials",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "BoTorch: A Framework for Efficient Monte-Carlo Bayesian Opti"
+   ]
+  ],
+  "note": ""
+ },
+ "https://catalog.data.gov/dataset/long-term-pavement-performance-ltpp": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://catalog.data.gov/dataset/long-term-pavement-performance-ltpp",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Long-Term Pavement Performance (LTPP) 长期路面性能数据库"
+   ]
+  ],
+  "note": ""
+ },
+ "https://data.mendeley.com/datasets/kkcztnxzph/1": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://data.mendeley.com/datasets/kkcztnxzph/1",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "High-Resolution Texture/Friction Dataset: Characterizing Asp"
+   ]
+  ],
+  "note": ""
+ },
+ "https://data.mendeley.com/datasets/yb4brz3sdx/3": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://data.mendeley.com/datasets/yb4brz3sdx/3",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Dataset used to develop soft computing models that predict t"
+   ]
+  ],
+  "note": ""
+ },
+ "https://docs.gpytorch.ai": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://docs.gpytorch.ai/en/stable/",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference "
+   ]
+  ],
+  "note": ""
+ },
+ "https://doi.org/10.1038/s41597-024-03039-z": {
+  "kind": "web",
+  "status": null,
+  "final_url": "https://doi.org/10.1038/s41597-024-03039-z",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "MatKG: An autonomously generated knowledge graph in Material"
+   ]
+  ],
+  "note": "URLError: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，",
+  "status_retry": null,
+  "final_url_retry": "https://doi.org/10.1038/s41597-024-03039-z",
+  "retry_note": "URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occur"
+ },
+ "https://github.com/AbolfazlAfshin/Uncertainty-Aware-Asphalt-Pavement-Modeling": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/AbolfazlAfshin/Uncertainty-Aware-Asphalt-Pavement-Modeling",
+  "refs": [
+   [
+    "eval_perf_prediction_models.json",
+    "Uncertainty-aware prediction of asphalt pavement roughness u"
+   ]
+  ]
+ },
+ "https://github.com/DEAP/deap": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/DEAP/deap",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "DEAP: Evolutionary Algorithms Made Easy"
+   ]
+  ]
+ },
+ "https://github.com/JHTanChris/AC-HP-P-DO": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/JHTanChris/AC-HP-P-DO",
+  "refs": [
+   [
+    "eval_perf_prediction_models.json",
+    "Data-driven efficient prediction and design optimisation for"
+   ]
+  ]
+ },
+ "https://github.com/MaxDreger92/MatGraph": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/MaxDreger92/MatGraph",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Large language models for knowledge graph extraction from ta"
+   ],
+   [
+    "rec_material_selection_algo.json",
+    "Large language models for knowledge graph extraction from ta"
+   ]
+  ]
+ },
+ "https://github.com/Paitesanshi/LLM-Agent-Survey": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/Paitesanshi/LLM-Agent-Survey",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "A survey on large language model based autonomous agents"
+   ]
+  ]
+ },
+ "https://github.com/Robin0111/Asphalt-MT-PCNN": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/Robin0111/Asphalt-MT-PCNN",
+  "refs": [
+   [
+    "eval_perf_prediction_models.json",
+    "Coupled prediction of viscoelastic properties of asphalt mix"
+   ]
+  ],
+  "stars": 0,
+  "pushed_at": "2026-04-03",
+  "description": "A novel multi-task physics-constrained neural network for the coupled prediction of dynamic modulus and phase angle of asphalt mixtures.",
+  "full_name": "Robin0111/Asphalt-MT-PCNN",
+  "archived": false
+ },
+ "https://github.com/VaclavNezerka/AsphaltFatigueANN": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/VaclavNezerka/AsphaltFatigueANN",
+  "refs": [
+   [
+    "eval_perf_prediction_models.json",
+    "Predicting the Fatigue Life of Asphalt Concrete Using Neural"
+   ],
+   [
+    "eval_perf_prediction_models.json",
+    "Predicting the Fatigue Life of Asphalt Concrete Using Neural"
+   ]
+  ],
+  "stars": 3,
+  "pushed_at": "2025-02-06",
+  "description": "",
+  "full_name": "VaclavNezerka/AsphaltFatigueANN",
+  "archived": false
+ },
+ "https://github.com/anyoptimization/pymoo": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/anyoptimization/pymoo",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "pymoo: Multi-Objective Optimization in Python"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "A fast and elitist multiobjective genetic algorithm: NSGA-II"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "An Evolutionary Many-Objective Optimization Algorithm Using "
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "MOEA/D: A Multiobjective Evolutionary Algorithm Based on Dec"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "Pymoo: Multi-Objective Optimization in Python"
+   ]
+  ],
+  "stars": 2974,
+  "pushed_at": "2026-07-07",
+  "description": "NSGA2, NSGA3, R-NSGA3, MOEAD, Genetic Algorithms (GA), Differential Evolution (DE), CMAES, PSO",
+  "full_name": "anyoptimization/pymoo",
+  "archived": false
+ },
+ "https://github.com/cornellius-gp/gpytorch": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/cornellius-gp/gpytorch",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference "
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference "
+   ]
+  ]
+ },
+ "https://github.com/dmlc/xgboost": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/dmlc/xgboost",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "XGBoost: A Scalable Tree Boosting System"
+   ]
+  ],
+  "stars": 28857,
+  "pushed_at": "2026-10-13",
+  "description": "Scalable, Portable and Distributed Gradient Boosting (GBDT, GBRT or GBM) Library,  for Python, R, Java, Scala, C and more. Runs on single machine, Had",
+  "full_name": "dmlc/xgboost",
+  "archived": false
+ },
+ "https://github.com/facebookresearch/DPR": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/facebookresearch/DPR",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Dense Passage Retrieval for Open-Domain Question Answering"
+   ],
+   [
+    "rec_material_selection_algo.json",
+    "Dense Passage Retrieval for Open-Domain Question Answering"
+   ]
+  ],
+  "stars": 1870,
+  "pushed_at": "2023-04-06",
+  "description": "Dense Passage Retriever - is a set of tools and models for open domain Q&A task.",
+  "full_name": "facebookresearch/DPR",
+  "archived": true
+ },
+ "https://github.com/hexiangnan/neural_collaborative_filtering": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/hexiangnan/neural_collaborative_filtering",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Neural Collaborative Filtering"
+   ]
+  ]
+ },
+ "https://github.com/interpretml/interpret": {
+  "kind": "github",
+  "status": null,
+  "final_url": "https://github.com/interpretml/interpret",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "InterpretML: A Unified Framework for Machine Learning Interp"
+   ]
+  ],
+  "status_retry": null,
+  "final_url_retry": "https://github.com/interpretml/interpret",
+  "retry_note": "URLError: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，"
+ },
+ "https://github.com/langchain-ai/langchain": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/langchain-ai/langchain",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "LangChain: Building applications with LLMs through composabi"
+   ]
+  ],
+  "stars": 147751,
+  "pushed_at": "2026-10-13",
+  "description": "The agent engineering platform.",
+  "full_name": "langchain-ai/langchain",
+  "archived": false
+ },
+ "https://github.com/lightgbm-org/LightGBM": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/lightgbm-org/LightGBM",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "LightGBM: A Highly Efficient Gradient Boosting Decision Tree"
+   ]
+  ],
+  "stars": 18870,
+  "pushed_at": "2026-10-12",
+  "description": "A fast, distributed, high performance gradient boosting (GBT, GBDT, GBRT, GBM or MART) framework based on decision tree algorithms, used for ranking, ",
+  "full_name": "lightgbm-org/LightGBM",
+  "archived": false
+ },
+ "https://github.com/milvus-io/milvus": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/milvus-io/milvus",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Milvus: A Purpose-Built Vector Data Management System"
+   ]
+  ],
+  "stars": 46373,
+  "pushed_at": "2026-10-13",
+  "description": "Milvus is a high-performance, cloud-native vector database built for scalable vector ANN search",
+  "full_name": "milvus-io/milvus",
+  "archived": false
+ },
+ "https://github.com/optuna/optuna": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/optuna/optuna",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Optuna: A Next-generation Hyperparameter Optimization Framew"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "Optuna: A Next-generation Hyperparameter Optimization Framew"
+   ]
+  ],
+  "stars": 14911,
+  "pushed_at": "2026-10-13",
+  "description": "A hyperparameter optimization framework",
+  "full_name": "optuna/optuna",
+  "archived": false
+ },
+ "https://github.com/optuna/optuna-examples": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/optuna/optuna-examples",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "Optuna: A Next-generation Hyperparameter Optimization Framew"
+   ]
+  ],
+  "stars": 864,
+  "pushed_at": "2026-09-29",
+  "description": "Examples for https://github.com/optuna/optuna",
+  "full_name": "optuna/optuna-examples",
+  "archived": false
+ },
+ "https://github.com/pengboci/GraphRAG-Survey": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/pengboci/GraphRAG-Survey",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Graph Retrieval-Augmented Generation: A Survey"
+   ]
+  ],
+  "stars": 290,
+  "pushed_at": "2025-03-21",
+  "description": "",
+  "full_name": "pengboci/GraphRAG-Survey",
+  "archived": false
+ },
+ "https://github.com/pycaret/pycaret": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/pycaret/pycaret",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "PyCaret: An open source, low-code machine learning library i"
+   ]
+  ],
+  "stars": 9854,
+  "pushed_at": "2026-07-23",
+  "description": "Open-source, low-code AutoML platform for Python. PyCaret 4.0: sklearn-native engine + React control plane.",
+  "full_name": "pycaret/pycaret",
+  "archived": false
+ },
+ "https://github.com/pytorch/botorch": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/pytorch/botorch",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "Parallel Bayesian Optimization of Multiple Noisy Objectives "
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "Differentiable Expected Hypervolume Improvement for Parallel"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "BoTorch: A Framework for Efficient Monte-Carlo Bayesian Opti"
+   ]
+  ],
+  "status_retry": 200,
+  "final_url_retry": "https://github.com/meta-pytorch/botorch",
+  "retry_note": ""
+ },
+ "https://github.com/scikit-learn-contrib/MAPIE": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/scikit-learn-contrib/MAPIE",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "MAPIE: A scikit-learn-compatible module for estimating predi"
+   ]
+  ],
+  "stars": 1602,
+  "pushed_at": "2026-10-13",
+  "description": "A scikit-learn-compatible library for estimating prediction intervals and controlling risks, based on conformal predictions.",
+  "full_name": "scikit-learn-contrib/MAPIE",
+  "archived": false
+ },
+ "https://github.com/shaoxiongji/knowledge-graphs": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/shaoxiongji/knowledge-graphs",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "A Survey on Knowledge Graphs: Representation, Acquisition, a"
+   ]
+  ],
+  "stars": 1799,
+  "pushed_at": "2022-10-07",
+  "description": "A collection of research on knowledge graphs",
+  "full_name": "shaoxiongji/knowledge-graphs",
+  "archived": false
+ },
+ "https://github.com/shap/shap": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/shap/shap",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "SHAP (SHapley Additive exPlanations)"
+   ]
+  ],
+  "stars": 25809,
+  "pushed_at": "2026-10-12",
+  "description": "A game theoretic approach to explain the output of any machine learning model.",
+  "full_name": "shap/shap",
+  "archived": false
+ },
+ "https://github.com/stanford-futuredata/ColBERT": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/stanford-futuredata/ColBERT",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "ColBERT: Efficient and Effective Passage Search via Contextu"
+   ]
+  ]
+ },
+ "https://github.com/tamagusko/predict-iri-ensemble": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/tamagusko/predict-iri-ensemble",
+  "refs": [
+   [
+    "eval_perf_prediction_models.json",
+    "Asphalt Pavement Performance Prediction Using Ensemble Learn"
+   ]
+  ]
+ },
+ "https://github.com/violet-sto/HN-GFN": {
+  "kind": "github",
+  "status": 200,
+  "final_url": "https://github.com/violet-sto/HN-GFN",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "Sample-efficient Multi-objective Molecular Optimization with"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "Sample-efficient Multi-objective Molecular Optimization with"
+   ]
+  ]
+ },
+ "https://gpytorch.ai/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://gpytorch.ai/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference "
+   ]
+  ],
+  "note": ""
+ },
+ "https://grouplens.org/datasets/movielens/1m/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://grouplens.org/datasets/movielens/1m/",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Neural Collaborative Filtering"
+   ]
+  ],
+  "note": ""
+ },
+ "https://hive.utah.edu/records/g15zy-0x872": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://hive.utah.edu/records/g15zy-0x872",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Pavement Performance Data（Utah Hive 研究数据仓储）"
+   ]
+  ],
+  "note": ""
+ },
+ "https://infopave.fhwa.dot.gov/": {
+  "kind": "web",
+  "status": null,
+  "final_url": "https://infopave.fhwa.dot.gov/",
+  "refs": [
+   [
+    "bg_pavement_condition.json",
+    "Effectiveness Evaluation of Preventive Maintenance Treatment"
+   ],
+   [
+    "bg_spec_standard_review.json",
+    "Review on Machine Learning Techniques for Developing Pavemen"
+   ],
+   [
+    "eval_datasets_opensource.json",
+    "LTPP InfoPave 数据平台（LTPP Standard Data Release / NALS 等）"
+   ]
+  ],
+  "note": "URLError: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，",
+  "status_retry": null,
+  "final_url_retry": "https://infopave.fhwa.dot.gov/",
+  "retry_note": "URLError: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，"
+ },
+ "https://mapie.readthedocs.io/en/latest/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://mapie.readthedocs.io/en/latest/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "MAPIE: A scikit-learn-compatible module for estimating predi"
+   ]
+  ],
+  "note": ""
+ },
+ "https://microsoft.github.io/msmarco/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://microsoft.github.io/msmarco/",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "ColBERT: Efficient and Effective Passage Search via Contextu"
+   ]
+  ],
+  "note": ""
+ },
+ "https://optuna.readthedocs.io/en/stable/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://optuna.readthedocs.io/en/stable/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Optuna: A Next-generation Hyperparameter Optimization Framew"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pymoo.org/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pymoo.org/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "pymoo: Multi-Objective Optimization in Python"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pymoo.org/problems/index.html": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pymoo.org/problems/index.html",
+  "refs": [
+   [
+    "eval_inverse_design_optimization.json",
+    "A fast and elitist multiobjective genetic algorithm: NSGA-II"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "An Evolutionary Many-Objective Optimization Algorithm Using "
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "MOEA/D: A Multiobjective Evolutionary Algorithm Based on Dec"
+   ],
+   [
+    "eval_inverse_design_optimization.json",
+    "Pymoo: Multi-Objective Optimization in Python"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pypi.org/project/deap/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/deap/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "DEAP: Evolutionary Algorithms Made Easy"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pypi.org/project/interpret/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/interpret/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "InterpretML: A Unified Framework for Machine Learning Interp"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pypi.org/project/langchain/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/langchain/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "LangChain: Building applications with LLMs through composabi"
+   ]
+  ],
+  "note": "URLError: <urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
+  "status_retry": 200,
+  "final_url_retry": "https://pypi.org/project/langchain/",
+  "retry_note": ""
+ },
+ "https://pypi.org/project/lightgbm/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/lightgbm/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "LightGBM: A Highly Efficient Gradient Boosting Decision Tree"
+   ]
+  ],
+  "note": "URLError: <urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
+  "status_retry": 200,
+  "final_url_retry": "https://pypi.org/project/lightgbm/",
+  "retry_note": ""
+ },
+ "https://pypi.org/project/pycaret/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/pycaret/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "PyCaret: An open source, low-code machine learning library i"
+   ]
+  ],
+  "note": ""
+ },
+ "https://pypi.org/project/xgboost/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://pypi.org/project/xgboost/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "XGBoost: A Scalable Tree Boosting System"
+   ]
+  ],
+  "note": ""
+ },
+ "https://shap.readthedocs.io/en/latest/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://shap.readthedocs.io/en/latest/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "SHAP (SHapley Additive exPlanations)"
+   ]
+  ],
+  "note": ""
+ },
+ "https://trec.nist.gov/data.html": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://trec.nist.gov/data.html",
+  "refs": [
+   [
+    "rec_material_selection_algo.json",
+    "Reciprocal rank fusion outperforms condorcet and individual "
+   ]
+  ],
+  "note": ""
+ },
+ "https://www.gov.cn/lianbo/bumen/202506/content_7027415.htm": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://www.gov.cn/lianbo/bumen/202506/content_7027415.htm",
+  "refs": [
+   [
+    "bg_spec_standard_review.json",
+    "2024年交通运输行业发展统计公报（全国公路 549.04 万公里、高速 19.07 万公里）"
+   ]
+  ],
+  "note": ""
+ },
+ "https://www.sciencedirect.com/science/article/pii/S2352340924001951": {
+  "kind": "web",
+  "status": 403,
+  "final_url": "https://www.sciencedirect.com/science/article/pii/S2352340924001951",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "Factors affecting asphalt concrete permanent deformation: Ex"
+   ]
+  ],
+  "note": ""
+ },
+ "https://www.stats.gov.cn/sj/ndsj/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://www.stats.gov.cn/sj/ndsj/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "中国统计年鉴（国家统计局，交通运输章节：公路里程、等级公路与养护数据）"
+   ]
+  ],
+  "note": ""
+ },
+ "https://xxgk.mot.gov.cn/": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://xxgk.mot.gov.cn/",
+  "refs": [
+   [
+    "eval_datasets_opensource.json",
+    "交通运输部政府信息公开平台（统计与公路养护相关公开数据）"
+   ]
+  ],
+  "note": ""
+ },
+ "https://xxgk.mot.gov.cn/jigou/glj/202508/t20250822_4175218.html": {
+  "kind": "web",
+  "status": 200,
+  "final_url": "https://xxgk.mot.gov.cn/jigou/glj/202508/t20250822_4175218.html",
+  "refs": [
+   [
+    "bg_asphalt_material.json",
+    "公路工程沥青及沥青混合料试验规程（JTG 3410-2025）"
+   ]
+  ],
+  "note": ""
+ }
+}

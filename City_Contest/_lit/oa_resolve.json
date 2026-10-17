@@ -1,0 +1,3259 @@
+{
+ "stats": {
+  "total": 149,
+  "with_doi": 118,
+  "is_oa": 68,
+  "has_candidate": 68,
+  "no_doi": 31
+ },
+ "records": [
+  {
+   "序号": 1,
+   "title": "Enhancing asphalt mix design with transfer learning and hybrid artificial intelligence",
+   "type": "评估方法",
+   "doi": "10.1016/j.cscm.2025.e05258",
+   "journal": "Case Studies in Construction Materials",
+   "year": "2025",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.cscm.2025.e05258",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ],
+   "_pre_existing": "2025-Case Studies in Construction Materials-Enhancing asphalt mix design with transfer learning and hybrid artificial intelligence.pdf"
+  },
+  {
+   "序号": 2,
+   "title": "The Structure of Bitumen: Conceptual Models and Experimental Evidences",
+   "type": "背景知识",
+   "doi": "10.3390/ma15030905",
+   "journal": "Materials",
+   "year": "2022",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "8837183",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/15/3/905/pdf?version=1643103939",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-15030-5/article_deploy/materials-15030-5.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-15030-00005/article_deploy/materials-15030-00005.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 3,
+   "title": "The preparation process, service performances and interaction mechanisms of crumb rubber modified asphalt (CRMA) by wet process: A comprehensive review",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2022.129168",
+   "journal": "Construction and Building Materials",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 4,
+   "title": "Evaluation on the rejuvenation and diffusion characteristics of waste cooking oil on aged SBS asphalt based on molecular dynamics method",
+   "type": "背景知识",
+   "doi": "10.1016/j.jclepro.2023.136998",
+   "journal": "Journal of Cleaner Production",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 5,
+   "title": "Influence of Three Different Antistripping Agents on Moisture Susceptibility, Stiffness, and Rutting Resistance of Hot-Mix Asphalt",
+   "type": "背景知识",
+   "doi": "10.3390/buildings14082458",
+   "journal": "Buildings",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2075-5309/14/8/2458/pdf?version=1723196887",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/buildings/buildings-14082-8/article_deploy/buildings-14082-8.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/buildings/buildings-14082-00008/article_deploy/buildings-14082-00008.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 6,
+   "title": "A review of phase structure of SBS modified asphalt: Affecting factors, analytical methods, phase models and improvements",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2021.123610",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 7,
+   "title": "Application of Epoxy-Asphalt Composite in Asphalt Paving Industry: A Review with Emphasis on Physicochemical Properties and Pavement Performances",
+   "type": "背景知识",
+   "doi": "10.1155/2021/3454029",
+   "journal": "Advances in Materials Science and Engineering",
+   "year": "2021",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://downloads.hindawi.com/journals/amse/2021/3454029.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 8,
+   "title": "Use of the multiple stress creep recovery (MSCR) test to characterize the rutting potential of asphalt binders: A literature review",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2020.121320",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 9,
+   "title": "Towards sustainable roads: A State-of-the-art review on the use of recycling agents in recycled asphalt mixtures",
+   "type": "背景知识",
+   "doi": "10.1016/j.jclepro.2023.136994",
+   "journal": "Journal of Cleaner Production",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 10,
+   "title": "Recent Advances in Basalt Fiber Reinforced Asphalt Mixture for Pavement Applications",
+   "type": "背景知识",
+   "doi": "10.3390/ma15196826",
+   "journal": "Materials",
+   "year": "2022",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "9571606",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/15/19/6826/pdf?version=1664614795",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-15196-6/article_deploy/materials-15196-6.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-15196-00006/article_deploy/materials-15196-00006.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 11,
+   "title": "A comprehensive review of warm-mix asphalt mixtures: mix design, construction temperatures determination, performance and life-cycle assessment",
+   "type": "背景知识",
+   "doi": "10.1080/14680629.2023.2268194",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 12,
+   "title": "Review on the diffusive and interfacial performance of bituminous materials: From a perspective of molecular dynamics simulation",
+   "type": "背景知识",
+   "doi": "10.1016/j.molliq.2022.120363",
+   "journal": "Journal of Molecular Liquids",
+   "year": "2022",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.sciencedirect.com/science/article/pii/S016773222201902X/pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 13,
+   "title": "Performance evaluation of petroleum bitumen binders and mixtures modified by natural rock asphalt from Xinjiang China",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2017.07.182",
+   "journal": "Construction and Building Materials",
+   "year": "2017",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 14,
+   "title": "Ultraviolet ageing of bituminous materials: A comprehensive literature review from 2011 to 2022",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2022.128889",
+   "journal": "Construction and Building Materials",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 15,
+   "title": "A comprehensive review on the plant-mixed cold recycling technology of emulsified asphalt: Raw materials and factors affecting performances",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2024.137344",
+   "journal": "Construction and Building Materials",
+   "year": "2024",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 16,
+   "title": "Review of the Superpave performance grading system and recent developments in the performance-based test methods for asphalt binder characterization",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2021.126063",
+   "journal": "Construction and Building Materials",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 17,
+   "title": "Evaluation of the Properties of Asphalt Mixes Modified with Diatomite and Lignin Fiber: A Review",
+   "type": "背景知识",
+   "doi": "10.3390/ma12030400",
+   "journal": "Materials",
+   "year": "2019",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "PMC6384685",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/12/3/400/pdf?version=1548666519",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12030-00000/article_deploy/materials-12030-00000.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12030-0/article_deploy/materials-12030-0.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 18,
+   "title": "High-viscosity modified asphalt mixtures for double-layer porous asphalt pavement: Design optimization and evaluation metrics",
+   "type": "背景知识",
+   "doi": "10.1016/j.conbuildmat.2020.121893",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 19,
+   "title": "公路工程沥青及沥青混合料试验规程（JTG 3410-2025）",
+   "type": "背景知识",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（强制性）",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 20,
+   "title": "中国沥青路面气候影响分区方案 (Zoning scheme of climatic influence for asphalt pavement in China)",
+   "type": "背景知识",
+   "doi": "",
+   "journal": "交通运输工程学报",
+   "year": "2007",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 21,
+   "title": "公路沥青路面设计规范 (JTG D50—2017)",
+   "type": "背景知识",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准",
+   "year": "2017",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 22,
+   "title": "Design of High-Modulus Asphalt Concrete for the Middle Layer of Asphalt Pavement",
+   "type": "背景知识",
+   "doi": "10.3390/coatings14020185",
+   "journal": "Coatings",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2079-6412/14/2/185/pdf?version=1706745558",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/coatings/coatings-14020-5/article_deploy/coatings-14020-5.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/coatings/coatings-14020-00005/article_deploy/coatings-14020-00005.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 23,
+   "title": "A review of rutting in asphalt concrete pavement",
+   "type": "背景知识",
+   "doi": "10.1515/eng-2022-0463",
+   "journal": "Open Engineering",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.degruyter.com/document/doi/10.1515/eng-2022-0463/pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 24,
+   "title": "Initiation and Propagation of Top-Down Cracking in Asphalt Pavement",
+   "type": "背景知识",
+   "doi": "10.3390/app8050774",
+   "journal": "Applied Sciences",
+   "year": "2018",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2076-3417/8/5/774/pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-8050-00004/article_deploy/applsci-8050-00004.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-8050-4/article_deploy/applsci-8050-4.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 25,
+   "title": "State-of-the-Art Review of the Evaluation of Asphalt Mixtures' Resistance to Reflective Cracking in Laboratory",
+   "type": "背景知识",
+   "doi": "10.1061/(asce)mt.1943-5533.0003254",
+   "journal": "Journal of Materials in Civil Engineering",
+   "year": "2020",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://digitalcommons.lsu.edu/construction_management_pubs/61",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 26,
+   "title": "The effect of using anti-stripping additives on moisture damage of hot mix asphalt",
+   "type": "背景知识",
+   "doi": "10.1016/j.ijadhadh.2017.03.016",
+   "journal": "International Journal of Adhesion and Adhesives",
+   "year": "2018",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 27,
+   "title": "Automatic Detection of Pothole Distress in Asphalt Pavement Using Improved Convolutional Neural Networks",
+   "type": "背景知识",
+   "doi": "10.3390/rs14163892",
+   "journal": "Remote Sensing",
+   "year": "2022",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.3390/rs14163892",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/remotesensing/remotesensing-14163-00002/article_deploy/remotesensing-14163-00002.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/remotesensing/remotesensing-14163-2/article_deploy/remotesensing-14163-2.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 28,
+   "title": "Pavement skid resistance as a function of pavement surface and aggregate texture properties",
+   "type": "背景知识",
+   "doi": "10.1080/10298436.2018.1525489",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2018",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 29,
+   "title": "Climate zoning of asphalt pavement based on spatial interpolation and Fuzzy C-Means algorithm",
+   "type": "背景知识",
+   "doi": "10.1080/10298436.2022.2072498",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 30,
+   "title": "Machine learning-based climate zoning and asphalt selection for pavement infrastructure under changing climate: A focused study of Ningxia, China",
+   "type": "背景知识",
+   "doi": "10.1016/j.ijtst.2024.10.001",
+   "journal": "International Journal of Transportation Science and Technology",
+   "year": "2025",
+   "oa_status": "diamond",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.ijtst.2024.10.001",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "diamond"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 31,
+   "title": "The impact of climate change on variations in rutting resilience of asphalt pavement across the climate zones in China",
+   "type": "背景知识",
+   "doi": "10.1016/j.jclepro.2024.144016",
+   "journal": "Journal of Cleaner Production",
+   "year": "2024",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 32,
+   "title": "Consideration of dynamic loads in the determination of axle load spectra for pavement design",
+   "type": "背景知识",
+   "doi": "10.1080/14680629.2019.1687006",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2019",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 33,
+   "title": "Traffic channelisation and pavement deterioration: an investigation of the role of lateral wander on asphalt pavement rutting",
+   "type": "背景知识",
+   "doi": "10.1080/10298436.2022.2118272",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2022",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1080/10298436.2022.2118272",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 34,
+   "title": "公路技术状况评定标准 (JTG 5210—2018)",
+   "type": "背景知识",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准",
+   "year": "2018",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 35,
+   "title": "公路沥青路面养护技术规范 (JTG 5142—2019)",
+   "type": "背景知识",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准",
+   "year": "2019",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 36,
+   "title": "Optimization for Asphalt Pavement Maintenance Plans at Network Level: Integrating Maintenance Funds, Pavement Performance, Road Users, and Environment",
+   "type": "背景知识",
+   "doi": "10.3390/app13158842",
+   "journal": "Applied Sciences",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2076-3417/13/15/8842/pdf?version=1690807851",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-13158-00002/article_deploy/applsci-13158-00002.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-13158-2/article_deploy/applsci-13158-2.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 37,
+   "title": "Review of methodology for life cycle assessment and life cycle cost analysis of asphalt pavements",
+   "type": "背景知识",
+   "doi": "10.1080/14680629.2023.2278149",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2023",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://nottingham-repository.worktribe.com/preview/27595938/Suwarto%20LCA%20LCCA%20RMPD%20author%20final%20version%202023.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 38,
+   "title": "Effectiveness Evaluation of Preventive Maintenance Treatments on Asphalt Pavement Performance Using LTPP Data",
+   "type": "背景知识",
+   "doi": "10.1007/s42947-021-00078-2",
+   "journal": "International Journal of Pavement Research and Technology",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 39,
+   "title": "Prediction of highway asphalt pavement performance based on Markov chain and artificial neural network approach",
+   "type": "背景知识",
+   "doi": "10.1007/s11227-020-03329-4",
+   "journal": "The Journal of Supercomputing",
+   "year": "2020",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 40,
+   "title": "Prediction of network level pavement treatment types using multi-classification machine learning algorithms",
+   "type": "背景知识",
+   "doi": "10.1080/14680629.2021.2019091",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 41,
+   "title": "An Overview of Pavement Degradation Prediction Models",
+   "type": "背景知识",
+   "doi": "10.1155/2022/7783588",
+   "journal": "Journal of Advanced Transportation",
+   "year": "2022",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://downloads.hindawi.com/journals/jat/2022/7783588.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 42,
+   "title": "JTG F40-2004 公路沥青路面施工技术规范（强制性行业标准，现行）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2004",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 43,
+   "title": "JTG D50-2017 公路沥青路面设计规范（现行，替代 JTG D50-2006）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2017",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 44,
+   "title": "JTG 3410-2025 公路工程沥青及沥青混合料试验规程（强制性行业标准，2025-10-01 施行，替代 JTG E20-2011）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 45,
+   "title": "JTG 5142-2019 公路沥青路面养护技术规范（现行，替代 JTJ 073.2-2001）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2019",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 46,
+   "title": "JTG 5421-2018 公路沥青路面养护设计规范（现行，2019-03-01 施行）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2018",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 47,
+   "title": "JTG/T 5142-01-2021 公路沥青路面预防养护技术规范（推荐性行业标准，2021-12-01 施行）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2021",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 48,
+   "title": "JTG/T 5521-2019 公路沥青路面再生技术规范（推荐性行业标准，2019-11-01 施行，替代 JTG F41-2008）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2019",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 49,
+   "title": "JTG 5210-2018 公路技术状况评定标准（现行，替代 JTG H20-2007，注意 H20 已废止）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+   "year": "2018",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 50,
+   "title": "2024年交通运输行业发展统计公报（全国公路 549.04 万公里、高速 19.07 万公里）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "交通运输部年度统计公报（中国政府网发布）",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 51,
+   "title": "AASHTO M 320 / T 283 / T 324 / R 35（PG 分级沥青结合料规范、抗水损害试验、汉堡车辙试验与 Superpave 体积设计方法）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "AASHTO Standard Specifications for Transportation Materials and Methods of Sampling and Testing",
+   "year": "",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 52,
+   "title": "ASTM D6373-21 Standard Specification for Performance-Graded Asphalt Binder",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "ASTM Annual Book of Standards",
+   "year": "2021",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 53,
+   "title": "NCHRP 1-37A Guide for Mechanistic-Empirical Design of New and Rehabilitated Pavement Structures（MEPDG，后发展为 AASHTOWare Pavement ME Design）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "NCHRP Project 1-37A 最终报告（TRB 存档）",
+   "year": "2004",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 54,
+   "title": "NCHRP Report 547: Simple Performance Tests: Summary of Recommended Methods and Database（NCHRP 9-19 Superpave 性能模型与简单性能试验）",
+   "type": "规范标准",
+   "doi": "",
+   "journal": "NCHRP Report 547（TRB 出版）",
+   "year": "2005",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 55,
+   "title": "Pavement asset management systems and technologies: A review",
+   "type": "综述",
+   "doi": "10.1016/j.autcon.2020.103336",
+   "journal": "Automation in Construction",
+   "year": "2020",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 56,
+   "title": "Review on Machine Learning Techniques for Developing Pavement Performance Prediction Models",
+   "type": "综述",
+   "doi": "10.3390/su13095248",
+   "journal": "Sustainability",
+   "year": "2021",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2071-1050/13/9/5248/pdf?version=1620632079",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-13095-8/article_deploy/sustainability-13095-8.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-13095-00008/article_deploy/sustainability-13095-00008.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 57,
+   "title": "Deep Learning in Data-Driven Pavement Image Analysis and Automated Distress Detection: A Review",
+   "type": "综述",
+   "doi": "10.3390/data3030028",
+   "journal": "Data",
+   "year": "2018",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2306-5729/3/3/28/pdf?version=1532481364",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/data/data-3030-8/article_deploy/data-3030-8.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/data/data-3030-00008/article_deploy/data-3030-00008.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 58,
+   "title": "Warm mix asphalt technology: An up to date review",
+   "type": "综述",
+   "doi": "10.1016/j.jclepro.2020.122128",
+   "journal": "Journal of Cleaner Production",
+   "year": "2020",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 59,
+   "title": "A comprehensive review on the blending condition between virgin and RAP asphalt binders in hot recycled asphalt mixtures: Mechanisms, evaluation methods, and influencing factors",
+   "type": "综述",
+   "doi": "10.1016/j.jclepro.2023.136515",
+   "journal": "Journal of Cleaner Production",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 60,
+   "title": "A review of polymer-modified asphalt binder: Modification mechanisms and mechanical properties",
+   "type": "综述",
+   "doi": "10.1016/j.clema.2024.100255",
+   "journal": "Cleaner Materials",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.clema.2024.100255",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 61,
+   "title": "Long-Term Pavement Performance (LTPP) 长期路面性能数据库",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2026",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 62,
+   "title": "LTPP InfoPave 数据平台（LTPP Standard Data Release / NALS 等）",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2026",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 63,
+   "title": "Dataset used to develop soft computing models that predict the stiffness modulus of bituminous mixtures",
+   "type": "数据集",
+   "doi": "10.1016/j.dib.2024.110382",
+   "journal": "Data in Brief",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "11016951",
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.dib.2024.110382",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11016951/pdf/main.pdf",
+     "src": "OpenAlex:PubMed Central",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by-nc"
+    },
+    {
+     "url": "https://pureadmin.qub.ac.uk/ws/files/587430589/1-s2.0-S2352340924003512-main.pdf",
+     "src": "OpenAlex:Research Portal (Queen's University Belfast)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by-nc"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 64,
+   "title": "High-Resolution Texture/Friction Dataset: Characterizing Asphalt Pavements and Aggregate Mosaics at Varied Polishing Stages for Measured Friction Analysis",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2024",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 65,
+   "title": "Pavement Performance Data（Utah Hive 研究数据仓储）",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 66,
+   "title": "Factors affecting asphalt concrete permanent deformation: Experimental dataset for uniaxial repeated load test",
+   "type": "数据集",
+   "doi": "10.1016/j.dib.2024.110224",
+   "journal": "Data in Brief",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "10907153",
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.dib.2024.110224",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10907153/fullTextXML",
+     "src": "EuropePMC:fullTextXML(PMC10907153)",
+     "kind": "xml",
+     "ver": null,
+     "lic": "cc by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 67,
+   "title": "Concrete Compressive Strength（UCI Machine Learning Repository）",
+   "type": "数据集",
+   "doi": "10.24432/c5pk67",
+   "journal": "UCI Machine Learning Repository",
+   "year": "2007",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.24432/c5pk67",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "unpaywall-miss 404",
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 68,
+   "title": "中国统计年鉴（国家统计局，交通运输章节：公路里程、等级公路与养护数据）",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 69,
+   "title": "交通运输部政府信息公开平台（统计与公路养护相关公开数据）",
+   "type": "数据集",
+   "doi": "",
+   "journal": "",
+   "year": "2026",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 70,
+   "title": "XGBoost: A Scalable Tree Boosting System",
+   "type": "开源代码",
+   "doi": "10.1145/2939672.2939785",
+   "journal": "KDD 2016",
+   "year": "2016",
+   "oa_status": "bronze",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "http://dl.acm.org/ft_gateway.cfm?id=2939785&type=pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "bronze"
+    },
+    {
+     "url": "https://arxiv.org/pdf/1603.02754",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 71,
+   "title": "LightGBM: A Highly Efficient Gradient Boosting Decision Tree",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "NeurIPS 2017",
+   "year": "2017",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 72,
+   "title": "PyCaret: An open source, low-code machine learning library in Python",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "",
+   "year": "2024",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 73,
+   "title": "Optuna: A Next-generation Hyperparameter Optimization Framework",
+   "type": "开源代码",
+   "doi": "10.1145/3292500.3330701",
+   "journal": "KDD 2019",
+   "year": "2019",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 74,
+   "title": "SHAP (SHapley Additive exPlanations)",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "NeurIPS 2017",
+   "year": "2017",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11902373/fullTextXML",
+     "src": "EuropePMC:fullTextXML(PMC11902373)",
+     "kind": "xml",
+     "ver": null,
+     "lic": "cc by"
+    }
+   ],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 75,
+   "title": "InterpretML: A Unified Framework for Machine Learning Interpretability",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "arXiv / Microsoft Research",
+   "year": "2019",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 76,
+   "title": "MAPIE: A scikit-learn-compatible module for estimating prediction intervals",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "Journal of Open Source Software",
+   "year": "2022",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 77,
+   "title": "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference with GPU Acceleration",
+   "type": "开源代码",
+   "doi": "arxiv:1809.11165",
+   "journal": "NeurIPS 2018",
+   "year": "2018",
+   "oa_status": "arxiv",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/1809.11165",
+     "src": "arXiv",
+     "kind": "pdf",
+     "ver": "preprint",
+     "lic": null
+    }
+   ],
+   "notes": []
+  },
+  {
+   "序号": 78,
+   "title": "pymoo: Multi-Objective Optimization in Python",
+   "type": "开源代码",
+   "doi": "10.1109/access.2020.2990567",
+   "journal": "IEEE Access",
+   "year": "2020",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://ieeexplore.ieee.org/ielx7/6287639/8948470/09078759.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://arxiv.org/pdf/2002.04504",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 79,
+   "title": "DEAP: Evolutionary Algorithms Made Easy",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "Journal of Machine Learning Research",
+   "year": "2012",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 80,
+   "title": "LangChain: Building applications with LLMs through composability",
+   "type": "开源代码",
+   "doi": "",
+   "journal": "",
+   "year": "2026",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "no-doi"
+   ]
+  },
+  {
+   "序号": 81,
+   "title": "Taking the Human Out of the Loop: A Review of Bayesian Optimization",
+   "type": "综述",
+   "doi": "10.1109/jproc.2015.2494218",
+   "journal": "Proceedings of the IEEE",
+   "year": "2016",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "http://nrs.harvard.edu/urn-3:HUL.InstRepos:27769882",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    },
+    {
+     "url": "https://dash.harvard.edu/bitstream/1/27769882/1/BayesOptLoop.pdf",
+     "src": "OpenAIRE:repository",
+     "kind": "pdf",
+     "ver": null,
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 82,
+   "title": "Bayesian Optimization for Materials Design",
+   "type": "评估方法",
+   "doi": "10.1007/978-3-319-23871-5_3",
+   "journal": "Information Science for Materials Discovery and Design (Springer Series in Materials Science)",
+   "year": "2015",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/1506.01349",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 83,
+   "title": "Parallel Bayesian Optimization of Multiple Noisy Objectives with Expected Hypervolume Improvement",
+   "type": "评估方法",
+   "doi": "arxiv:2105.08195",
+   "journal": "Advances in Neural Information Processing Systems 36 (NeurIPS 2021)",
+   "year": "2021",
+   "oa_status": "arxiv",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2105.08195",
+     "src": "arXiv",
+     "kind": "pdf",
+     "ver": "preprint",
+     "lic": null
+    }
+   ],
+   "notes": []
+  },
+  {
+   "序号": 84,
+   "title": "Differentiable Expected Hypervolume Improvement for Parallel Multi-Objective Bayesian Optimization",
+   "type": "评估方法",
+   "doi": "arxiv:2006.05078",
+   "journal": "Proceedings of the 37th International Conference on Machine Learning (ICML 2020)",
+   "year": "2020",
+   "oa_status": "arxiv",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2006.05078",
+     "src": "arXiv",
+     "kind": "pdf",
+     "ver": "preprint",
+     "lic": null
+    }
+   ],
+   "notes": []
+  },
+  {
+   "序号": 85,
+   "title": "BoTorch: A Framework for Efficient Monte-Carlo Bayesian Optimization",
+   "type": "开源代码",
+   "doi": "arxiv:1910.06403",
+   "journal": "Advances in Neural Information Processing Systems 33 (NeurIPS 2020)",
+   "year": "2020",
+   "oa_status": "arxiv",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/1910.06403",
+     "src": "arXiv",
+     "kind": "pdf",
+     "ver": "preprint",
+     "lic": null
+    }
+   ],
+   "notes": []
+  },
+  {
+   "序号": 86,
+   "title": "Evolution-guided Bayesian optimization for constrained multi-objective optimization in self-driving labs",
+   "type": "评估方法",
+   "doi": "10.1038/s41524-024-01274-x",
+   "journal": "npj Computational Materials",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.nature.com/articles/s41524-024-01274-x.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://www.researchsquare.com/article/rs-3578558/latest.pdf",
+     "src": "OpenAlex:Research Square",
+     "kind": "pdf",
+     "ver": "acceptedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://chemrxiv.org/engage/api-gateway/chemrxiv/assets/orp/resource/item/64ed86aa3fdae147fa0be615/original/evolution-guided-bayesian-optimization-for-constrained-multi-objective-optimization-in-self-driving-labs.pdf",
+     "src": "OpenAlex:ChemRxiv",
+     "kind": "pdf",
+     "ver": "acceptedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 87,
+   "title": "A fast and elitist multiobjective genetic algorithm: NSGA-II",
+   "type": "评估方法",
+   "doi": "10.1109/4235.996017",
+   "journal": "IEEE Transactions on Evolutionary Computation",
+   "year": "2002",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 88,
+   "title": "An Evolutionary Many-Objective Optimization Algorithm Using Reference-Point-Based Nondominated Sorting Approach, Part I: Solving Problems With Box Constraints",
+   "type": "评估方法",
+   "doi": "10.1109/tevc.2013.2281535",
+   "journal": "IEEE Transactions on Evolutionary Computation",
+   "year": "2014",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 89,
+   "title": "MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition",
+   "type": "评估方法",
+   "doi": "10.1109/tevc.2007.892759",
+   "journal": "IEEE Transactions on Evolutionary Computation",
+   "year": "2007",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 90,
+   "title": "Particle swarm optimization",
+   "type": "评估方法",
+   "doi": "10.1109/icnn.1995.488968",
+   "journal": "Proceedings of ICNN'95 - International Conference on Neural Networks",
+   "year": "1995",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 91,
+   "title": "Sample-efficient Multi-objective Molecular Optimization with GFlowNets",
+   "type": "评估方法",
+   "doi": "10.52202/075280-3487",
+   "journal": "Advances in Neural Information Processing Systems 36 (NeurIPS 2023)",
+   "year": "2023",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2302.04040",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 92,
+   "title": "Machine learning-based inverse design methods considering data characteristics and design space size in materials design and manufacturing: a review",
+   "type": "综述",
+   "doi": "10.1039/d3mh00039g",
+   "journal": "Materials Horizons",
+   "year": "2023",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://pubs.rsc.org/en/content/articlepdf/2023/mh/d3mh00039g",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "https://engrxiv.org/preprint/download/2845/5279/4133",
+     "src": "OpenAlex:None",
+     "kind": "pdf",
+     "ver": "acceptedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 93,
+   "title": "数据驱动下的沥青混合料材料组成设计方法",
+   "type": "应用研究",
+   "doi": "10.11896/cldb.24010230",
+   "journal": "材料导报 (Materials Reports)",
+   "year": "2025",
+   "oa_status": null,
+   "is_oa": null,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "openalex-miss 404",
+    "unpaywall-miss 404",
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 94,
+   "title": "Optimization of asphalt mix design considering mixture performance, environmental impact, and life cycle cost",
+   "type": "应用研究",
+   "doi": "10.1016/j.jclepro.2025.145618",
+   "journal": "Journal of Cleaner Production",
+   "year": "2025",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 95,
+   "title": "A mix design–supporting multi-objective optimization framework for ultra-high-performance concrete balancing mechanical strength, workability, cost efficiency, and carbon emission criteria",
+   "type": "应用研究",
+   "doi": "10.1016/j.cscm.2026.e06043",
+   "journal": "Case Studies in Construction Materials",
+   "year": "2026",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.cscm.2026.e06043",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 96,
+   "title": "Physics-guided neural network for predicting asphalt mixture rutting with balanced accuracy, stability and rationality",
+   "type": "评估方法",
+   "doi": "10.1016/j.neunet.2023.12.039",
+   "journal": "Neural Networks",
+   "year": "2024",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 97,
+   "title": "Physics-informed machine learning for asphalt mixture dynamic modulus: Balancing high accuracy with stability and rationality",
+   "type": "评估方法",
+   "doi": "10.1016/j.engappai.2026.115997",
+   "journal": "Engineering Applications of Artificial Intelligence",
+   "year": "2026",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.engappai.2026.115997",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 98,
+   "title": "Coupled prediction of viscoelastic properties of asphalt mixtures using a multi-task physics-constrained neural network",
+   "type": "评估方法",
+   "doi": "10.1016/j.aei.2026.104437",
+   "journal": "Advanced Engineering Informatics",
+   "year": "2026",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.aei.2026.104437",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 99,
+   "title": "Enhancing understanding of asphalt mixture dynamic modulus prediction through interpretable machine learning method",
+   "type": "评估方法",
+   "doi": "10.1016/j.aei.2025.103111",
+   "journal": "Advanced Engineering Informatics",
+   "year": "2025",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 100,
+   "title": "Predicting the dynamic modulus of asphalt mixture using hybridized artificial neural network and grey wolf optimizer",
+   "type": "评估方法",
+   "doi": "10.1080/10298436.2021.2005056",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 101,
+   "title": "Developing a prediction model for rutting depth of asphalt mixtures using gene expression programming",
+   "type": "评估方法",
+   "doi": "10.1016/j.conbuildmat.2020.120543",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 102,
+   "title": "Predicting the Fatigue Life of Asphalt Concrete Using Neural Networks",
+   "type": "评估方法",
+   "doi": "10.1061/jmcee7.mteng-20929",
+   "journal": "Journal of Materials in Civil Engineering",
+   "year": "2026",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://ascelibrary.org/doi/pdf/10.1061/JMCEE7.MTENG-20929",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "https://arxiv.org/pdf/2406.01523",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 103,
+   "title": "Prediction of moisture susceptibility of asphalt mixtures containing RAP materials using machine learning algorithms",
+   "type": "评估方法",
+   "doi": "10.1080/10298436.2024.2431610",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2024",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 104,
+   "title": "Physics-informed TVAE and probabilistic learning for uncertainty-aware prediction of tensile strength and moisture susceptibility in sustainable asphalt mixtures",
+   "type": "评估方法",
+   "doi": "10.1016/j.clema.2026.100404",
+   "journal": "Cleaner Materials",
+   "year": "2026",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.clema.2026.100404",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 105,
+   "title": "Data-driven generative adversarial network and machine learning hybrid framework for predicting rutting depth in recycled asphalt shingle pavements",
+   "type": "评估方法",
+   "doi": "10.1080/10298436.2026.2668561",
+   "journal": "International Journal of Pavement Engineering",
+   "year": "2026",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 106,
+   "title": "Machine Learning-Driven Prediction and Design Guidance for Asphalt Concrete Using Marshall Stability and Indirect Tensile Strength",
+   "type": "评估方法",
+   "doi": "10.3390/ma19163408",
+   "journal": "Materials",
+   "year": "2026",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.3390/ma19163408",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-19163-8/article_deploy/materials-19163-8.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-19163-00008/article_deploy/materials-19163-00008.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 107,
+   "title": "Regression-Based Performance Prediction in Asphalt Mixture Design and Input Analysis with SHAP",
+   "type": "评估方法",
+   "doi": "10.3390/app151910779",
+   "journal": "Applied Sciences",
+   "year": "2025",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.3390/app151910779",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-151910-9/article_deploy/applsci-151910-9.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-151910-00009/article_deploy/applsci-151910-00009.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 108,
+   "title": "Uncertainty-aware prediction of asphalt pavement roughness using probabilistic machine learning",
+   "type": "评估方法",
+   "doi": "10.1016/j.engappai.2026.116515",
+   "journal": "Engineering Applications of Artificial Intelligence",
+   "year": "2026",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.engappai.2026.116515",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 109,
+   "title": "XGBoost-SHAP framework for asphalt pavement condition evaluation",
+   "type": "评估方法",
+   "doi": "10.1016/j.conbuildmat.2024.136182",
+   "journal": "Construction and Building Materials",
+   "year": "2024",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 110,
+   "title": "Data-driven efficient prediction and design optimisation for high-temperature performance of asphalt mixture",
+   "type": "评估方法",
+   "doi": "10.1080/14680629.2026.2669991",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2026",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 111,
+   "title": "Asphalt Pavement Performance Prediction Using Ensemble Learning Methods",
+   "type": "评估方法",
+   "doi": "10.1007/978-3-032-04774-8_23",
+   "journal": "Lecture Notes in Mobility (Transport Transitions)",
+   "year": "2025",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://link.springer.com/content/pdf/10.1007/978-3-032-04774-8_23.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 112,
+   "title": "Research on prediction models for low-temperature cracking characteristics of asphalt mixtures by integrating laboratory experiments and machine learning",
+   "type": "评估方法",
+   "doi": "10.1016/j.conbuildmat.2026.146545",
+   "journal": "Construction and Building Materials",
+   "year": "2026",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 113,
+   "title": "Revised Predictive Model for Dynamic (Complex) Modulus of Asphalt Mixtures",
+   "type": "评估方法",
+   "doi": "10.1177/0361198196154000103",
+   "journal": "Transportation Research Record",
+   "year": "1996",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 114,
+   "title": "Accuracy of Dynamic Modulus Models of Asphalt Mixtures Containing Reclaimed Asphalt (RA)",
+   "type": "评估方法",
+   "doi": "10.3390/app142210505",
+   "journal": "Applied Sciences",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2076-3417/14/22/10505/pdf?version=1731587395",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-142210-5/article_deploy/applsci-142210-5.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/applsci/applsci-142210-00005/article_deploy/applsci-142210-00005.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 115,
+   "title": "Modeling the rutting performance of asphalt pavements: a review",
+   "type": "评估方法",
+   "doi": "10.1186/s43065-023-00082-9",
+   "journal": "Journal of Infrastructure Preservation and Resilience",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://jipr.springeropen.com/counter/pdf/10.1186/s43065-023-00082-9",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 116,
+   "title": "Graph Retrieval-Augmented Generation: A Survey",
+   "type": "RAG与检索",
+   "doi": "10.1145/3777378",
+   "journal": "ACM Transactions on Information Systems",
+   "year": "2025",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2408.08921",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 117,
+   "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+   "type": "RAG与检索",
+   "doi": "10.18653/v1/2020.emnlp-main.550",
+   "journal": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+   "year": "2020",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.aclweb.org/anthology/2020.emnlp-main.550.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "https://arxiv.org/pdf/2004.04906",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 118,
+   "title": "ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT",
+   "type": "RAG与检索",
+   "doi": "10.1145/3397271.3401075",
+   "journal": "Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval",
+   "year": "2020",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2004.12832",
+     "src": "arXiv:title-match(1.00)",
+     "kind": "pdf",
+     "ver": "preprint",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 119,
+   "title": "Milvus: A Purpose-Built Vector Data Management System",
+   "type": "RAG与检索",
+   "doi": "10.1145/3448016.3457550",
+   "journal": "Proceedings of the 2021 International Conference on Management of Data (SIGMOD)",
+   "year": "2021",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://dl.acm.org/doi/pdf/10.1145/3448016.3457550",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 120,
+   "title": "Reciprocal rank fusion outperforms condorcet and individual rank learning methods",
+   "type": "RAG与检索",
+   "doi": "10.1145/1571941.1572114",
+   "journal": "Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval",
+   "year": "2009",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "http://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf",
+     "src": "OpenAIRE:repository",
+     "kind": "pdf",
+     "ver": null,
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 121,
+   "title": "A survey on large language model based autonomous agents",
+   "type": "RAG与检索",
+   "doi": "10.1007/s11704-024-40231-1",
+   "journal": "Frontiers of Computer Science",
+   "year": "2024",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://link.springer.com/content/pdf/10.1007/s11704-024-40231-1.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "https://arxiv.org/pdf/2308.11432",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 122,
+   "title": "A Survey on Knowledge Graphs: Representation, Acquisition, and Applications",
+   "type": "知识图谱",
+   "doi": "10.1109/tnnls.2021.3070843",
+   "journal": "IEEE Transactions on Neural Networks and Learning Systems",
+   "year": "2022",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://arxiv.org/pdf/2002.00388",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 123,
+   "title": "A Comprehensive Survey on Automatic Knowledge Graph Construction",
+   "type": "知识图谱",
+   "doi": "10.1145/3618295",
+   "journal": "ACM Computing Surveys",
+   "year": "2023",
+   "oa_status": "bronze",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://dl.acm.org/doi/pdf/10.1145/3618295",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "bronze"
+    },
+    {
+     "url": "https://arxiv.org/pdf/2302.05019",
+     "src": "OpenAlex:arXiv (Cornell University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 124,
+   "title": "Text-based automatic knowledge graph construction for road infrastructure operations management",
+   "type": "知识图谱",
+   "doi": "10.1016/j.autcon.2025.106733",
+   "journal": "Automation in Construction",
+   "year": "2026",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.autcon.2025.106733",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 125,
+   "title": "Exploring bridge maintenance knowledge graph by leveraging GrapshSAGE and text encoding",
+   "type": "知识图谱",
+   "doi": "10.1016/j.autcon.2024.105634",
+   "journal": "Automation in Construction",
+   "year": "2024",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.autcon.2024.105634",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "https://orca.cardiff.ac.uk/id/eprint/171007/1/1-s2.0-S0926580524003704-main.pdf",
+     "src": "OpenAlex:ORCA Online Research @Cardiff (Cardiff University)",
+     "kind": "pdf",
+     "ver": "acceptedVersion",
+     "lic": null
+    },
+    {
+     "url": "https://orca.cardiff.ac.uk/id/eprint/170939/7/1-s2.0-S0926580524003704-main.pdf",
+     "src": "OpenAlex:ORCA Online Research @Cardiff (Cardiff University)",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 126,
+   "title": "BERT and hierarchical cross attention-based question answering over bridge inspection knowledge graph",
+   "type": "知识图谱",
+   "doi": "10.1016/j.eswa.2023.120896",
+   "journal": "Expert Systems with Applications",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 127,
+   "title": "Knowledge graph and CBR-based approach for automated analysis of bridge operational accidents: Case representation and retrieval",
+   "type": "案例推理",
+   "doi": "10.1371/journal.pone.0294130",
+   "journal": "PLOS ONE",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "10629649",
+   "candidates": [
+    {
+     "url": "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0294130&type=printable",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10629649/pdf/pone.0294130.pdf",
+     "src": "OpenAlex:PubMed Central",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 128,
+   "title": "MatKG: An autonomously generated knowledge graph in Material Science",
+   "type": "知识图谱",
+   "doi": "10.1038/s41597-024-03039-z",
+   "journal": "Scientific Data",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "10874416",
+   "candidates": [
+    {
+     "url": "https://www.nature.com/articles/s41597-024-03039-z.pdf",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10874416/pdf/41597_2024_Article_3039.pdf",
+     "src": "OpenAlex:PubMed Central",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 129,
+   "title": "Large language models for knowledge graph extraction from tables in materials science",
+   "type": "知识图谱",
+   "doi": "10.1039/d4dd00362d",
+   "journal": "Digital Discovery",
+   "year": "2025",
+   "oa_status": "diamond",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://pubs.rsc.org/en/content/articlepdf/2025/dd/d4dd00362d",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "diamond"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 130,
+   "title": "Deep Learning Based Recommender System: A Survey and New Perspectives",
+   "type": "推荐算法",
+   "doi": "10.1145/3285029",
+   "journal": "ACM Computing Surveys",
+   "year": "2019",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://dr.ntu.edu.sg/bitstream/10356/142804/2/Deep%20learning%20based%20recommender%20system%20-%20A%20survey%20and%20new%20perspectives.pdf",
+     "src": "OpenAIRE:repository",
+     "kind": "pdf",
+     "ver": null,
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 131,
+   "title": "Neural Collaborative Filtering",
+   "type": "推荐算法",
+   "doi": "10.1145/3038912.3052569",
+   "journal": "Proceedings of the 26th International Conference on World Wide Web (WWW)",
+   "year": "2017",
+   "oa_status": "hybrid",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1145/3038912.3052569",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "hybrid"
+    },
+    {
+     "url": "http://arxiv.org/pdf/1708.05031",
+     "src": "OpenAIRE:repository",
+     "kind": "pdf",
+     "ver": null,
+     "lic": null
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 132,
+   "title": "Multi-Criteria Decision-Making Framework (AHP-TOPSIS): Pavement Preventive Maintenance Case Study for Ordinary National Trunk Highways",
+   "type": "多准则决策",
+   "doi": "10.3390/buildings14103048",
+   "journal": "Buildings",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.3390/buildings14103048",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/buildings/buildings-14103-8/article_deploy/buildings-14103-8.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/buildings/buildings-14103-00008/article_deploy/buildings-14103-00008.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 133,
+   "title": "A Novel Multi-Criteria Decision-Making Model for Building Material Supplier Selection Based on Entropy-AHP Weighted TOPSIS",
+   "type": "多准则决策",
+   "doi": "10.3390/e22020259",
+   "journal": "Entropy",
+   "year": "2020",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "7516705",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1099-4300/22/2/259/pdf?version=1583119932",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/entropy/entropy-22020-9/article_deploy/entropy-22020-9.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/entropy/entropy-22020-00009/article_deploy/entropy-22020-00009.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 134,
+   "title": "Evaluation of open-grade friction course (OGFC) mixtures with high content SBS polymer modified asphalt",
+   "type": "实验研究（掺量-性能）",
+   "doi": "10.1016/j.conbuildmat.2020.121374",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 135,
+   "title": "Performance evaluation of asphalt mixtures containing warm mix asphalt (WMA) additives and reclaimed asphalt pavement (RAP)",
+   "type": "实验研究（掺量-性能）",
+   "doi": "10.1016/j.conbuildmat.2020.121200",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 136,
+   "title": "Laboratory investigation and statistical analysis of the rutting and fatigue resistance of asphalt mixtures containing crumb-rubber and wax-based warm mix asphalt additive",
+   "type": "实验研究（掺量-性能）",
+   "doi": "10.1016/j.conbuildmat.2021.125165",
+   "journal": "Construction and Building Materials",
+   "year": "2021",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 137,
+   "title": "Fatigue performance characterization of styrene-butadiene-styrene and crumb rubber composite modified asphalt binders with high crumb rubber contents",
+   "type": "实验研究（改性机理-疲劳）",
+   "doi": "10.1016/j.jclepro.2021.129979",
+   "journal": "Journal of Cleaner Production",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 138,
+   "title": "Evaluation of the Potential of Sasobit REDUX Additive to Lower Warm-Mix Asphalt Production Temperature",
+   "type": "实验研究（温拌降温定量）",
+   "doi": "10.3390/ma12081285",
+   "journal": "Materials",
+   "year": "2019",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "6514915",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/12/8/1285/pdf?version=1555647953",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12081-5/article_deploy/materials-12081-5.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12081-00005/article_deploy/materials-12081-00005.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 139,
+   "title": "Analysis of Modulus Properties of High-Modulus Asphalt Mixture and Its New Evaluation Index of Rutting Resistance",
+   "type": "实验研究（材料-模量-车辙）",
+   "doi": "10.3390/su15097574",
+   "journal": "Sustainability",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2071-1050/15/9/7574/pdf?version=1683277856",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-15097-00004/article_deploy/sustainability-15097-00004.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-15097-4/article_deploy/sustainability-15097-4.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 140,
+   "title": "Effects of In-Place Volumetric Properties on Field Rutting and Cracking Performance of Asphalt Pavement",
+   "type": "现场统计研究（体积参数-路况）",
+   "doi": "10.1061/(asce)mt.1943-5533.0002767",
+   "journal": "Journal of Materials in Civil Engineering",
+   "year": "2019",
+   "oa_status": "green",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://repository.lsu.edu/civil_engineering_pubs/852",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "green"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 141,
+   "title": "Evaluation of the Effect of Fiber Type, Length, and Content on Asphalt Properties and Asphalt Mixture Performance",
+   "type": "实验研究（纤维类型/长度/掺量）",
+   "doi": "10.3390/ma13071556",
+   "journal": "Materials",
+   "year": "2020",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "7178060",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/13/7/1556/pdf?version=1585317659",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-13071-6/article_deploy/materials-13071-6.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-13071-00006/article_deploy/materials-13071-00006.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 142,
+   "title": "Laboratory Performance of Hot Mix Asphalt with High Reclaimed Asphalt Pavement (RAP) and Fine Reclaimed Asphalt Pavement (FRAP) Content",
+   "type": "实验研究（RAP掺量-性能权衡）",
+   "doi": "10.3390/ma12162536",
+   "journal": "Materials",
+   "year": "2019",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "6719227",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/1996-1944/12/16/2536/pdf?version=1565332736",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12162-6/article_deploy/materials-12162-6.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/materials/materials-12162-00006/article_deploy/materials-12162-00006.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 143,
+   "title": "Enhancing Moisture Damage Resistance in Asphalt Concrete: The Role of Mix Variables, Hydrated Lime and Nanomaterials",
+   "type": "实验研究（抗剥落剂/纳米材料掺量）",
+   "doi": "10.3390/infrastructures9100173",
+   "journal": "Infrastructures",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2412-3811/9/10/173/pdf?version=1728462949",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/infrastructures/infrastructures-9100-00003/article_deploy/infrastructures-9100-00003.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/infrastructures/infrastructures-9100-3/article_deploy/infrastructures-9100-3.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 144,
+   "title": "Predicting rutting performance of asphalt mixture from binder properties and mixture design variables",
+   "type": "经验回归建模（胶结料-配合比→车辙）",
+   "doi": "10.1080/14680629.2020.1820890",
+   "journal": "Road Materials and Pavement Design",
+   "year": "2020",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 145,
+   "title": "Effects of Rejuvenator Dosage, Temperature, RAP Content and Rejuvenation Process on the Road Performance of Recycled Asphalt Mixture",
+   "type": "实验研究（再生剂掺量-工艺）",
+   "doi": "10.3390/su15043539",
+   "journal": "Sustainability",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2071-1050/15/4/3539/pdf?version=1676684265",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-15043-9/article_deploy/sustainability-15043-9.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/sustainability/sustainability-15043-00009/article_deploy/sustainability-15043-00009.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 146,
+   "title": "Performance evaluation of lignin-fibre reinforced asphalt mixture modified by anti-rutting agent",
+   "type": "实验研究（纤维+抗车辙剂复配）",
+   "doi": "10.1016/j.conbuildmat.2022.128152",
+   "journal": "Construction and Building Materials",
+   "year": "2022",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 147,
+   "title": "Optimization design of rubberized porous asphalt mixture based on noise reduction and pavement performance",
+   "type": "多目标优化设计（降噪-性能）",
+   "doi": "10.1016/j.conbuildmat.2023.131551",
+   "journal": "Construction and Building Materials",
+   "year": "2023",
+   "oa_status": "closed",
+   "is_oa": false,
+   "pmcid": null,
+   "candidates": [],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 148,
+   "title": "Mechanistic Fatigue Performance Evaluation of Stone Mastic Asphalt Mixtures: Effect of Asphalt Performance Grade and Elastic Recovery",
+   "type": "机理实验研究（PG等级-疲劳）",
+   "doi": "10.3390/polym16172414",
+   "journal": "Polymers",
+   "year": "2024",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": "11397872",
+   "candidates": [
+    {
+     "url": "https://www.mdpi.com/2073-4360/16/17/2414/pdf?version=1724655148",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    },
+    {
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11397872/pdf/polymers-16-02414.pdf",
+     "src": "OpenAlex:PubMed Central",
+     "kind": "pdf",
+     "ver": "submittedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/polymers/polymers-16172-00004/article_deploy/polymers-16172-00004.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    },
+    {
+     "url": "https://res.mdpi.com/d_attachment/polymers/polymers-16172-4/article_deploy/polymers-16172-4.pdf",
+     "src": "MDPI-CDN",
+     "kind": "pdf",
+     "ver": "publishedVersion",
+     "lic": "cc-by"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  },
+  {
+   "序号": 149,
+   "title": "The effect of mix design method on performance of asphalt mixtures containing reclaimed asphalt pavement and recycling agents: Superpave versus balanced mix design",
+   "type": "设计方法对比研究",
+   "doi": "10.1016/j.cscm.2023.e01931",
+   "journal": "Case Studies in Construction Materials",
+   "year": "2023",
+   "oa_status": "gold",
+   "is_oa": true,
+   "pmcid": null,
+   "candidates": [
+    {
+     "url": "https://doi.org/10.1016/j.cscm.2023.e01931",
+     "src": "OpenAlex:oa_url",
+     "kind": "pdf",
+     "ver": null,
+     "lic": "gold"
+    }
+   ],
+   "notes": [
+    "epmc-err unsupported format character '%' (0x25) at index 69"
+   ]
+  }
+ ]
+}

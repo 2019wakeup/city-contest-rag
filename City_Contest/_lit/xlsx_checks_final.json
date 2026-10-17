@@ -1,0 +1,60 @@
+{
+  "format": "xlsx",
+  "verdict": "pass",
+  "checks": [
+    {
+      "id": "package",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "sheets": [
+      {
+        "name": "\u8bf4\u660e",
+        "cells": 80,
+        "formulas": 0
+      },
+      {
+        "name": "\u5168\u90e8\u6587\u732e",
+        "cells": 2717,
+        "formulas": 0
+      },
+      {
+        "name": "\u4efb\u52a11-\u80cc\u666f\u77e5\u8bc6",
+        "cells": 1121,
+        "formulas": 0
+      },
+      {
+        "name": "\u4efb\u52a12-\u63a8\u8350\u7b97\u6cd5",
+        "cells": 608,
+        "formulas": 0
+      },
+      {
+        "name": "\u4efb\u52a13-\u8bc4\u4f30\u65b9\u6cd5\u4e0e\u4ee3\u7801",
+        "cells": 1026,
+        "formulas": 0
+      },
+      {
+        "name": "\u6570\u636e\u96c6\u4e0e\u5f00\u6e90\u5de5\u5177",
+        "cells": 855,
+        "formulas": 0
+      },
+      {
+        "name": "\u671f\u520a\u6307\u6807\u6765\u6e90",
+        "cells": 245,
+        "formulas": 0
+      },
+      {
+        "name": "\u94fe\u63a5\u53ef\u7528\u6027\u6838\u67e5",
+        "cells": 406,
+        "formulas": 0
+      },
+      {
+        "name": "\u5f85\u4eba\u5de5\u590d\u6838",
+        "cells": 152,
+        "formulas": 0
+      }
+    ],
+    "formulas_evaluated": false
+  }
+}
