@@ -142,7 +142,14 @@ describe('T8 orchestrator + /api/v1 路由', () => {
       [makeChunk('k-binder-002:0:v1', 'SBS 改性沥青显著提高混合料高温抗车辙性能', 'knowledge', ['高温', '车辙'])],
       [[1, 0]],
     );
-    const app = createApp({ store, embedder: fakeEmbedder, relationDb, backend: 'sqlite' });
+    const app = createApp({
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+      backend: 'sqlite',
+      corpusDir: CORPUS_DIR,
+      manifestPath: join(dir, 'manifest.json'),
+    });
 
     const ok = await app.request('/api/v1/recommend', {
       method: 'POST',

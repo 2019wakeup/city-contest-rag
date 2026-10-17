@@ -59,6 +59,8 @@ async function main(): Promise<void> {
     embedder,
     relationDb,
     backend: store instanceof SqliteVectorStore ? 'sqlite' : 'lancedb',
+    corpusDir: join(REPO_ROOT, 'data/corpus'),
+    manifestPath: join(REPO_ROOT, 'data/index', 'manifest.json'),
     chatResponder: llmConfigured ? streamChat : undefined,
   });
 

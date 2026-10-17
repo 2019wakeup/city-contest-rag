@@ -9,12 +9,17 @@ import { registerCases } from './routes/cases';
 import { registerHealth } from './routes/health';
 import { registerFeedback } from './routes/feedback';
 import { registerChat } from './routes/chat';
+import { registerKb } from './routes/kb';
 
 export interface AppDeps {
   store: VectorStore;
   embedder: EmbedderLike | null;
   relationDb: RelationDb;
   backend: string;
+  /** 语料真相源目录（kb/rebuild 用） */
+  corpusDir: string;
+  /** buildIndex manifest 路径（幂等记录；测试注入临时路径） */
+  manifestPath: string;
   /** 测试注入：fake LLM 调用（缺省走 env） */
   llmCall?: LlmCall;
   /** 对话流式响应器（index.ts 按 env 配置；null = 普通 JSON 降级） */
@@ -29,6 +34,7 @@ export function createApp(deps: AppDeps): OpenAPIHono {
   registerHealth(app, deps);
   registerFeedback(app, deps);
   registerChat(app, deps);
+  registerKb(app, deps);
   app.doc('/openapi', {
     openapi: '3.1.0',
     info: { title: '数智选材 RAG 演示 API', version: '1.0.0' },

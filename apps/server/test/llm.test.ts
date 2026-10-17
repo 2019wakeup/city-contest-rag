@@ -179,6 +179,8 @@ describe('T9 LLM 报告生成 + 对话面板', () => {
       embedder: fakeEmbedder,
       relationDb,
       backend: 'sqlite',
+      corpusDir: CORPUS_DIR,
+      manifestPath: join(dir, 'manifest.json'),
       chatResponder: async (_opts, onDelta) => {
         onDelta('你好');
         onDelta('，工程师');
@@ -199,7 +201,14 @@ describe('T9 LLM 报告生成 + 对话面板', () => {
   });
 
   it('chat 路由：无 responder（LLM_OFF）→ 普通 JSON 降级 {reply}', async () => {
-    const app = createApp({ store, embedder: fakeEmbedder, relationDb, backend: 'sqlite' });
+    const app = createApp({
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+      backend: 'sqlite',
+      corpusDir: CORPUS_DIR,
+      manifestPath: join(dir, 'manifest.json'),
+    });
     const res = await app.request('/api/v1/chat', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
