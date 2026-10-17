@@ -69,6 +69,28 @@ describe('SceneForm（schema 驱动）', () => {
     expect(payload.schemaVersion).toBe(SCHEMA_VERSION)
   })
 
+  it('案例回填：traffic.level 英文值渲染为注册表中文 label（R3-C5/F3）', async () => {
+    const trafficOptions = FIELD_REGISTRY['traffic.level'].options ?? []
+    const heavyOption = trafficOptions.find((o) => o.value === 'heavy')
+    expect(heavyOption).toBeTruthy()
+
+    const caseScene: SceneInput = {
+      schemaVersion: '1',
+      climate: { zone: '华南高温区', pgHigh: 76, pgLow: -22 },
+      traffic: { level: 'heavy', esal: 30000000 },
+      pavement: { layer: '上面层', structure: '半刚性基层沥青路面' },
+      distresses: [{ type: '车辙', severity: '中' }],
+      constraints: { budget: 500, schedule: 30, env: '环保要求高', noise: '低噪' },
+      notes: '',
+    }
+    const wrapper = mount(SceneForm, { props: { initialScene: caseScene } })
+    await wrapper.vm.$nextTick()
+
+    const trafficField = wrapper.find('[data-testid="field-traffic.level"]')
+    expect(trafficField.text()).toContain(heavyOption?.label as string)
+    expect(trafficField.text()).not.toContain('heavy')
+  })
+
   it('勾选病害后 distresses 按 {type, severity} 数组提交', async () => {
     const wrapper = mount(SceneForm)
     const distressOptions = FIELD_REGISTRY.distresses.options ?? []

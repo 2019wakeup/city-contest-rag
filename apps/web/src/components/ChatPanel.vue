@@ -43,6 +43,13 @@ async function send(): Promise<void> {
     sending.value = false
   }
 }
+
+/** 回车发送；中文输入法组词回车（isComposing/Process 键）不误发（F4）。 */
+function onEnterKey(event: KeyboardEvent): void {
+  if (event.isComposing || event.key === 'Process') return
+  event.preventDefault()
+  void send()
+}
 </script>
 
 <template>
@@ -73,7 +80,7 @@ async function send(): Promise<void> {
         :rows="2"
         data-testid="chat-input"
         placeholder="输入追问…"
-        @keydown.enter.exact.prevent="send"
+        @keydown.enter.exact="onEnterKey"
       />
       <el-button
         type="primary"

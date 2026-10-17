@@ -41,7 +41,7 @@ const postChatMock = vi.mocked(postChat)
 const validScene: SceneInput = {
   schemaVersion: '1',
   climate: { zone: '华南高温区', pgHigh: 76, pgLow: -22 },
-  traffic: { level: '重交通', esal: 20000000 },
+  traffic: { level: 'heavy', esal: 20000000 },
   pavement: { layer: '上面层', structure: '半刚性基层沥青路面' },
   distresses: [{ type: '车辙', severity: '中' }],
   constraints: { budget: 500, schedule: 30, env: '环保要求高', noise: '低噪' },
@@ -271,6 +271,20 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.text()).toContain('推荐方案一')
   })
 
+  it('ChatPanel 中文输入法选词回车不误发（isComposing 过滤，F4）', async () => {
+    const wrapper = await mountView()
+    const input = wrapper.find('[data-testid="chat-input"]')
+    await input.setValue('推荐这个方案')
+
+    await input.trigger('keydown.enter', { key: 'Enter', isComposing: true })
+    await flushPromises()
+    expect(postChatMock).not.toHaveBeenCalled()
+
+    await input.trigger('keydown.enter', { key: 'Enter' })
+    await flushPromises()
+    expect(postChatMock).toHaveBeenCalledTimes(1)
+  })
+
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {
     getCasesMock.mockResolvedValue([caseFixture('case-01'), caseFixture('case-02')])
     postRecommendMock.mockResolvedValue(makeReport())
@@ -289,11 +303,16 @@ describe('RecommendView 推荐工作台', () => {
     await flushPromises()
 
     expect(store.activeCaseId).toBe('case-01')
+    // F3：回填后交通荷载控件显示中文 label 而非英文值
+    const trafficField = wrapper.find('[data-testid="field-traffic.level"]')
+    expect(trafficField.text()).toContain('重交通')
+    expect(trafficField.text()).not.toContain('heavy')
     await wrapper.find('[data-testid="scene-form-submit"]').trigger('click')
     await flushPromises()
 
     const sceneArg = postRecommendMock.mock.calls[0]?.[0] as SceneInput
     expect(sceneArg.climate.zone).toBe(validScene.climate.zone)
+    expect(sceneArg.traffic.level).toBe('heavy')
     expect(sceneArg.distresses).toEqual(validScene.distresses)
   })
 })
