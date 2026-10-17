@@ -56,8 +56,28 @@
 | knowledge/entries.json | 知识条目（实体+定量关系，全部 DOI/规范号溯源） | 42 条 / 94 关系 |
 | standards/*.md | 8 份规范条文摘录（JTG 3410/5142/5210/5421/F40/D50 + AASHTO） | 57 条文 |
 | literature/from-xlsx.json | 文献题录（由 City_Contest/文献调研.xlsx 脚本转换） | 142 条（109 含 DOI） |
+| literature-full/*.md | 「材料-性能关系」7 篇文献全文（按章节切块入库，溯源头部含原 PDF 路径） | 7 篇 |
 | cases/cases.json | 5 典型案例（场景+期望方案） | 5 |
 | scene-tags.json | 场景标签词典 | 27 标签 |
+
+### 2.4 全文语料交接资源（`literature_md/`，不入 git）
+
+81 份已获取全文 PDF 的 MinerU 提取产物，按原分类组织（共 126 个文档目录、990 万字符、4,552 张图、797MB）：
+
+```
+literature_md/
+├── INDEX.md                总索引
+├── reference/{背景知识(67),推荐算法(9),评估方法(7),材料-性能关系(7),规范标准(6),开源代码(2),数据集(1)}/
+└── city_contest_ref/       按调研序号命名的 26 个文档目录
+    每个文档目录/
+    ├── markdown.md             正文（图片相对路径引用）
+    ├── images/                 外置图片
+    ├── middle_json.json / structured_content.json / model_output.json   结构化中间结果
+    └── SOURCE.txt              原始 PDF 路径与页数
+```
+
+- **已入索引**：「材料-性能关系」7 篇全文（`data/corpus/literature-full/`，按章节切块，证据链可引用原文段落）。
+- **交接用途**：其余 119 篇全文供企业后续研发——扩充知识库、微调模型、人工精读。入库方式：复制对应 `markdown.md` 至 `data/corpus/literature-full/` 后重跑 `pnpm build:index --rebuild`（章节自动切块，provenance 自动生成）。
 
 ## 3. 输入输出字段（契约）
 

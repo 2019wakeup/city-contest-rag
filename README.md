@@ -72,5 +72,6 @@ tsx scripts/anonymity-audit.ts       # 匿名合规审计（git 身份/密钥/�
 ## 目录速查
 
 - 接口文档：后端启动后 `http://localhost:3010/openapi`
-- 评审记录：`docs/reviews/`（R1–R4 已通过，R5 见文件）
+- 评审记录：`docs/reviews/`（R1–R5 已通过，R5 见文件）
 - 语料统计：`tsx scripts/validate-corpus.ts`
+- 全文语料交接：`literature_md/`（81 份全文 PDF 的 MinerU 提取产物，126 文档目录；7 篇已入索引，其余见 [docs/DELIVERY.md](docs/DELIVERY.md) §2.4）
