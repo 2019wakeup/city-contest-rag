@@ -20,17 +20,33 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const corpusDir = path.resolve(here, '../data/corpus');
 const indexDir = path.resolve(here, '../data/index');
 
-async function main(): Promise<void> {
-  const args = process.argv.slice(2);
+export const EMBEDDING_MODELS = ['bge-m3', 'multilingual-e5-small'] as const;
+
+export interface CliOptions {
+  rebuild: boolean;
+  backend: 'sqlite' | 'lancedb';
+  model: EmbedderModel;
+}
+
+/** 纯参数解析（可测试）：非法 backend/model 抛明确错误（C4） */
+export function resolveCliOptions(args: string[], env: NodeJS.ProcessEnv): CliOptions {
   const rebuild = args.includes('--rebuild');
   const backendArg = args.find((a) => a.startsWith('--backend='));
-  const backend = backendArg?.split('=')[1] ?? process.env.RETRIEVAL_BACKEND ?? 'lancedb';
+  const backend = backendArg?.split('=')[1] ?? env.RETRIEVAL_BACKEND ?? 'lancedb';
   const modelArg = args.find((a) => a.startsWith('--model='));
-  const model = (modelArg?.split('=')[1] ?? process.env.EMBEDDING_MODEL ?? 'bge-m3') as EmbedderModel;
+  const model = modelArg?.split('=')[1] ?? env.EMBEDDING_MODEL ?? 'bge-m3';
 
   if (backend !== 'sqlite' && backend !== 'lancedb') {
     throw new Error(`不支持的 backend: ${backend}（可选 sqlite|lancedb）`);
   }
+  if (!(EMBEDDING_MODELS as readonly string[]).includes(model)) {
+    throw new Error(`不支持的 embedding 模型: ${model}（可选 ${EMBEDDING_MODELS.join('|')}）`);
+  }
+  return { rebuild, backend: backend as CliOptions['backend'], model: model as EmbedderModel };
+}
+
+async function main(): Promise<void> {
+  const { rebuild, backend, model } = resolveCliOptions(process.argv.slice(2), process.env);
 
   const embedder = await createEmbedder({
     model,
@@ -63,7 +79,10 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((err) => {
-  console.error('build-index 失败:', err);
-  process.exit(1);
-});
+// 仅 CLI 直跑时执行（被测试/其他模块 import 时无副作用）
+if (import.meta.url === `file://${process.argv[1]}` || path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1] ?? '')) {
+  main().catch((err) => {
+    console.error('build-index 失败:', err);
+    process.exit(1);
+  });
+}

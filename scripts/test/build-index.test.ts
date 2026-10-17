@@ -202,6 +202,48 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
     store.close();
   });
 
+  it('单 doc 多 chunk 删 1 条：幸存 chunk 被重嵌且可检索（R2-C1 回归）', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-c1-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'idx-c1-'));
+    fs.mkdirSync(path.join(dir, 'standards'), { recursive: true });
+    const stdFile = path.join(dir, 'standards/jtg-c1.md');
+    const clauses = [
+      '## jtg-c1-1.1 条款甲\n\n条款甲正文：甲甲甲甲。\n',
+      '## jtg-c1-1.2 条款乙\n\n条款乙正文：乙乙乙乙。\n',
+      '## jtg-c1-1.3 条款丙\n\n条款丙正文：丙丙丙丙。\n',
+    ];
+    const writeStd = (cs: string[]) =>
+      fs.writeFileSync(stdFile, ['# 测试\n', ...cs, '<!-- source: 测试 -->\n'].join('\n'));
+    writeStd(clauses);
+
+    const store = new SqliteVectorStore(path.join(tmp, 'test.db'));
+    const opts = {
+      corpusDir: dir,
+      store: store as unknown as VectorStore,
+      embedder: makeFakeEmbedder(),
+      manifestPath: path.join(tmp, 'manifest.json'),
+      pipelineRev: 'testrev1',
+    };
+    const r1 = await buildIndex(opts);
+    expect(r1.total).toBe(3);
+    expect((await store.stats()).count).toBe(3);
+
+    // 删除中间条文（同 docId 的另两条 hash 未变）
+    writeStd([clauses[0], clauses[2]]);
+    const r2 = await buildIndex(opts);
+    expect(r2).toEqual({ added: 2, skipped: 0, total: 2 });
+    expect((await store.stats()).count).toBe(2);
+
+    // 幸存 chunk 必须可检索（条文索引随文件位置重排：丙从 :2 变为 :1）、被删 chunk 不可检索
+    const hitSurvivor = await store.search({ text: '甲甲甲甲', topK: 3 });
+    expect(hitSurvivor.map((h) => h.chunkId)).toContain('jtg-c1:0');
+    const hitSurvivor2 = await store.search({ text: '丙丙丙丙', topK: 3 });
+    expect(hitSurvivor2.map((h) => h.chunkId)).toContain('jtg-c1:1');
+    const hitRemoved = await store.search({ text: '乙乙乙乙', topK: 3 });
+    expect(hitRemoved).toEqual([]);
+    store.close();
+  });
+
   it('入库 chunk 带完整 provenance 7 字段且检索可命中', async () => {
     const { store, dir, manifest } = await setup();
     await buildIndex({

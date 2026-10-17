@@ -204,21 +204,26 @@ export async function buildIndex(opts: BuildOptions): Promise<BuildResult> {
   const byChunkId = new Map(planned.map((p) => [p.chunk.chunkId, p]));
   const toDelete = new Set<string>();
   const toEmbed: PlannedChunk[] = [];
-  let skipped = 0;
 
   for (const [chunkId, m] of Object.entries(manifest!.chunks)) {
     const p = byChunkId.get(chunkId);
     if (!p) {
       toDelete.add(m.docId);
-    } else if (p.contentHash === m.contentHash) {
-      skipped += 1;
-    } else {
+    } else if (p.contentHash !== m.contentHash) {
       if (p.docId !== m.docId) toDelete.add(m.docId);
       toEmbed.push(p);
     }
+    // hash 未变：跳过（除非所属 docId 因删除需要整体重嵌，见下方 C1 处理）
   }
   for (const p of planned) {
     if (!manifest!.chunks[p.chunk.chunkId]) toEmbed.push(p);
+  }
+  // R2-C1：VectorStore.delete(docId) 是 doc 级删除，会连带吞掉同 doc 未变化的兄弟 chunk，
+  // 因此所有涉及删除的 docId 的幸存 chunk 必须一并重嵌（否则索引静默缺块而 manifest 虚记）。
+  for (const docId of toDelete) {
+    for (const p of planned) {
+      if (p.docId === docId && !toEmbed.includes(p)) toEmbed.push(p);
+    }
   }
 
   for (const docId of toDelete) await opts.store.delete(docId);
@@ -228,6 +233,7 @@ export async function buildIndex(opts: BuildOptions): Promise<BuildResult> {
   }
 
   writeManifest(manifestPath, buildManifest(planned, embedder, pipelineRev));
+  const skipped = planned.length - toEmbed.length;
   return { added: toEmbed.length, skipped, total: planned.length };
 }
 
