@@ -92,3 +92,20 @@
 ## Verdict
 
 **Needs changes**（MEDIUM×6、LOW×6；无 HIGH）。建议由 builder-frontend 单轮修复：11、5、4 优先，其余合并一轮，修复后浏览器截图复核。
+
+---
+
+## 复核记录（10-17 下午，修复后浏览器实测）
+
+| # | 项 | 状态 | 证据 |
+|---|---|---|---|
+| 1 | 报告上移 + 候选卡折叠 | ✅ 已修 | DOM：推荐报告（12_86）位于候选卡（12_102）之前；方案 2-5 折叠为摘要行、方案 1 展开 |
+| 2 | 层级（shadow hover） | ✅ 已修 | CandidateCard/ReportSection shadow="hover" |
+| 5 | 预测中文键名 | ✅ 已修 | 高温性能/低温性能/疲劳/水稳TSR/LCC/碳排/预期寿命/施工可行性 |
+| 4/6 | tabular-nums + 数字格式 | ✅ 已修 | 权重 27.0%；疲劳 1,000,000 次 |
+| 11 | 案例卡中文标签+重复行 | ✅ 已修（根因在 server，b2958b9） | cases 页：中文摘要 + 中文标签行各司其职，无英文无重复 |
+| 8/3/7/9/10/12 | 按压反馈/间距/字体基线/步进条/logo/对话提示 | ✅ 已修 | 代码+DOM 确认（logo 色块「材」+副标题；对话 placeholder「请输入问题」） |
+
+浏览器复核：/cases、/recommend（案例回填+生成）DOM 走查 + 全页截图 ui-5/ui-6；console 0 error/warn。修复 commit：98952e1、736b5d0、13ffb5f、b2958b9。web 49/49、server 37/37。
+
+**最终 Verdict：Approve**（12 项全部闭环，无残留可行动项）。
