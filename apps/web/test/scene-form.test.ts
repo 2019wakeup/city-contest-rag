@@ -91,6 +91,30 @@ describe('SceneForm（schema 驱动）', () => {
     expect(trafficField.text()).not.toContain('heavy')
   })
 
+  it('案例回填：pavement.layer 英文值渲染为注册表中文 label（R25）', async () => {
+    const layerOptions = FIELD_REGISTRY['pavement.layer'].options ?? []
+    const surfaceOption = layerOptions.find((o) => o.value === 'surface')
+    const binderOption = layerOptions.find((o) => o.value === 'binder')
+    expect(surfaceOption).toBeTruthy()
+    expect(binderOption).toBeTruthy()
+
+    const caseScene: SceneInput = {
+      schemaVersion: '1',
+      climate: { zone: '华南高温区', pgHigh: 76, pgLow: -22 },
+      traffic: { level: 'heavy', esal: 20000000 },
+      pavement: { layer: 'surface', structure: '半刚性基层沥青路面' },
+      distresses: [{ type: '车辙', severity: '中' }],
+      constraints: { budget: 500, schedule: 30, env: '环保要求高', noise: '低噪' },
+      notes: '',
+    }
+    const wrapper = mount(SceneForm, { props: { initialScene: caseScene } })
+    await wrapper.vm.$nextTick()
+
+    const layerField = wrapper.find('[data-testid="field-pavement.layer"]')
+    expect(layerField.text()).toContain(surfaceOption?.label as string)
+    expect(layerField.text()).not.toContain('surface')
+  })
+
   it('勾选病害后 distresses 按 {type, severity} 数组提交', async () => {
     const wrapper = mount(SceneForm)
     const distressOptions = FIELD_REGISTRY.distresses.options ?? []
