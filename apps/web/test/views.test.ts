@@ -50,13 +50,13 @@ const fiveCases = [
   caseFixture('case-05', '城市低噪排水'),
 ]
 
-const hitFixture = (): SearchHit => ({
+const hitFixture = (score?: number): SearchHit => ({
   schemaVersion: '1',
-  chunkId: 'chunk-9',
+  chunkId: `chunk-${score ?? 'x'}`,
   text: 'SBS改性沥青显著提升高温抗车辙性能，适用于重交通路段。',
   docType: 'standard',
   tags: ['车辙'],
-  score: 0.8,
+  score: score ?? 0.8,
   provenance: {
     sourceDocId: 'std-9',
     contentHash: 'x',
@@ -154,7 +154,29 @@ describe('KnowledgeView 知识库管理页', () => {
     expect(kbSearchMock).toHaveBeenCalledWith({ query: '车辙', topK: 5 })
     expect(wrapper.text()).toContain('SBS改性沥青显著提升高温抗车辙性能')
     expect(wrapper.text()).toContain('std-9')
-    expect(wrapper.text()).toContain('0.800')
+    // C7：分数按首位归一化展示，单条命中 = 100
+    expect(wrapper.text()).toContain('相关度（归一化）：100')
+  })
+
+  it('检索分数按首位归一化 0-100 展示，负值显示 —（C7）', async () => {
+    kbSearchMock.mockResolvedValue([hitFixture(0.9), hitFixture(0.45), hitFixture(-0.2)])
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="kb-search-input"]').setValue('车辙')
+    await wrapper.find('[data-testid="kb-search-btn"]').trigger('click')
+    await flushPromises()
+
+    const scores = wrapper.findAll('[data-testid="kb-hit-score"]').map((n) => n.text())
+    expect(scores).toEqual([
+      '相关度（归一化）：100',
+      '相关度（归一化）：50',
+      '相关度（归一化）：—',
+    ])
   })
 
   it('上传按钮触发 kbUpload 调用并刷新统计', async () => {

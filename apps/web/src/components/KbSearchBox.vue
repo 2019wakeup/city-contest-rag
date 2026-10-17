@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 
 import { kbSearch } from '@/api/client'
 import type { SearchHit } from '@road-rec/contracts'
@@ -10,6 +10,25 @@ const searching = shallowRef(false)
 const searched = shallowRef(false)
 const hits = shallowRef<SearchHit[]>([])
 const errorMessage = shallowRef('')
+
+/**
+ * C7 裁决：分数仅前端展示换算——按首位命中的原始分归一化到 0-100；
+ * 契约里的原始 score 不动。score 为空（null/undefined/NaN）或负值显示「—」。
+ */
+const displayHits = computed<Array<{ hit: SearchHit; scoreText: string }>>(() => {
+  const list = hits.value ?? []
+  const top = list.reduce((max, h) => {
+    const s = h?.score
+    return typeof s === 'number' && Number.isFinite(s) && s > 0 ? Math.max(max, s) : max
+  }, 0)
+  return list.map((h) => {
+    const s = h?.score
+    if (top <= 0 || typeof s !== 'number' || !Number.isFinite(s) || s < 0) {
+      return { hit: h, scoreText: '—' }
+    }
+    return { hit: h, scoreText: String(Math.round((s / top) * 100)) }
+  })
+})
 
 async function search(): Promise<void> {
   if (!query.value.trim() || searching.value) return
@@ -54,14 +73,14 @@ async function search(): Promise<void> {
       :title="`检索失败：${errorMessage}`"
       class="kb-search-alert"
     />
-    <div v-for="hit in hits" :key="hit.chunkId" class="kb-hit">
-      <p class="kb-hit-text">{{ hit.text }}</p>
+    <div v-for="dh in displayHits" :key="dh.hit.chunkId" class="kb-hit">
+      <p class="kb-hit-text">{{ dh.hit.text }}</p>
       <p class="kb-hit-provenance">
-        来源：{{ hit.provenance?.sourceDocId ?? '未知' }}
-        · {{ hit.docType ?? '' }}
-        · 模型 {{ hit.provenance?.embeddingModel ?? '-' }} v{{ hit.provenance?.modelVersion ?? '-' }}
-        · 相关度 {{ (hit.score ?? 0).toFixed(3) }}
+        来源：{{ dh.hit.provenance?.sourceDocId ?? '未知' }}
+        · {{ dh.hit.docType ?? '' }}
+        · 模型 {{ dh.hit.provenance?.embeddingModel ?? '-' }} v{{ dh.hit.provenance?.modelVersion ?? '-' }}
       </p>
+      <p data-testid="kb-hit-score" class="kb-hit-score">相关度（归一化）：{{ dh.scoreText }}</p>
     </div>
     <el-empty
       v-if="!searching && searched && hits.length === 0"
@@ -101,5 +120,11 @@ async function search(): Promise<void> {
   margin: 0;
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+
+.kb-hit-score {
+  margin: 0;
+  font-size: 12px;
+  color: var(--el-color-primary);
 }
 </style>
