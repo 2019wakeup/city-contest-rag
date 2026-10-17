@@ -137,16 +137,27 @@ export class SqliteVectorStore implements VectorStore {
     const q = text.trim();
     if (!q) return [];
     const tokens = q.split(/\s+/).filter(Boolean);
-    // trigram tokenizer 不支持 <3 字符查询 → 子串兜底（多词时逐词 AND）
+    // FTS 操作符出现（独立大写 AND/OR/NOT/NEAR）→ 整串按字面子串检索（R1-C4）
+    if (tokens.some((t) => ['AND', 'OR', 'NOT', 'NEAR'].includes(t.toUpperCase()))) {
+      return this.substringSearchLiteral(q, limit);
+    }
+    // trigram tokenizer 不支持 <3 字符查询 → 子串兜底（多词按任意词命中计分）
     if (tokens.some((t) => Array.from(t).length < 3)) return this.substringSearch(q, limit);
-    // 逐 token 引号包裹 + 引号加倍：空格 = 隐式 AND，AND/OR/NOT/NEAR 等操作符按字面短语检索
-    const ftsQuery = tokens.map((t) => `"${t.replace(/"/g, '""')}"`).join(' ');
+    // 中文长查询召回（金标准反馈）：按字符 trigram 展开为 OR——
+    // 任意 3 字重叠即命中，bm25 加权；否则长短语 AND 语义在真实语料上恒为空集。
+    const trigrams = [
+      ...new Set(
+        tokens
+          .flatMap((t) => trigramsOf(t))
+          .map((g) => `"${g.replace(/"/g, '""')}"`),
+      ),
+    ].join(' OR ');
     try {
       const rows = this.db
         .prepare(
           'SELECT chunk_id AS id, bm25(chunks_fts) AS score FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY score LIMIT ?',
         )
-        .all(ftsQuery, limit) as unknown as Array<{ id: string; score: number | null }>;
+        .all(trigrams, limit) as unknown as Array<{ id: string; score: number | null }>;
       // bm25 越小越好 → 取负统一为"越大越好"
       return rows.map((r) => ({ id: r.id, score: typeof r.score === 'number' ? -r.score : 0 }));
     } catch {
@@ -161,15 +172,29 @@ export class SqliteVectorStore implements VectorStore {
       .prepare('SELECT chunk_id AS id, text FROM chunks')
       .all() as unknown as Array<{ id: string; text: string }>;
     return rows
-      .map((r) => ({
-        id: r.id,
-        // 多词 = 逐词 AND：每个 token 都出现才命中；分数 = 出现次数总和
-        score: tokens.every((t) => r.text.includes(t))
-          ? tokens.reduce((acc, t) => acc + countOccurrences(r.text, t), 0)
-          : -1,
-        len: r.text.length,
-      }))
+      .map((r) => {
+        // 多词 = 任意词命中即召回；分数 = 各词出现次数总和
+        const perToken = tokens.map((t) => countOccurrences(r.text, t));
+        const matched = perToken.some((n) => n > 0);
+        return {
+          id: r.id,
+          score: matched ? perToken.reduce((a, b) => a + b, 0) : -1,
+          len: r.text.length,
+        };
+      })
       .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score || a.len - b.len || a.id.localeCompare(b.id))
+      .slice(0, limit)
+      .map(({ id, score }) => ({ id, score }));
+  }
+
+  /** 整串字面子串检索（操作符查询兜底路径） */
+  private substringSearchLiteral(q: string, limit: number): RankedItem[] {
+    const rows = this.db
+      .prepare('SELECT chunk_id AS id, text FROM chunks WHERE instr(text, ?) > 0')
+      .all(q) as unknown as Array<{ id: string; text: string }>;
+    return rows
+      .map((r) => ({ id: r.id, score: countOccurrences(r.text, q), len: r.text.length }))
       .sort((a, b) => b.score - a.score || a.len - b.len || a.id.localeCompare(b.id))
       .slice(0, limit)
       .map(({ id, score }) => ({ id, score }));
@@ -225,6 +250,15 @@ function countOccurrences(haystack: string, needle: string): number {
     count += 1;
     from = idx + needle.length;
   }
+}
+
+/** 按 Unicode 字符切 trigram（≤3 字符即整词） */
+function trigramsOf(token: string): string[] {
+  const chars = Array.from(token);
+  if (chars.length <= 3) return [chars.join('')];
+  const out: string[] = [];
+  for (let i = 0; i + 3 <= chars.length; i++) out.push(chars.slice(i, i + 3).join(''));
+  return out;
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {

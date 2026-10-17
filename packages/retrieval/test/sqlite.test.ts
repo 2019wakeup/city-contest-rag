@@ -183,4 +183,19 @@ describe('SqliteVectorStore', () => {
     expect(hits.map((h) => h.chunkId)).toContain('doc-a:0:v1');
     expect(hits.map((h) => h.chunkId)).not.toContain('doc-b:0:v1');
   });
+
+  it('长中文查询按 trigram 重叠命中（金标准召回，T5 反馈）', async () => {
+    await store.add(
+      [
+        makeChunk('doc-a:0:v1', 'SBS改性沥青与SMA级配用于高温重载路段抗车辙'),
+        makeChunk('doc-b:0:v1', '低温地区裂缝处治'),
+      ],
+      [
+        [1, 0],
+        [0, 1],
+      ],
+    );
+    const hits = await store.search({ text: '高温重载路段抗车辙改性沥青与 SMA 级配', topK: 5 });
+    expect(hits.map((h) => h.chunkId)).toContain('doc-a:0:v1');
+  });
 });
