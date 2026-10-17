@@ -42,25 +42,36 @@ export class SqliteVectorStore implements VectorStore {
     if (chunks.length !== vectors.length) {
       throw new Error(`chunks(${chunks.length}) 与 vectors(${vectors.length}) 数量不一致`);
     }
+    const deleteFts = this.db.prepare('DELETE FROM chunks_fts WHERE chunk_id = ?');
     const insertChunk = this.db.prepare(
       'INSERT OR REPLACE INTO chunks (chunk_id, doc_id, text, doc_type, tags, provenance, vector) VALUES (?, ?, ?, ?, ?, ?, ?)',
     );
     const insertFts = this.db.prepare(
       'INSERT OR REPLACE INTO chunks_fts (chunk_id, text) VALUES (?, ?)',
     );
-    chunks.forEach((chunk, i) => {
-      const parsed = CorpusChunkSchema.parse(chunk);
-      insertChunk.run(
-        parsed.chunkId,
-        parsed.provenance.sourceDocId,
-        parsed.text,
-        parsed.docType,
-        JSON.stringify(parsed.tags),
-        JSON.stringify(parsed.provenance),
-        vectors[i] ? JSON.stringify(vectors[i]) : null,
-      );
-      insertFts.run(parsed.chunkId, parsed.text);
-    });
+    this.db.exec('BEGIN');
+    try {
+      chunks.forEach((chunk, i) => {
+        const parsed = CorpusChunkSchema.parse(chunk);
+        // FTS5 虚表 INSERT OR REPLACE 等同 INSERT（无法按 UNINDEXED chunk_id 判重），
+        // 先删旧行再插入，防止同 id 重写后旧文本残留可被命中（防静默检索漂移）。
+        deleteFts.run(parsed.chunkId);
+        insertChunk.run(
+          parsed.chunkId,
+          parsed.provenance.sourceDocId,
+          parsed.text,
+          parsed.docType,
+          JSON.stringify(parsed.tags),
+          JSON.stringify(parsed.provenance),
+          vectors[i] ? JSON.stringify(vectors[i]) : null,
+        );
+        insertFts.run(parsed.chunkId, parsed.text);
+      });
+      this.db.exec('COMMIT');
+    } catch (err) {
+      this.db.exec('ROLLBACK');
+      throw err;
+    }
   }
 
   async search(q: VectorSearchQuery): Promise<SearchHit[]> {
@@ -127,12 +138,14 @@ export class SqliteVectorStore implements VectorStore {
     if (!q) return [];
     // trigram tokenizer 不支持 <3 字符查询 → 子串兜底
     if (Array.from(q).length < 3) return this.substringSearch(q, limit);
+    // 整串引号包裹 + 引号加倍转义：AND/OR/NOT/NEAR 等 FTS 操作符按字面短语检索
+    const ftsQuery = `"${q.replace(/"/g, '""')}"`;
     try {
       const rows = this.db
         .prepare(
           'SELECT chunk_id AS id, bm25(chunks_fts) AS score FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY score LIMIT ?',
         )
-        .all(q, limit) as unknown as Array<{ id: string; score: number | null }>;
+        .all(ftsQuery, limit) as unknown as Array<{ id: string; score: number | null }>;
       // bm25 越小越好 → 取负统一为"越大越好"
       return rows.map((r) => ({ id: r.id, score: typeof r.score === 'number' ? -r.score : 0 }));
     } catch {

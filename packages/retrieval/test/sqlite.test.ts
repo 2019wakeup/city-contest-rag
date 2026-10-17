@@ -138,4 +138,33 @@ describe('SqliteVectorStore', () => {
   it('add 时 vectors 与 chunks 数量不一致抛错', async () => {
     await expect(store.add([makeChunk('doc-a:0:v1', 'x')], [])).rejects.toThrow();
   });
+
+  it('同 chunk_id 重写文本后旧文本不再命中（防静默检索漂移，R1-C1）', async () => {
+    await store.add([makeChunk('doc-a:0:v1', '旧文本：水稳性能增强剂')], [[1, 0]]);
+    // 同 id 重写（contentHash 变更后的重入库路径）
+    await store.add([makeChunk('doc-a:0:v1', '新文本：高温抗车辙改性剂')], [[0, 1]]);
+    expect((await store.stats()).count).toBe(1);
+
+    const hitsOld = await store.search({ text: '水稳性能', topK: 5 });
+    expect(hitsOld.map((h) => h.chunkId)).not.toContain('doc-a:0:v1');
+
+    const hitsNew = await store.search({ text: '高温抗车辙', topK: 5 });
+    expect(hitsNew.map((h) => h.chunkId)).toContain('doc-a:0:v1');
+  });
+
+  it('MATCH 查询中的英文操作符按字面短语转义（R1-C4）', async () => {
+    await store.add(
+      [
+        makeChunk('doc-a:0:v1', 'A 与 B 双掺方案'),
+        makeChunk('doc-b:0:v1', 'A AND B 双掺方案'),
+      ],
+      [
+        [1, 0],
+        [0, 1],
+      ],
+    );
+    const hits = await store.search({ text: 'A AND B', topK: 5 });
+    expect(hits.map((h) => h.chunkId)).toContain('doc-b:0:v1');
+    expect(hits.map((h) => h.chunkId)).not.toContain('doc-a:0:v1');
+  });
 });
