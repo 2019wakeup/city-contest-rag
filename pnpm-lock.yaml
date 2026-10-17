@@ -181,12 +181,18 @@ importers:
 
   apps/server:
     dependencies:
+      '@hono/node-server':
+        specifier: ^1.13.0
+        version: 1.19.17(hono@4.13.13)
       '@hono/zod-openapi':
         specifier: ^0.19.4
         version: 0.19.10(hono@4.13.13)(zod@3.25.76)
       '@road-rec/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@road-rec/embedding':
+        specifier: workspace:*
+        version: link:../../packages/embedding
       '@road-rec/retrieval':
         specifier: workspace:*
         version: link:../../packages/retrieval
@@ -513,6 +519,12 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@hono/node-server@1.19.17':
+    resolution: {integrity: sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: ^4
 
   '@hono/zod-openapi@0.19.10':
     resolution: {integrity: sha512-dpoS6DenvoJyvxtQ7Kd633FRZ/Qf74+4+o9s+zZI8pEqnbjdF/DtxIib08WDpCaWabMEJOL5TXpMgNEZvb7hpA==}
@@ -2335,6 +2347,10 @@ snapshots:
       '@floating-ui/utils': 0.2.12
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@hono/node-server@1.19.17(hono@4.13.13)':
+    dependencies:
+      hono: 4.13.13
 
   '@hono/zod-openapi@0.19.10(hono@4.13.13)(zod@3.25.76)':
     dependencies:
