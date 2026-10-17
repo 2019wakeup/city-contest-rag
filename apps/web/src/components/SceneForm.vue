@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
 import { FIELD_REGISTRY, SCHEMA_VERSION } from '@road-rec/contracts'
 import type { FieldDef, SceneInput } from '@road-rec/contracts'
@@ -7,7 +7,9 @@ import type { FieldDef, SceneInput } from '@road-rec/contracts'
 /**
  * Schema 驱动场景表单：控件清单、标签、单位、选项全部来自 contracts 的
  * FIELD_REGISTRY——改 contracts 一处，表单自动跟随，不写死任何字段。
+ * 可选 initialScene 用于案例一键填入（改值即回填表单）。
  */
+const props = defineProps<{ initialScene?: SceneInput | null }>()
 const emit = defineEmits<{ submit: [scene: SceneInput] }>()
 
 interface FieldEntry {
@@ -35,6 +37,28 @@ const values = reactive<Record<string, unknown>>({})
 for (const { path, def } of fields) {
   values[path] = defaultValue(def)
 }
+
+function getByPath(source: unknown, path: string): unknown {
+  let node = source as Record<string, unknown>
+  for (const part of path.split('.')) {
+    if (typeof node !== 'object' || node === null) return undefined
+    node = node[part] as Record<string, unknown>
+  }
+  return node
+}
+
+/** 案例一键填入：外部场景按注册表路径反填控件值（distresses 取类型数组）。 */
+function applyScene(scene: SceneInput | null | undefined): void {
+  if (!scene) return
+  for (const { path, def } of fields) {
+    if (path === 'distresses') continue
+    const v = getByPath(scene, path)
+    values[path] = v === undefined ? defaultValue(def) : v
+  }
+  values.distresses = (scene.distresses ?? []).map((d) => d.type)
+}
+
+watch(() => props.initialScene, applyScene, { immediate: true })
 
 function setByPath(target: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split('.')
