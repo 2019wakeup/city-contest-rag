@@ -49,7 +49,41 @@ const MODIFIER_DOSAGE_EST = 4.0; // 改性剂掺量缺省 4.0%（假设）
 const ADDITIVE_DOSAGE_EST = 0.3; // 助剂掺量缺省 0.3%（假设）
 const TOP_K_CANDIDATES = 5;
 const EVIDENCE_PER_CANDIDATE = 3;
-const LOWER_BETTER_DIMS = new Set(['lcc', 'carbon']);
+// 排序用 min-max 相对归一化的"越低越好"维度（lowTemp 方向修复：低温 PG 越低越抗冻）
+const LOWER_BETTER_DIMS = new Set(['lcc', 'carbon', 'lowTemp']);
+
+/**
+ * 雷达图绝对基准锚点（UI#13）：演示锚点，接入真实模块 C 后按企业数据校准。
+ * lowTemp 写法 min=-10 / max=-40 为反向区间（越低越好，-40℃ 抗冻最强 → 满分）。
+ */
+export interface RadarAnchor {
+  min: number;
+  max: number;
+  lowerBetter: boolean;
+}
+
+export const RADAR_ANCHORS: Record<string, RadarAnchor> = {
+  highTemp: { min: 70, max: 90, lowerBetter: false }, // ℃，越高越好
+  lowTemp: { min: -10, max: -40, lowerBetter: true }, // ℃，越低越好
+  fatigue: { min: 60, max: 100, lowerBetter: false }, // 万次
+  waterStability: { min: 70, max: 100, lowerBetter: false }, // %
+  lcc: { min: 80, max: 200, lowerBetter: true }, // 万元，越低越好
+  carbon: { min: 40, max: 80, lowerBetter: true }, // tCO2e，越低越好
+  expectedLife: { min: 8, max: 20, lowerBetter: false }, // 年
+  constructability: { min: 60, max: 100, lowerBetter: false }, // 分
+};
+
+/** 原始预测值 → 绝对锚点 0-100 分（clamp；lowerBetter 反向；min>max 表示反向区间） */
+export function toRadarAbsolute(raw: number | undefined, anchor: RadarAnchor): number {
+  if (raw === undefined || Number.isNaN(raw)) return 0;
+  const lo = Math.min(anchor.min, anchor.max);
+  const hi = Math.max(anchor.min, anchor.max);
+  const span = hi - lo;
+  if (span === 0) return 50;
+  const t = (raw - lo) / span; // 越靠近 hi 越大
+  const norm = anchor.lowerBetter ? 1 - t : t; // 越低越好 → 越靠近 lo 分越高
+  return Math.max(0, Math.min(100, Math.round(norm * 100)));
+}
 
 /** 模块 A 目标性能名（中文词汇，与 relations.property 对齐）→ 雷达 8 维英文键 */
 const PERF_ALIAS: Record<string, string> = {
@@ -390,11 +424,6 @@ function normalize(
   return result;
 }
 
-function toRadar(norm: number | undefined): number {
-  if (norm === undefined) return 0;
-  return Math.max(0, Math.min(100, Math.round(norm * 100)));
-}
-
 function rankCandidates(
   scene: SceneInput,
   assembled: Array<{ id: string; formula: Formula }>,
@@ -463,14 +492,15 @@ function rankCandidates(
       predictions: predictions[i].predictions,
       explanations: predictions[i].explanations,
       radar: {
-        highTemp: toRadar(nm.get('highTemp')),
-        lowTemp: toRadar(nm.get('lowTemp')),
-        fatigue: toRadar(nm.get('fatigue')),
-        waterStability: toRadar(nm.get('waterStability')),
-        lcc: toRadar(nm.get('lcc')),
-        carbon: toRadar(nm.get('carbon')),
-        expectedLife: toRadar(nm.get('expectedLife')),
-        constructability: toRadar(nm.get('constructability')),
+        // UI#13：雷达展示用绝对锚点分（排序加权仍用 min-max 相对 normMaps，不变）
+        highTemp: toRadarAbsolute(vm.get('highTemp'), RADAR_ANCHORS.highTemp),
+        lowTemp: toRadarAbsolute(vm.get('lowTemp'), RADAR_ANCHORS.lowTemp),
+        fatigue: toRadarAbsolute(vm.get('fatigue'), RADAR_ANCHORS.fatigue),
+        waterStability: toRadarAbsolute(vm.get('waterStability'), RADAR_ANCHORS.waterStability),
+        lcc: toRadarAbsolute(vm.get('lcc'), RADAR_ANCHORS.lcc),
+        carbon: toRadarAbsolute(vm.get('carbon'), RADAR_ANCHORS.carbon),
+        expectedLife: toRadarAbsolute(vm.get('expectedLife'), RADAR_ANCHORS.expectedLife),
+        constructability: toRadarAbsolute(vm.get('constructability'), RADAR_ANCHORS.constructability),
       },
       lcc,
       carbon,

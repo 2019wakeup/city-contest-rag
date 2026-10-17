@@ -9,7 +9,7 @@ import type { CorpusChunk, SceneInput } from '@road-rec/contracts';
 import { initRelationDb } from '../src/relation/db';
 import type { RelationDb } from '../src/relation/db';
 import { seedFromCorpus } from '../src/relation/seed';
-import { recommend } from '../src/orchestrator';
+import { recommend, RADAR_ANCHORS, toRadarAbsolute } from '../src/orchestrator';
 import type { EmbedderLike } from '../src/orchestrator';
 import { createApp } from '../src/app';
 
@@ -154,6 +154,51 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     const { steps: _s1, ...rest1 } = r1;
     const { steps: _s2, ...rest2 } = r2;
     expect(rest1).toEqual(rest2);
+  });
+
+  it('R-雷达（UI#13）：lowTemp 方向修复——最抗冻候选雷达低温分最高', async () => {
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    const candidates = report.candidates;
+    expect(candidates.length).toBeGreaterThan(1);
+    const rawLow = candidates.map(
+      (c) => c.predictions.find((p) => p.perf === 'lowTemp')?.value ?? 0,
+    );
+    const minIdx = rawLow.indexOf(Math.min(...rawLow));
+    const maxRadarLow = Math.max(...candidates.map((c) => c.radar.lowTemp));
+    expect(candidates[minIdx].radar.lowTemp).toBe(maxRadarLow);
+  });
+
+  it('R-雷达（UI#13）：lcc 最低者雷达 lcc 分最高，且各维 0-100', async () => {
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    const candidates = report.candidates;
+    const rawLcc = candidates.map(
+      (c) => c.predictions.find((p) => p.perf === 'lcc')?.value ?? 0,
+    );
+    const minIdx = rawLcc.indexOf(Math.min(...rawLcc));
+    const maxRadarLcc = Math.max(...candidates.map((c) => c.radar.lcc));
+    expect(candidates[minIdx].radar.lcc).toBe(maxRadarLcc);
+    for (const cand of candidates) {
+      for (const dim of RADAR_DIMS) {
+        expect(cand.radar[dim]).toBeGreaterThanOrEqual(0);
+        expect(cand.radar[dim]).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it('R-雷达（UI#13）：绝对锚点映射——11.78 vs 12.07 寿命分差 < 10', () => {
+    const a = toRadarAbsolute(11.78, RADAR_ANCHORS.expectedLife);
+    const b = toRadarAbsolute(12.07, RADAR_ANCHORS.expectedLife);
+    expect(Math.abs(a - b)).toBeLessThan(10);
+    expect(toRadarAbsolute(-40, RADAR_ANCHORS.lowTemp)).toBe(100);
+    expect(toRadarAbsolute(-10, RADAR_ANCHORS.lowTemp)).toBe(0);
   });
 
   it('空向量库：evidence=[] + warnings 含 build:index，主流程仍完成（Review Focus #4）', async () => {
