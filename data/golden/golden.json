@@ -1,0 +1,26 @@
+[
+  { "id": "c01-knowledge", "query": "高温 重载 抗车辙 高模量 模量 改性沥青", "expectedDocIds": ["k-binder-002", "k-modifier-002", "k-mixture-003", "k-modifier-003", "k-gradation-004"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
+  { "id": "c01-standard", "query": "车辙试验 动稳定度 技术要求", "expectedDocIds": ["jtg-d50-2017", "jtg-3410-2025"], "minRecallAt5": 1.0, "docTypes": ["standard"] },
+  { "id": "c01-literature", "query": "高模量 沥青混合料 抗车辙 中面层 动态模量", "expectedDocIds": ["lit-089", "lit-005"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c01-enterprise", "query": "道路养护决策 沥青材料 智能推荐 系统 技术路线", "expectedDocIds": ["lit-052", "lit-032"], "minRecallAt5": 0.5, "docTypes": ["literature"] },
+
+  { "id": "c02-knowledge", "query": "寒冷 低温 横向裂缝 抗裂 改性沥青 纤维", "expectedDocIds": ["k-binder-003", "k-binder-004", "k-additive-005", "k-additive-007", "k-binder-002"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
+  { "id": "c02-standard", "query": "低温弯曲试验 破坏应变 气候分区", "expectedDocIds": ["jtg-d50-2017", "jtg-3410-2025"], "minRecallAt5": 1.0, "docTypes": ["standard"] },
+  { "id": "c02-literature", "query": "橡胶改性沥青 PG76-28 弹性恢复 疲劳", "expectedDocIds": ["lit-087"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c02-enterprise", "query": "机器学习 气候分区 沥青选型 养护措施 推荐", "expectedDocIds": ["lit-018", "lit-032"], "minRecallAt5": 0.5, "docTypes": ["literature"] },
+
+  { "id": "c03-knowledge", "query": "水损害 抗剥落剂 消石灰 纳米材料 TSR", "expectedDocIds": ["k-additive-001", "k-additive-002", "k-additive-003", "k-additive-004", "k-binder-005"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
+  { "id": "c03-standard", "query": "浸水马歇尔 残留稳定度 冻融劈裂 水稳定性", "expectedDocIds": ["jtg-d50-2017", "jtg-3410-2025"], "minRecallAt5": 1.0, "docTypes": ["standard"] },
+  { "id": "c03-literature", "query": "消石灰 抗剥落剂 水稳定性 纳米 TSR", "expectedDocIds": ["lit-082", "lit-004"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c03-enterprise", "query": "道路运维文本 知识图谱 案例推理 检索", "expectedDocIds": ["lit-063", "lit-070"], "minRecallAt5": 0.5, "docTypes": ["literature"] },
+
+  { "id": "c04-knowledge", "query": "高RAP 再生 温拌剂 再生剂 成本 碳排", "expectedDocIds": ["k-gradation-005", "k-gradation-006", "k-additive-009", "k-additive-010", "k-mixture-001"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
+  { "id": "c04-standard", "query": "再生利用 温拌 冷再生 绿色养护 破损基层 修复", "expectedDocIds": ["jtg-5142-2019", "jtg-5421-2018"], "minRecallAt5": 1.0, "docTypes": ["standard"] },
+  { "id": "c04-literature", "query": "温拌剂 降低生产温度 再生混合料 RAP", "expectedDocIds": ["lit-085", "lit-086"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c04-enterprise", "query": "路网级 养护方案 多目标优化 碳排放 资金", "expectedDocIds": ["lit-003"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+
+  { "id": "c05-knowledge", "query": "低噪 排水 多孔沥青 降噪 抗滑 高粘", "expectedDocIds": ["k-binder-005", "k-gradation-003", "k-gradation-007", "k-mixture-005", "k-mixture-011"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
+  { "id": "c05-standard", "query": "降噪沥青路面 排水沥青面层 开级配", "expectedDocIds": ["jtg-5142-2019", "jtg-d50-2017", "jtg-5421-2018", "jtg-f40-2004"], "minRecallAt5": 0.75, "docTypes": ["standard"] },
+  { "id": "c05-literature", "query": "排水 多孔沥青 降噪 配合比 OGFC SBS", "expectedDocIds": ["lit-079", "lit-077"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c05-enterprise", "query": "数据驱动 沥青混合料 材料组成 反向匹配", "expectedDocIds": ["lit-123"], "minRecallAt5": 1.0, "docTypes": ["literature"] }
+]
