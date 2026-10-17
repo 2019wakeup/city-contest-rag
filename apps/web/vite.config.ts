@@ -4,7 +4,10 @@ import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
-// 前端 dev 服务器：/api 固定代理到后端 3000 端口（计划 R4 裁决）
+// 前端 dev 服务器：/api 代理目标可用 API_PROXY_TARGET 覆盖（默认 3000，R4 预案：
+// 本机 3000 被其他进程占用时，演示用 API_PROXY_TARGET=http://localhost:3010）。
+const apiProxyTarget = process.env.API_PROXY_TARGET ?? 'http://localhost:3000'
+
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -15,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: apiProxyTarget,
         changeOrigin: true,
       },
     },
