@@ -18,3 +18,4 @@ City_Contest/ref/
 __pycache__/
 *.pyc
 *.bak
+.audit-words.txt
