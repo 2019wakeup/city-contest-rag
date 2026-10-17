@@ -7,6 +7,7 @@ import {
   kbSearch,
   kbStats,
   kbUpload,
+  kbUploadFile,
   postChat,
   postRecommend,
 } from '@/api/client'
@@ -240,6 +241,23 @@ describe('api client - 知识库', () => {
       docType: 'enterprise',
       text: '正文',
     })
+  })
+
+  it('kbUploadFile 以 multipart FormData 上传文件且不手动设置 content-type', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ added: 1, chunks: 3 }))
+    const file = new File(['PDF内容'], '企业资料.pdf', { type: 'application/pdf' })
+
+    await expect(kbUploadFile(file)).resolves.toEqual({ added: 1, chunks: 3 })
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    expect(url).toBe('/api/v1/kb/documents')
+    expect(init.method).toBe('POST')
+    expect(init.body).toBeInstanceOf(FormData)
+    const fd = init.body as FormData
+    expect(fd.get('file')).toBe(file)
+    // multipart 边界由浏览器自动生成，不得手动覆盖 content-type
+    const headers = init.headers as Record<string, string> | undefined
+    expect(headers?.['Content-Type'] ?? headers?.['content-type']).toBeUndefined()
   })
 
   it('kbRebuild 调 POST /api/v1/kb/rebuild', async () => {

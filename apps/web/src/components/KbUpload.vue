@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef } from 'vue'
 
-import { kbUpload } from '@/api/client'
+import { kbUpload, kbUploadFile } from '@/api/client'
 import type { KbUploadResult } from '@/api/client'
 import type { DocType } from '@road-rec/contracts'
 
@@ -21,17 +21,21 @@ const uploading = shallowRef(false)
 const errorMessage = shallowRef('')
 const result = shallowRef<KbUploadResult | null>(null)
 
-/** 文本类文件（.md/.txt）读取后填入文本域，走 JSON 上传通道（PDF 走后端 multipart 通道）。 */
+/** 文件上传走 multipart 通道：PDF 由后端 pdf-parse 抽取文本，.md/.txt 走原文。 */
 async function onFileChange(event: Event): Promise<void> {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (!file) return
+  if (!file || uploading.value) return
+  uploading.value = true
+  errorMessage.value = ''
+  result.value = null
   try {
-    text.value = await file.text()
-    if (!title.value) title.value = file.name
+    result.value = await kbUploadFile(file)
+    emit('uploaded')
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err)
   } finally {
+    uploading.value = false
     input.value = ''
   }
 }
@@ -88,10 +92,10 @@ async function upload(): Promise<void> {
           placeholder="粘贴企业资料 / 规范条文等文本"
         />
       </el-form-item>
-      <el-form-item label="或选择文本文件（.md / .txt）">
+      <el-form-item label="或选择文件上传（.pdf / .md / .txt）">
         <input
           type="file"
-          accept=".md,.txt,.markdown"
+          accept=".pdf,.md,.txt,.markdown"
           data-testid="kb-upload-file"
           @change="onFileChange"
         />

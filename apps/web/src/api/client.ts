@@ -161,6 +161,20 @@ export function kbUpload(payload: KbUploadPayload): Promise<KbUploadResult> {
   })
 }
 
+/**
+ * 知识库文件上传（multipart，PDF 由后端 pdf-parse 抽取文本；.md/.txt 走原文）。
+ * 不手动设置 content-type：浏览器自动生成 multipart 边界。
+ */
+export async function kbUploadFile(file: File): Promise<KbUploadResult> {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${API_BASE}/kb/documents`, { method: 'POST', body: form })
+  if (!res.ok) {
+    throw new Error(`请求失败（${res.status}）: /kb/documents`)
+  }
+  return (await res.json()) as KbUploadResult
+}
+
 /** 索引重建。 */
 export function kbRebuild(): Promise<KbRebuildResult> {
   return request<KbRebuildResult>('/kb/rebuild', { method: 'POST' })

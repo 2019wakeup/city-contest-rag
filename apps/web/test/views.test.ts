@@ -2,7 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getCases, kbRebuild, kbSearch, kbStats, kbUpload } from '@/api/client'
+import { getCases, kbRebuild, kbSearch, kbStats, kbUpload, kbUploadFile } from '@/api/client'
 import type { CaseSeed, SceneInput, SearchHit } from '@road-rec/contracts'
 import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
@@ -12,6 +12,7 @@ vi.mock('@/api/client', () => ({
   kbStats: vi.fn(),
   kbSearch: vi.fn(),
   kbUpload: vi.fn(),
+  kbUploadFile: vi.fn(),
   kbRebuild: vi.fn(),
 }))
 
@@ -19,6 +20,7 @@ const getCasesMock = vi.mocked(getCases)
 const kbStatsMock = vi.mocked(kbStats)
 const kbSearchMock = vi.mocked(kbSearch)
 const kbUploadMock = vi.mocked(kbUpload)
+const kbUploadFileMock = vi.mocked(kbUploadFile)
 const kbRebuildMock = vi.mocked(kbRebuild)
 
 const validScene: SceneInput = {
@@ -86,6 +88,7 @@ beforeEach(() => {
   kbStatsMock.mockResolvedValue({ count: 42, docTypes: { knowledge: 30, standard: 12 }, backend: 'sqlite' })
   kbSearchMock.mockResolvedValue([hitFixture()])
   kbUploadMock.mockResolvedValue({ added: 1, chunks: 2 })
+  kbUploadFileMock.mockResolvedValue({ added: 1, chunks: 2 })
   kbRebuildMock.mockResolvedValue({ count: 42 })
   getCasesMock.mockResolvedValue([])
 })
@@ -173,6 +176,26 @@ describe('KnowledgeView 知识库管理页', () => {
       docType: 'enterprise',
       text: '企业提供的新资料正文',
     })
+    expect(kbStatsMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('PDF 文件上传触发 kbUploadFile 并刷新统计', async () => {
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+    expect(kbStatsMock).toHaveBeenCalledTimes(1)
+
+    const fileInput = wrapper.find('[data-testid="kb-upload-file"]')
+    expect(fileInput.exists()).toBe(true)
+    const file = new File(['pdf-bytes'], '企业资料.pdf', { type: 'application/pdf' })
+    Object.defineProperty(fileInput.element, 'files', { value: [file] })
+    await fileInput.trigger('change')
+    await flushPromises()
+
+    expect(kbUploadFileMock).toHaveBeenCalledWith(file)
     expect(kbStatsMock).toHaveBeenCalledTimes(2)
   })
 
