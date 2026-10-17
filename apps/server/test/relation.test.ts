@@ -45,6 +45,12 @@ describe('关系层（T6）', () => {
     expect(countRows(db, 'relations')).toBe(stats.relations);
     expect(countRows(db, 'cases')).toBe(5);
     expect(countRows(db, 'scene_tags')).toBeGreaterThan(0);
+    // UI#11：cases 表含原始中文摘要列（非英文标签串）
+    const caseRow = db
+      .prepare("SELECT summary FROM cases WHERE id = 'case-01'")
+      .get() as unknown as { summary: string };
+    expect(caseRow.summary).toContain('车辙');
+    expect(caseRow.summary).not.toContain('heavy');
     db.close();
   });
 

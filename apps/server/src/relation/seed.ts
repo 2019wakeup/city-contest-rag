@@ -57,7 +57,7 @@ export async function seedFromCorpus(corpusDir: string, dbPath: string): Promise
     'INSERT INTO scene_tags (id, label, kind, synonymsJson) VALUES (?, ?, ?, ?)',
   );
   const insCase = db.prepare(
-    'INSERT INTO cases (id, title, sceneJson, expectedJson) VALUES (?, ?, ?, ?)',
+    'INSERT INTO cases (id, title, summary, sceneJson, expectedJson) VALUES (?, ?, ?, ?, ?)',
   );
 
   let relationCount = 0;
@@ -91,7 +91,9 @@ export async function seedFromCorpus(corpusDir: string, dbPath: string): Promise
       insTag.run(t.id, t.label, t.kind, JSON.stringify(t.synonyms ?? []));
     }
     for (const c of cases) {
-      insCase.run(c.id, c.title, JSON.stringify(c.scene), JSON.stringify(c.expected));
+      // UI#11：summary 存 cases.json 的原始中文摘要（passthrough 字段）
+      const extra = c as unknown as { summary?: string };
+      insCase.run(c.id, c.title, extra.summary ?? '', JSON.stringify(c.scene), JSON.stringify(c.expected));
     }
     db.exec('COMMIT');
   } catch (err) {

@@ -51,10 +51,18 @@ export function createRelationSchema(db: RelationDb): void {
     CREATE TABLE IF NOT EXISTS cases (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
+      summary TEXT NOT NULL,
       sceneJson TEXT NOT NULL,
       expectedJson TEXT NOT NULL
     );
   `);
+  // 旧库迁移：补充 summary 列（UI#11 后新增；既有 data/db/relation.db 无此列）
+  const caseCols = db
+    .prepare('PRAGMA table_info(cases)')
+    .all() as unknown as Array<{ name: string }>;
+  if (!caseCols.some((c) => c.name === 'summary')) {
+    db.exec("ALTER TABLE cases ADD COLUMN summary TEXT NOT NULL DEFAULT ''");
+  }
 }
 
 export function initRelationDb(dbPath: string): RelationDb {

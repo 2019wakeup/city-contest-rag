@@ -240,8 +240,16 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     expect(typeof health.vectorStore.ok).toBe('boolean');
     expect(typeof health.llm.configured).toBe('boolean');
 
-    const cases = (await (await app.request('/api/v1/cases')).json()) as unknown[];
+    const cases = (await (await app.request('/api/v1/cases')).json()) as Array<{
+      id: string;
+      summary: string;
+    }>;
     expect(cases).toHaveLength(5);
+    // UI#11：summary 为原始中文摘要，不含英文标签串
+    const case01 = cases.find((c) => c.id === 'case-01');
+    expect(case01?.summary).toContain('车辙');
+    expect(case01?.summary).not.toContain('heavy');
+    expect(case01?.summary).not.toContain('rutting');
 
     expect((await app.request('/api/v1/cases/case-01')).status).toBe(200);
     expect((await app.request('/api/v1/cases/no-such')).status).toBe(404);
