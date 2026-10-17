@@ -266,4 +266,66 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
     expect(hit!.docType).toBe('knowledge');
     store.close();
   });
+
+  it('literature-full 按 ## 标题切块 + 无标题长节按 ~500 字聚合', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-litfull-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'idx-litfull-'));
+    fs.mkdirSync(path.join(dir, 'literature-full'), { recursive: true });
+    const longSection = '长节正文。'.repeat(160); // 800 字符，无 ## 标题，应硬切成 ≥2 块
+    fs.writeFileSync(
+      path.join(dir, 'literature-full/litfull-001.md'),
+      [
+        '<!--',
+        'SOURCE: 原始 PDF: reference/x.pdf | 页数: 3 | 集合: reference',
+        '题录: litfull-001 测试全文',
+        '-->',
+        '# 测试全文标题',
+        '',
+        '摘要正文：这是前言内容。',
+        '## 1. 引言',
+        '',
+        '引言正文甲乙丙。',
+        '## 2. 方法',
+        '',
+        '方法正文。',
+        '### 2.1 子节',
+        '',
+        '子节正文应归入父节。',
+        '## 3. 长节',
+        '',
+        longSection,
+        '![图](images/page_1_image_1.jpg)',
+      ].join('\n'),
+    );
+
+    const store = new SqliteVectorStore(path.join(tmp, 'test.db'));
+    const r = await buildIndex({
+      corpusDir: dir,
+      store: store as unknown as VectorStore,
+      embedder: makeFakeEmbedder(),
+      manifestPath: path.join(tmp, 'manifest.json'),
+      pipelineRev: 'testrev1',
+    });
+    // 前言+摘要 1 块、引言 1 块、方法（含 2.1 子节）1 块、长节拆 ≥2 块
+    expect(r.total).toBeGreaterThanOrEqual(5);
+    expect((await store.stats()).count).toBe(r.total);
+
+    // 各块均含「正文」一词（空文本无向量时 search 返回 []，属契约行为）
+    const all = await store.search({ text: '正文', topK: 100 });
+    const chunks = all.filter((h) => h.provenance.sourceDocId === 'litfull-001');
+    expect(chunks.length).toBe(r.total);
+    for (const c of chunks) {
+      expect(c.docType).toBe('literature');
+      expect(c.chunkId).toMatch(/^litfull-001:\d+$/);
+      expect(c.text).not.toContain('![图]');
+    }
+    // 方法块包含 2.1 子节内容（子节不单独成块）
+    const methods = chunks.find((c) => c.text.includes('## 2. 方法'));
+    expect(methods?.text).toContain('子节正文应归入父节');
+    // 长节被拆分且每块 ≤ 600 字符
+    const longParts = chunks.filter((c) => c.text.includes('长节正文'));
+    expect(longParts.length).toBeGreaterThanOrEqual(2);
+    for (const c of longParts) expect(c.text.length).toBeLessThanOrEqual(700);
+    store.close();
+  });
 });

@@ -141,7 +141,86 @@ function collectPlanned(corpusDir: string): PlannedChunk[] {
     });
   }
 
+  // 4. 文献全文（litfull-<题录序号>.md：按 ## 标题切块，无标题长节按 ~500 字聚合）
+  const litFullDir = path.join(corpusDir, 'literature-full');
+  if (fs.existsSync(litFullDir)) {
+    for (const f of fs.readdirSync(litFullDir).filter((x) => x.endsWith('.md')).sort()) {
+      const docId = f.replace(/\.md$/, '');
+      const content = fs.readFileSync(path.join(litFullDir, f), 'utf-8');
+      planned.push(...chunkLiteratureFull(docId, content));
+    }
+  }
+
   return planned;
+}
+
+/** 文献全文切块：按 `## ` 分节；节内正文超长时按段落聚合（目标 ~500 字，硬上限 600） */
+const LITFULL_CHUNK_TARGET = 500;
+const LITFULL_CHUNK_MAX = 600;
+
+function chunkLiteratureFull(docId: string, content: string): PlannedChunk[] {
+  const cleaned = content
+    .split('\n')
+    .filter((line) => !/^\s*!\[[^\]]*\]\([^)]*\)\s*$/.test(line)) // 图片引用行不入块
+    .join('\n');
+
+  const matches = [...cleaned.matchAll(/^##\s+(.+)$/gm)];
+  const sections: Array<{ heading: string; body: string }> = [];
+  if (matches.length === 0) {
+    sections.push({ heading: '', body: cleaned });
+  } else {
+    if ((matches[0].index ?? 0) > 0) {
+      sections.push({ heading: '', body: cleaned.slice(0, matches[0].index) });
+    }
+    matches.forEach((m, i) => {
+      const bodyStart = (m.index ?? 0) + m[0].length;
+      const bodyEnd = matches[i + 1]?.index ?? cleaned.length;
+      sections.push({ heading: m[0], body: cleaned.slice(bodyStart, bodyEnd) });
+    });
+  }
+
+  const chunks: PlannedChunk[] = [];
+  let idx = 0;
+  for (const s of sections) {
+    const prefix = s.heading ? `${s.heading}\n` : '';
+    for (const part of packParagraphs(s.body, LITFULL_CHUNK_TARGET, LITFULL_CHUNK_MAX)) {
+      const text = (prefix + part).trim();
+      if (text.length < 10) continue;
+      chunks.push(makeChunk(`${docId}:${idx++}`, docId, text, 'literature', [], idx));
+    }
+  }
+  return chunks;
+}
+
+/** 段落聚合：优先按空行分段装包到 target 附近；单段超长则按 max 硬切 */
+function packParagraphs(body: string, target: number, max: number): string[] {
+  const paragraphs = body
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  const out: string[] = [];
+  let buf = '';
+  const flush = () => {
+    if (buf.trim().length > 0) {
+      out.push(buf.trim());
+      buf = '';
+    }
+  };
+  for (const p of paragraphs) {
+    if (p.length > max) {
+      flush();
+      for (let i = 0; i < p.length; i += max) out.push(p.slice(i, i + max));
+      continue;
+    }
+    if (buf.length === 0) buf = p;
+    else if (buf.length + p.length + 2 <= target) buf = `${buf}\n\n${p}`;
+    else {
+      flush();
+      buf = p;
+    }
+  }
+  flush();
+  return out;
 }
 
 function makeChunk(

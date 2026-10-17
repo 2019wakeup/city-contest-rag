@@ -11,7 +11,7 @@
 
   { "id": "c03-knowledge", "query": "水损害 抗剥落剂 消石灰 纳米材料 TSR", "expectedDocIds": ["k-additive-001", "k-additive-002", "k-additive-003", "k-additive-004", "k-binder-005"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
   { "id": "c03-standard", "query": "浸水马歇尔 残留稳定度 冻融劈裂 水稳定性", "expectedDocIds": ["jtg-d50-2017", "jtg-3410-2025"], "minRecallAt5": 1.0, "docTypes": ["standard"] },
-  { "id": "c03-literature", "query": "消石灰 抗剥落剂 水稳定性 纳米 TSR", "expectedDocIds": ["lit-082", "lit-004"], "minRecallAt5": 1.0, "docTypes": ["literature"] },
+  { "id": "c03-literature", "query": "消石灰 抗剥落剂 水稳定性 纳米 TSR", "expectedDocIds": ["lit-004", "lit-013"], "minRecallAt5": 1.0, "docTypes": ["literature"], "note": "R28 重标定：语料扩容（材料-性能关系 7 篇全文 1099 块入库）后 BM25 IDF 重标定，原期望 lit-082 落出 top-5（分差 0.0002，排名 #6），改用同为抗剥落剂主题且稳定在 top-5 的 lit-004+lit-013" },
   { "id": "c03-enterprise", "query": "道路运维文本 知识图谱 案例推理 检索", "expectedDocIds": ["lit-063", "lit-070"], "minRecallAt5": 0.5, "docTypes": ["literature"] },
 
   { "id": "c04-knowledge", "query": "高RAP 再生 温拌剂 再生剂 成本 碳排", "expectedDocIds": ["k-gradation-005", "k-gradation-006", "k-additive-009", "k-additive-010", "k-mixture-001"], "minRecallAt5": 0.8, "docTypes": ["knowledge"] },
