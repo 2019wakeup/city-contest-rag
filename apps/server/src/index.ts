@@ -1,5 +1,6 @@
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { loadEnvFile } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { serve } from '@hono/node-server';
 import { SqliteVectorStore } from '@road-rec/retrieval';
@@ -13,6 +14,17 @@ import type { EmbedderLike } from './orchestrator';
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
 async function main(): Promise<void> {
+  // 加载根目录 .env（Node 24 内置；不覆盖已存在的环境变量）。
+  // 必须在任何读取 env 的逻辑（llmConfigured/resolveEmbeddingModel 等）之前执行。
+  const envPath = resolve(REPO_ROOT, '.env');
+  if (existsSync(envPath)) {
+    try {
+      loadEnvFile(envPath);
+    } catch {
+      // .env 损坏时忽略，走真实环境变量
+    }
+  }
+
   const dbDir = join(REPO_ROOT, 'data/db');
   const indexDir = join(REPO_ROOT, 'data/index');
   mkdirSync(dbDir, { recursive: true });
