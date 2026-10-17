@@ -64,11 +64,12 @@ export const FIELD_REGISTRY: Record<string, FieldDef> = {
   'pavement.layer': {
     label: '路面结构层位',
     control: 'select',
+    // value 与 cases.json 场景取值对齐（surface/middle/binder/deck），中文 label 供展示（R25）
     options: [
-      { label: '上面层', value: '上面层' },
-      { label: '中面层', value: '中面层' },
-      { label: '下面层', value: '下面层' },
-      { label: '桥面铺装', value: '桥面铺装' },
+      { label: '上面层', value: 'surface' },
+      { label: '中面层', value: 'middle' },
+      { label: '下面层', value: 'binder' },
+      { label: '桥面铺装', value: 'deck' },
     ],
     placeholder: '选择结构层位',
   },
