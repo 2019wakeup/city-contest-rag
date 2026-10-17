@@ -152,12 +152,19 @@ const caseFixture = (id: string): CaseSeed => ({
   expected: { formulas: [] },
 })
 
+/** el-drawer 测试桩：按 modelValue 渲染内容（teleport 不参与，便于 wrapper 查询）。 */
+const DrawerStub = {
+  props: ['modelValue'],
+  template: '<div v-if="modelValue" data-testid="drawer-stub"><slot /></div>',
+}
+
 async function mountView(routePath = '/recommend') {
   const pinia = createPinia()
   setActivePinia(pinia)
   const store = useRecommendStore()
   store.report = makeReport()
   store.status = 'done'
+  store.step = 'result'
   store.scene = validScene
 
   const router = createRouter({
@@ -168,7 +175,10 @@ async function mountView(routePath = '/recommend') {
   await router.isReady()
 
   const wrapper = mount(RecommendView, {
-    global: { plugins: [pinia, router] },
+    global: {
+      plugins: [pinia, router],
+      stubs: { 'el-drawer': DrawerStub },
+    },
   })
   await flushPromises()
   return wrapper
@@ -203,6 +213,7 @@ describe('RecommendView 推荐工作台', () => {
     const store = useRecommendStore()
     store.report = makeReport({ llmStatus: 'degraded' })
     store.status = 'degraded'
+    store.step = 'result'
     store.scene = validScene
 
     const router = createRouter({
@@ -223,6 +234,7 @@ describe('RecommendView 推荐工作台', () => {
     const store = useRecommendStore()
     store.report = makeReport({ evidence: [], warnings: ['知识库为空，请执行 pnpm build:index'] })
     store.status = 'done'
+    store.step = 'result'
     store.scene = validScene
 
     const router = createRouter({
@@ -267,6 +279,8 @@ describe('RecommendView 推荐工作台', () => {
     })
     const wrapper = await mountView()
 
+    await wrapper.find('[data-testid="chat-fab"]').trigger('click')
+    await flushPromises()
     const input = wrapper.find('[data-testid="chat-input"]')
     expect(input.exists()).toBe(true)
     await input.setValue('为什么推荐它？')
@@ -279,6 +293,8 @@ describe('RecommendView 推荐工作台', () => {
 
   it('ChatPanel 中文输入法选词回车不误发（isComposing 过滤，F4）', async () => {
     const wrapper = await mountView()
+    await wrapper.find('[data-testid="chat-fab"]').trigger('click')
+    await flushPromises()
     const input = wrapper.find('[data-testid="chat-input"]')
     await input.setValue('推荐这个方案')
 
@@ -355,6 +371,7 @@ describe('RecommendView 推荐工作台', () => {
       },
     })
     store.status = 'done'
+    store.step = 'result'
     store.scene = validScene
 
     const router = createRouter({
@@ -392,6 +409,7 @@ describe('RecommendView 推荐工作台', () => {
     vi.stubGlobal('fetch', healthFetch)
     try {
       const wrapper = await mountView()
+      await wrapper.find('[data-testid="chat-fab"]').trigger('click')
       await flushPromises()
 
       // 空输入时给输入提示
@@ -463,6 +481,7 @@ describe('RecommendView 推荐工作台', () => {
     ]
     store.report = rep
     store.status = 'done'
+    store.step = 'result'
     store.scene = validScene
 
     const router = createRouter({
@@ -492,6 +511,7 @@ describe('RecommendView 推荐工作台', () => {
     setActivePinia(pinia)
     const store = useRecommendStore()
     store.status = 'running'
+    store.step = 'result'
     store.report = null
 
     const router = createRouter({
@@ -577,6 +597,15 @@ describe('RecommendView 推荐工作台', () => {
   it('表格数值列右对齐（目标表+基准对比，UI二轮）', async () => {
     const wrapper = await mountView()
 
+    // 目标/基准为默认折叠区块 → 先展开
+    const headers = wrapper.findAll('.el-collapse-item__header')
+    for (const h of headers) {
+      if (h.text().includes('目标性能') || h.text().includes('基准')) {
+        await h.trigger('click')
+      }
+    }
+    await flushPromises()
+
     const columns = wrapper.findAllComponents(ElTableColumn)
     const propsOf = (c: (typeof columns)[number]) => c.props() as Record<string, unknown>
     const byLabel = (label: string) => columns.find((c) => propsOf(c).label === label)
@@ -612,6 +641,64 @@ describe('RecommendView 推荐工作台', () => {
     expect(
       wrapper.findAll('[data-testid="candidate-card"]')[0].find('[data-testid="evidence-panel"]').exists(),
     ).toBe(true)
+  })
+
+  it('两页式：提交切结果页，返回修改参数回填表单（重构）', async () => {
+    postRecommendMock.mockResolvedValue(makeReport())
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, {
+      global: { plugins: [pinia, router], stubs: { 'el-drawer': DrawerStub } },
+    })
+    await flushPromises()
+
+    // 初始在参数页：有表单、无结果区与工具栏
+    expect(wrapper.find('[data-testid="scene-form-submit"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="kpi-hero"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="back-to-input"]').exists()).toBe(false)
+
+    await wrapper.find('[data-testid="scene-form-submit"]').trigger('click')
+    await flushPromises()
+
+    expect(store.step).toBe('result')
+    expect(wrapper.find('[data-testid="kpi-hero"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="scene-form-submit"]').exists()).toBe(false)
+
+    // 模拟结果页上场景为 heavy（返回时必须用它回填表单）
+    store.scene = {
+      ...(store.scene as SceneInput),
+      traffic: { ...(store.scene as SceneInput).traffic, level: 'heavy' },
+    }
+
+    await wrapper.find('[data-testid="back-to-input"]').trigger('click')
+    await flushPromises()
+
+    expect(store.step).toBe('input')
+    // 回填：store.scene 的 traffic.level=heavy → 表单显示中文 label
+    const trafficField = wrapper.find('[data-testid="field-traffic.level"]')
+    expect(trafficField.text()).toContain('重交通')
+  })
+
+  it('追问悬浮按钮打开/收起对话抽屉（重构）', async () => {
+    const wrapper = await mountView()
+    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(false)
+
+    await wrapper.find('[data-testid="chat-fab"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="chat-input"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="chat-close"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(false)
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

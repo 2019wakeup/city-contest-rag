@@ -99,9 +99,45 @@ describe('recommend store 状态机', () => {
   it('初始状态为 idle，无报告无步骤', () => {
     const store = useRecommendStore()
     expect(store.status).toBe('idle')
+    expect(store.step).toBe('input')
     expect(store.report).toBeNull()
     expect(store.scene).toBeNull()
     expect(store.steps).toEqual([])
+  })
+
+  it('run 成功 → step 切到 result；backToInput 返回 input（两页式）', async () => {
+    postRecommendMock.mockResolvedValue(reportFixture('ok'))
+    const store = useRecommendStore()
+
+    await store.run(validScene)
+    expect(store.step).toBe('result')
+
+    store.backToInput()
+    expect(store.step).toBe('input')
+    expect(store.scene).toEqual(validScene) // 返回时场景保留供回填
+  })
+
+  it('初次提交失败 → 回到 input 页并记录错误', async () => {
+    postRecommendMock.mockRejectedValue(new Error('网络错误'))
+    const store = useRecommendStore()
+
+    await store.run(validScene)
+
+    expect(store.status).toBe('error')
+    expect(store.step).toBe('input')
+  })
+
+  it('结果页微调失败 → 留在 result 页', async () => {
+    postRecommendMock.mockResolvedValue(reportFixture('ok'))
+    const store = useRecommendStore()
+    await store.run(validScene)
+    expect(store.step).toBe('result')
+
+    postRecommendMock.mockRejectedValue(new Error('网络错误'))
+    await store.adjustAndRerun({ notes: 'x' })
+
+    expect(store.status).toBe('error')
+    expect(store.step).toBe('result')
   })
 
   it('run 成功（llmStatus ok）→ done，报告与步骤就绪', async () => {
