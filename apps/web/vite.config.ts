@@ -16,6 +16,8 @@ export default defineConfig({
     },
   },
   server: {
+    // 监听 0.0.0.0：无显示器服务器上供 SSH 隧道 / 局域网直连访问（演示环境）
+    host: true,
     proxy: {
       '/api': {
         target: apiProxyTarget,
