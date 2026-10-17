@@ -8,8 +8,6 @@ dist/
 City_Contest.7z
 .tools/
 .npm-cache/
-data/db/
-data/index/
 reference.zip
 reference/
 City_Contest/ref/
@@ -20,3 +18,10 @@ __pycache__/
 *.bak
 .audit-words.txt
 literature_md/
+
+# 公开仓附带已建好的向量库索引与关系库（模型缓存不推，>100MB）
+data/db/*
+!data/db/relation.db
+data/index/*
+!data/index/lancedb/
+!data/index/sqlite.db
