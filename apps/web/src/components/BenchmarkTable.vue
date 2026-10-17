@@ -17,12 +17,12 @@ const candidateIds = computed(() => [
     <template #header>与规范查表基线对比</template>
     <el-table :data="rows ?? []" size="small">
       <el-table-column prop="label" label="指标" />
-      <el-table-column label="规范基线">
+      <el-table-column label="规范基线" align="right">
         <template #default="{ row }">
           <span class="tabular">{{ formatNumber(row.baseline) }} {{ row.unit ?? '' }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-for="cid in candidateIds" :key="cid" :label="cid">
+      <el-table-column v-for="cid in candidateIds" :key="cid" :label="cid" align="right">
         <template #default="{ row }">
           <span class="tabular">{{ formatNumber(row.candidates?.[cid]) }}</span>
         </template>

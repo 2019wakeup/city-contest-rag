@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { ElInputNumber, ElSelect, ElSteps } from 'element-plus'
+import { ElInputNumber, ElSelect, ElSteps, ElTableColumn } from 'element-plus'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -572,6 +572,46 @@ describe('RecommendView 推荐工作台', () => {
     const focusSpy = vi.spyOn(select.vm, 'focus')
     await wrapper.find('[data-testid="focus-case-select"]').trigger('click')
     expect(focusSpy).toHaveBeenCalled()
+  })
+
+  it('表格数值列右对齐（目标表+基准对比，UI二轮）', async () => {
+    const wrapper = await mountView()
+
+    const columns = wrapper.findAllComponents(ElTableColumn)
+    const propsOf = (c: (typeof columns)[number]) => c.props() as Record<string, unknown>
+    const byLabel = (label: string) => columns.find((c) => propsOf(c).label === label)
+    const alignOf = (label: string) => {
+      const col = byLabel(label)
+      return col ? (propsOf(col).align as string | undefined) : undefined
+    }
+
+    expect(alignOf('目标值')).toBe('right')
+    expect(alignOf('权重')).toBe('right')
+    expect(alignOf('规范基线')).toBe('right')
+    // 动态候选列（cand-1/cand-2）同样右对齐
+    expect(alignOf('cand-1')).toBe('right')
+    expect(alignOf('cand-2')).toBe('right')
+  })
+
+  it('Esc 收起已展开候选卡（UI二轮键盘）', async () => {
+    const wrapper = await mountView()
+    // 展开 cand-2
+    await wrapper.findAll('[data-testid="candidate-toggle"]')[1].trigger('click')
+    await flushPromises()
+    expect(
+      wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists(),
+    ).toBe(true)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+
+    expect(
+      wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists(),
+    ).toBe(false)
+    // top-1 保持展开
+    expect(
+      wrapper.findAll('[data-testid="candidate-card"]')[0].find('[data-testid="evidence-panel"]').exists(),
+    ).toBe(true)
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

@@ -89,10 +89,18 @@ function buildScene(): SceneInput {
 function onSubmit(): void {
   emit('submit', buildScene())
 }
+
+/** UI二轮键盘：Ctrl/⌘+Enter 提交表单；普通 Enter 不触发（避免输入框误提交）。 */
+function onFormKeydown(event: KeyboardEvent): void {
+  if (event.key !== 'Enter') return
+  if (!event.ctrlKey && !event.metaKey) return
+  event.preventDefault()
+  onSubmit()
+}
 </script>
 
 <template>
-  <el-form label-position="top" class="scene-form">
+  <el-form label-position="top" class="scene-form" @keydown="onFormKeydown">
     <el-form-item
       v-for="{ path, def } in fields"
       :key="path"

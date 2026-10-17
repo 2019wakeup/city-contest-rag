@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { getCases } from '@/api/client'
@@ -141,6 +141,16 @@ function focusCaseSelect(): void {
 function gotoCases(): void {
   void router.push('/cases')
 }
+
+// ---- 键盘（UI二轮）：Esc 收起已展开候选卡（回到默认仅展开 top-1）----
+function onKeydown(event: KeyboardEvent): void {
+  if (event.key !== 'Escape') return
+  const firstId = report.value?.candidates?.[0]?.id
+  expandedIds.value = firstId ? new Set([firstId]) : new Set()
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
@@ -287,12 +297,12 @@ function gotoCases(): void {
             <template #header>目标性能与权重</template>
             <el-table :data="report.targets?.targets ?? []" size="small">
               <el-table-column prop="perf" label="性能指标" />
-              <el-table-column label="目标值">
+              <el-table-column label="目标值" align="right">
                 <template #default="{ row }">
                   <span class="tabular">{{ formatNumber(row.value) }} {{ row.unit ?? '' }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="权重">
+              <el-table-column label="权重" align="right">
                 <template #default="{ row }">
                   <span class="tabular">{{ weightOf(row.perf) }}</span>
                 </template>

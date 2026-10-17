@@ -136,4 +136,20 @@ describe('SceneForm（schema 驱动）', () => {
       severity: '中',
     })
   })
+
+  it('Ctrl/⌘+Enter 提交表单，普通 Enter 不提交（UI二轮键盘）', async () => {
+    const wrapper = mount(SceneForm)
+    const form = wrapper.find('form')
+
+    await form.trigger('keydown', { key: 'Enter', ctrlKey: true })
+    expect(wrapper.emitted('submit')).toBeTruthy()
+
+    const wrapper2 = mount(SceneForm)
+    await wrapper2.find('form').trigger('keydown', { key: 'Enter' })
+    expect(wrapper2.emitted('submit')).toBeFalsy()
+
+    const wrapper3 = mount(SceneForm)
+    await wrapper3.find('form').trigger('keydown', { key: 'Enter', metaKey: true })
+    expect(wrapper3.emitted('submit')).toBeTruthy()
+  })
 })
