@@ -123,7 +123,16 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     expect(report.evidence.length).toBeGreaterThan(0);
     expect(['ok', 'degraded']).toContain(report.llmStatus);
     expect(report.adapterMode).toEqual({ a: 'mock', c: 'mock' });
-    expect(report.steps.length).toBeGreaterThan(0);
+    // spec §8 步进条 = 解析→映射→召回→预测→排序→报告 6 步（含顺序）
+    expect(report.steps.map((s) => s.name)).toEqual([
+      'parse',
+      'mapping',
+      'recall',
+      'predict',
+      'rank',
+      'report',
+    ]);
+    for (const s of report.steps) expect(s.ms).toBeGreaterThanOrEqual(0);
     for (const cand of report.candidates) {
       for (const dim of RADAR_DIMS) {
         expect(cand.radar[dim]).toBeGreaterThanOrEqual(0);

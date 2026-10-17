@@ -135,6 +135,8 @@ export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise
     benchmark: buildBenchmark(ranked, targets),
   };
   const sectionsWithStatus = await buildReportSections(base, deps.llmCall);
+  // 报告生成阶段耗时须计入 steps（spec §8 六步：解析→映射→召回→预测→排序→报告）
+  mark('report');
   const report = RecommendationReportSchema.parse({
     schemaVersion: '1',
     ...base,
@@ -145,7 +147,6 @@ export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise
     warnings,
     steps,
   });
-  mark('report');
   return report;
 }
 
