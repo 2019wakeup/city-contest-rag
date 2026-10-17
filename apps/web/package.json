@@ -11,6 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@road-rec/contracts": "workspace:*",
     "echarts": "^6.1.0",
     "element-plus": "^2.14.7",
     "pinia": "^4.1.0",
@@ -26,10 +27,5 @@
     "vite": "^7.3.7",
     "vitest": "^4.1.12",
     "vue-tsc": "^3.3.13"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
