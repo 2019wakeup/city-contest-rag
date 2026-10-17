@@ -8,6 +8,7 @@ import { getCases, postChat, postRecommend } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
+import EvidencePanel from '@/components/EvidencePanel.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
 
 vi.mock('@/api/client', () => ({
@@ -283,6 +284,22 @@ describe('RecommendView 推荐工作台', () => {
     await input.trigger('keydown.enter', { key: 'Enter' })
     await flushPromises()
     expect(postChatMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('EvidencePanel 分数按首位归一化展示（F2 残留）', () => {
+    const evidence = [
+      { ...makeReport().evidence[0], chunkId: 'top', score: 0.9 },
+      { ...makeReport().evidence[0], chunkId: 'low', score: 0.02 },
+    ]
+    const wrapper = mount(EvidencePanel, {
+      props: { evidence, ids: ['top', 'low'] },
+    })
+
+    const text = wrapper.text()
+    expect(text).toContain('相关度（归一化）：100')
+    expect(text).toContain('相关度（归一化）：2')
+    expect(text).not.toContain('0.020')
+    expect(text).not.toContain('0.900')
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

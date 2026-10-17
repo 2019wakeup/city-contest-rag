@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { scoreDisplayText } from '@/utils/score'
 import type { EvidenceRef } from '@road-rec/contracts'
 
 const props = defineProps<{ evidence: EvidenceRef[]; ids: string[] }>()
@@ -16,6 +17,12 @@ const matches = computed(() => {
   const byId = new Map((props.evidence ?? []).map((e) => [e.chunkId, e]))
   return (props.ids ?? []).map((id) => byId.get(id)).filter((e): e is EvidenceRef => e != null)
 })
+
+const scoreTextOf = (hit: EvidenceRef): string =>
+  scoreDisplayText(
+    matches.value.map((m) => m.score),
+    hit.score,
+  )
 
 const docTypeLabel = (docType: string): string => DOC_TYPE_LABELS[docType] ?? docType
 </script>
@@ -44,7 +51,9 @@ const docTypeLabel = (docType: string): string => DOC_TYPE_LABELS[docType] ?? do
           来源：{{ hit.provenance?.sourceDocId ?? '未知' }}
           · 模型 {{ hit.provenance?.embeddingModel ?? '-' }}
           v{{ hit.provenance?.modelVersion ?? '-' }}
-          · 相关度 {{ (hit.score ?? 0).toFixed(3) }}
+        </p>
+        <p data-testid="evidence-score" class="evidence-score">
+          相关度（归一化）：{{ scoreTextOf(hit) }}
         </p>
       </el-collapse-item>
     </el-collapse>

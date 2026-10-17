@@ -2,6 +2,7 @@
 import { computed, shallowRef } from 'vue'
 
 import { kbSearch } from '@/api/client'
+import { scoreDisplayText } from '@/utils/score'
 import type { SearchHit } from '@road-rec/contracts'
 
 const query = shallowRef('')
@@ -12,23 +13,18 @@ const hits = shallowRef<SearchHit[]>([])
 const errorMessage = shallowRef('')
 
 /**
- * C7 裁决：分数仅前端展示换算——按首位命中的原始分归一化到 0-100；
- * 契约里的原始 score 不动。score 为空（null/undefined/NaN）或负值显示「—」。
+ * C7 裁决：分数仅前端展示换算——按首位命中的原始分归一化到 0-100（共享工具
+ * src/utils/score.ts，与 EvidencePanel 同逻辑）；契约里的原始 score 不动。
  */
-const displayHits = computed<Array<{ hit: SearchHit; scoreText: string }>>(() => {
-  const list = hits.value ?? []
-  const top = list.reduce((max, h) => {
-    const s = h?.score
-    return typeof s === 'number' && Number.isFinite(s) && s > 0 ? Math.max(max, s) : max
-  }, 0)
-  return list.map((h) => {
-    const s = h?.score
-    if (top <= 0 || typeof s !== 'number' || !Number.isFinite(s) || s < 0) {
-      return { hit: h, scoreText: '—' }
-    }
-    return { hit: h, scoreText: String(Math.round((s / top) * 100)) }
-  })
-})
+const displayHits = computed<Array<{ hit: SearchHit; scoreText: string }>>(() =>
+  (hits.value ?? []).map((h) => ({
+    hit: h,
+    scoreText: scoreDisplayText(
+      (hits.value ?? []).map((x) => x.score),
+      h?.score,
+    ),
+  })),
+)
 
 async function search(): Promise<void> {
   if (!query.value.trim() || searching.value) return
