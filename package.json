@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "pnpm --parallel -r run dev",
-    "test": "pnpm -r run test",
+    "test": "pnpm -r test && pnpm exec vitest run --root scripts",
     "build:index": "tsx scripts/build-index.ts",
     "e2e": "tsx scripts/e2e-cases.ts && tsx scripts/e2e-degradation.ts"
   },
