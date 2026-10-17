@@ -224,6 +224,11 @@ export function deriveSceneTags(scene: SceneInput, db: RelationDb): string[] {
       if (candidates.some((s) => s && freeText.includes(s))) tags.add(r.id);
     }
   }
+  // cases.json 英文取值映射（env/noise 的 strict/low-noise 无中文同义词可匹配）
+  const env = scene.constraints.env.toLowerCase();
+  const noise = scene.constraints.noise.toLowerCase();
+  if (env === 'strict' || env === 'high') tags.add('k-env');
+  if (noise === 'strict' || noise === 'low-noise') tags.add('k-noise-ctl');
   return [...tags].sort();
 }
 
@@ -288,17 +293,25 @@ function assembleCandidates(
       b.score - a.score || a.binder.localeCompare(b.binder, 'zh-CN') || a.gradation.localeCompare(b.gradation, 'zh-CN'),
   );
 
-  // modifier / additive：命中数最高的各取 1（每候选至多各 1）
-  const bestOf = (names: string[]) =>
+  // modifier / additive：按场景匹配数降序，逐候选轮转分配（R3-C1：消除"全局唯一最优"，
+  // 对齐 binder×gradation 的场景敏感排序；每候选至多各 1）
+  const rankedOf = (names: string[]) =>
     names
       .map((name) => ({ name, hits: hitsOf(name) }))
-      .sort((a, b) => b.hits - a.hits || a.name.localeCompare(b.name, 'zh-CN'))[0]?.name ?? null;
-  const bestModifier = bestOf(materialSet.modifiers);
-  const bestAdditive = bestOf(materialSet.additives);
+      .sort((a, b) => b.hits - a.hits || a.name.localeCompare(b.name, 'zh-CN'));
+  const rankedModifiers = rankedOf(materialSet.modifiers);
+  const rankedAdditives = rankedOf(materialSet.additives);
 
   return combos.slice(0, TOP_K_CANDIDATES).map((combo, i) => ({
     id: `cand-${i + 1}`,
-    formula: buildFormula(combo.binder, combo.gradation, bestModifier, bestAdditive, scene, byName),
+    formula: buildFormula(
+      combo.binder,
+      combo.gradation,
+      rankedModifiers.length > 0 ? rankedModifiers[i % rankedModifiers.length].name : null,
+      rankedAdditives.length > 0 ? rankedAdditives[i % rankedAdditives.length].name : null,
+      scene,
+      byName,
+    ),
   }));
 }
 
@@ -507,7 +520,8 @@ async function retrieveEvidence(
         text: texts[i],
         vector: vectors?.[i],
         topK: EVIDENCE_PER_CANDIDATE,
-        filter: { docTypes: ['knowledge', 'standard', 'literature'] },
+        // R3-C3：enterprise 企业资料同为语料，进证据链（保持 topK 截断）
+        filter: { docTypes: ['knowledge', 'standard', 'literature', 'enterprise'] },
       });
       const ids: string[] = [];
       for (const h of hits) {
@@ -527,7 +541,10 @@ async function retrieveEvidence(
 // ---------------------------------------------------------------------------
 
 function buildBenchmark(candidates: Candidate[], targets: TargetProfile): BenchmarkRow[] {
-  return DIM_META.map(({ dim, label, unit }) => {
+  // R3-C1：基准行只覆盖 mock A 输出的目标子集（baseline 来自 targets，缺失维度无对比意义）
+  return DIM_META.filter(({ dim }) =>
+    targets.targets.some((t) => PERF_ALIAS[t.perf] === dim || t.perf === dim),
+  ).map(({ dim, label, unit }) => {
     const target = targets.targets.find((t) => PERF_ALIAS[t.perf] === dim || t.perf === dim);
     const row: Record<string, number> = {};
     for (const c of candidates) {

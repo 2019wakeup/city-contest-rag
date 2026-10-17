@@ -25,6 +25,27 @@ function loadCaseScene(id: string): SceneInput {
   return SceneInputSchema.parse(found.scene);
 }
 
+function normName(s: string): string {
+  return s.replace(/\s+/g, '');
+}
+
+/** cases.json expected.formulas 的 binder 关键词（'基质沥青+再生剂' → ['基质沥青','再生剂']，去空白） */
+function expectedBinderKeywords(id: string): string[] {
+  const cases = JSON.parse(
+    readFileSync(join(CORPUS_DIR, 'cases', 'cases.json'), 'utf8'),
+  ) as Array<{ id: string; expected: { formulas: Array<{ binder?: { type?: string } }> } }>;
+  const found = cases.find((c) => c.id === id);
+  if (!found) throw new Error(`case ${id} 不存在`);
+  const keywords = new Set<string>();
+  for (const f of found.expected.formulas) {
+    for (const part of (f.binder?.type ?? '').split('+')) {
+      const trimmed = normName(part.trim());
+      if (trimmed) keywords.add(trimmed);
+    }
+  }
+  return [...keywords];
+}
+
 const fakeEmbedder: EmbedderLike = {
   dim: 2,
   modelName: 'fake',
@@ -135,6 +156,38 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     expect(report.candidates).toHaveLength(5);
     expect(report.evidence).toEqual([]);
     expect(report.warnings.some((w) => w.includes('build:index'))).toBe(true);
+  });
+
+  it('R3-C3：enterprise 语料进入证据链', async () => {
+    await store.add(
+      [makeChunk('kb-enterprise-1:0:v1', '企业资料：SBS 改性沥青高温抗车辙应用案例', 'enterprise', ['高温'])],
+      [[1, 0]],
+    );
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    expect(report.evidence.some((e) => e.docType === 'enterprise')).toBe(true);
+  });
+
+  it('R3-C1 回归：5 案例 top-1 签名 ≥3 种，且 top-5 含 cases.json 期望方向', async () => {
+    const deps = { store, embedder: fakeEmbedder, relationDb };
+    const signatures = new Set<string>();
+    for (const id of ['case-01', 'case-02', 'case-03', 'case-04', 'case-05']) {
+      const report = await recommend(loadCaseScene(id), deps);
+      expect(report.candidates.length, `${id} 候选数`).toBeGreaterThanOrEqual(5);
+      const top = report.candidates[0];
+      signatures.add(`${normName(top.formula.binder.type)}+${normName(top.formula.modifier.type)}`);
+
+      const topBinders = report.candidates.slice(0, 5).map((c) => normName(c.formula.binder.type));
+      const keywords = expectedBinderKeywords(id);
+      expect(
+        topBinders.some((b) => keywords.some((k) => b.includes(k))),
+        `${id} top-5 应含期望方向（${keywords.join('/')}）`,
+      ).toBe(true);
+    }
+    expect(signatures.size).toBeGreaterThanOrEqual(3);
   });
 
   it('REST：recommend 200/400、cases(含 404)、health、feedback、/openapi', async () => {

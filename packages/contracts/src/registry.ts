@@ -46,11 +46,12 @@ export const FIELD_REGISTRY: Record<string, FieldDef> = {
   'traffic.level': {
     label: '交通荷载等级',
     control: 'select',
+    // value 与 cases.json 场景取值对齐（heavy/medium/light/channelized），中文 label 供展示（R3-C5）
     options: [
-      { label: '轻交通', value: '轻交通' },
-      { label: '中等交通', value: '中等交通' },
-      { label: '重交通', value: '重交通' },
-      { label: '特重交通', value: '特重交通' },
+      { label: '轻交通', value: 'light' },
+      { label: '中等交通', value: 'medium' },
+      { label: '重交通', value: 'heavy' },
+      { label: '渠化重载', value: 'channelized' },
     ],
     placeholder: '选择交通荷载等级',
   },

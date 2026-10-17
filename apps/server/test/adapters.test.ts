@@ -60,6 +60,15 @@ describe('模块 A/C 适配器（T7）', () => {
       expect(result).toHaveLength(0);
       expect(result.adapterMode).toBe('mock');
     });
+
+    it('mock A 按场景输出目标子集（R3-C1：不再恒 8 目标）', async () => {
+      vi.stubEnv('MODULE_A_ENDPOINT', '');
+      const result = await mapSceneToTargets(scene); // 车辙+拥包场景
+      const perfs = result.targets.map((t) => t.perf);
+      expect(perfs.length).toBeLessThan(8);
+      expect(perfs).toContain('高温PG');
+      expect(perfs).not.toContain('水稳TSR');
+    });
   });
 
   describe('真实端点（fake HTTP server）', () => {

@@ -2,13 +2,12 @@ import { mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { serve } from '@hono/node-server';
-import { LanceDBVectorStore, SqliteVectorStore } from '@road-rec/retrieval';
-import type { VectorStore } from '@road-rec/retrieval';
+import { SqliteVectorStore } from '@road-rec/retrieval';
 import { initRelationDb } from './relation/db';
 import { seedFromCorpus } from './relation/seed';
 import { createApp } from './app';
 import { streamChat } from './llm/client';
-import { resolveEmbeddingModel } from './config';
+import { createVectorStore, resolveEmbeddingModel } from './config';
 import type { EmbedderLike } from './orchestrator';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -28,20 +27,6 @@ async function main(): Promise<void> {
     await seedFromCorpus(join(REPO_ROOT, 'data/corpus'), relationDbPath);
   }
 
-  // 向量库：RETRIEVAL_BACKEND=sqlite 显式降级；lancedb 初始化失败自动降级 SQLite
-  const backend = process.env.RETRIEVAL_BACKEND ?? 'lancedb';
-  let store: VectorStore;
-  if (backend === 'sqlite') {
-    store = new SqliteVectorStore(join(indexDir, 'sqlite.db'));
-  } else {
-    try {
-      store = new LanceDBVectorStore(join(indexDir, 'lancedb'));
-    } catch (err) {
-      console.warn('LanceDB 初始化失败，自动降级 SQLite：', err);
-      store = new SqliteVectorStore(join(indexDir, 'sqlite.db'));
-    }
-  }
-
   // embedding（EMBEDDING_MODEL: bge-m3 默认 | multilingual-e5-small；首次需联网下载，走 HF_ENDPOINT 镜像）。
   // 非法模型名启动即报错退出；下载失败降级纯 BM25 检索。缓存目录与 build-index CLI 口径一致。
   const embeddingModel = resolveEmbeddingModel();
@@ -58,6 +43,11 @@ async function main(): Promise<void> {
       err instanceof Error ? err.message : String(err),
     );
   }
+
+  // 向量库（R3-C2：先 embedder 后 store，LanceDB 表维度 = embedder.dim；
+  // embedder 失败时 dim 用默认，store 仍可用纯 BM25）。RETRIEVAL_BACKEND=sqlite 显式降级。
+  const backend = process.env.RETRIEVAL_BACKEND ?? 'lancedb';
+  const store = createVectorStore({ backend, indexDir, dim: embedder?.dim ?? null });
 
   const llmConfigured = Boolean(process.env.DEEPSEEK_API_KEY && process.env.LLM_OFF !== '1');
   const app = createApp({
