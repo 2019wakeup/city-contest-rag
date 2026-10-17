@@ -1,0 +1,193 @@
+import { flushPromises, mount } from '@vue/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { getCases, kbRebuild, kbSearch, kbStats, kbUpload } from '@/api/client'
+import type { CaseSeed, SceneInput, SearchHit } from '@road-rec/contracts'
+import CasesView from '@/views/CasesView.vue'
+import KnowledgeView from '@/views/KnowledgeView.vue'
+
+vi.mock('@/api/client', () => ({
+  getCases: vi.fn(),
+  kbStats: vi.fn(),
+  kbSearch: vi.fn(),
+  kbUpload: vi.fn(),
+  kbRebuild: vi.fn(),
+}))
+
+const getCasesMock = vi.mocked(getCases)
+const kbStatsMock = vi.mocked(kbStats)
+const kbSearchMock = vi.mocked(kbSearch)
+const kbUploadMock = vi.mocked(kbUpload)
+const kbRebuildMock = vi.mocked(kbRebuild)
+
+const validScene: SceneInput = {
+  schemaVersion: '1',
+  climate: { zone: '华南高温区', pgHigh: 76, pgLow: -22 },
+  traffic: { level: '重交通', esal: 20000000 },
+  pavement: { layer: '上面层', structure: '半刚性基层沥青路面' },
+  distresses: [{ type: '车辙', severity: '中' }],
+  constraints: { budget: 500, schedule: 30, env: '环保要求高', noise: '低噪' },
+  notes: '',
+}
+
+const caseFixture = (id: string, title: string): CaseSeed => ({
+  schemaVersion: '1',
+  id,
+  title,
+  summary: `${title}摘要`,
+  scene: validScene,
+  expected: { formulas: [] },
+})
+
+const fiveCases = [
+  caseFixture('case-01', '华南高温重载车辙'),
+  caseFixture('case-02', '寒冷地区横向裂缝'),
+  caseFixture('case-03', '多雨冻融水损害'),
+  caseFixture('case-04', '旧路高RAP再生'),
+  caseFixture('case-05', '城市低噪排水'),
+]
+
+const hitFixture = (): SearchHit => ({
+  schemaVersion: '1',
+  chunkId: 'chunk-9',
+  text: 'SBS改性沥青显著提升高温抗车辙性能，适用于重交通路段。',
+  docType: 'standard',
+  tags: ['车辙'],
+  score: 0.8,
+  provenance: {
+    sourceDocId: 'std-9',
+    contentHash: 'x',
+    embeddingModel: 'bge-m3',
+    modelVersion: '1',
+    dim: 1024,
+    pipelineRev: 'abc1234',
+    embeddedAt: '2026-10-17',
+  },
+})
+
+function makeRouter() {
+  return createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/cases', name: 'cases', component: CasesView },
+      { path: '/recommend', name: 'recommend', component: { template: '<div />' } },
+      { path: '/knowledge', name: 'knowledge', component: KnowledgeView },
+    ],
+  })
+}
+
+beforeEach(() => {
+  getCasesMock.mockReset()
+  kbStatsMock.mockReset()
+  kbSearchMock.mockReset()
+  kbUploadMock.mockReset()
+  kbRebuildMock.mockReset()
+  kbStatsMock.mockResolvedValue({ count: 42, docTypes: { knowledge: 30, standard: 12 }, backend: 'sqlite' })
+  kbSearchMock.mockResolvedValue([hitFixture()])
+  kbUploadMock.mockResolvedValue({ added: 1, chunks: 2 })
+  kbRebuildMock.mockResolvedValue({ count: 42 })
+  getCasesMock.mockResolvedValue([])
+})
+
+describe('CasesView 典型案例页', () => {
+  it('渲染 5 个案例卡片（标题+摘要）', async () => {
+    getCasesMock.mockResolvedValue(fiveCases)
+    const router = makeRouter()
+    await router.push('/cases')
+    await router.isReady()
+
+    const wrapper = mount(CasesView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="case-card"]')).toHaveLength(5)
+    expect(wrapper.text()).toContain('华南高温重载车辙')
+    expect(wrapper.text()).toContain('华南高温重载车辙摘要')
+  })
+
+  it('点击案例卡片载入工作台（router.push /recommend?case=…）', async () => {
+    getCasesMock.mockResolvedValue(fiveCases)
+    const router = makeRouter()
+    await router.push('/cases')
+    await router.isReady()
+
+    const wrapper = mount(CasesView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.findAll('[data-testid="case-load"]')[0].trigger('click')
+    await flushPromises()
+
+    expect(router.currentRoute.value.path).toBe('/recommend')
+    expect(router.currentRoute.value.query.case).toBe('case-01')
+  })
+})
+
+describe('KnowledgeView 知识库管理页', () => {
+  it('渲染统计卡（count/docTypes/backend）', async () => {
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="kb-count"]').text()).toContain('42')
+    expect(wrapper.text()).toContain('sqlite')
+    expect(wrapper.text()).toContain('knowledge')
+  })
+
+  it('检索返回 fixture 渲染 hit 列表（含来源行与分数）', async () => {
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="kb-search-input"]').setValue('车辙')
+    await wrapper.find('[data-testid="kb-search-btn"]').trigger('click')
+    await flushPromises()
+
+    expect(kbSearchMock).toHaveBeenCalledWith({ query: '车辙', topK: 5 })
+    expect(wrapper.text()).toContain('SBS改性沥青显著提升高温抗车辙性能')
+    expect(wrapper.text()).toContain('std-9')
+    expect(wrapper.text()).toContain('0.800')
+  })
+
+  it('上传按钮触发 kbUpload 调用并刷新统计', async () => {
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+    expect(kbStatsMock).toHaveBeenCalledTimes(1)
+
+    await wrapper.find('[data-testid="kb-upload-title"]').setValue('企业资料')
+    await wrapper.find('[data-testid="kb-upload-text"]').setValue('企业提供的新资料正文')
+    await wrapper.find('[data-testid="kb-upload-btn"]').trigger('click')
+    await flushPromises()
+
+    expect(kbUploadMock).toHaveBeenCalledWith({
+      title: '企业资料',
+      docType: 'enterprise',
+      text: '企业提供的新资料正文',
+    })
+    expect(kbStatsMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('重建按钮触发 kbRebuild 并刷新统计', async () => {
+    const router = makeRouter()
+    await router.push('/knowledge')
+    await router.isReady()
+
+    const wrapper = mount(KnowledgeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="kb-rebuild-btn"]').trigger('click')
+    await flushPromises()
+
+    expect(kbRebuildMock).toHaveBeenCalledTimes(1)
+    expect(kbStatsMock).toHaveBeenCalledTimes(2)
+  })
+})
