@@ -154,12 +154,6 @@ const caseFixture = (id: string): CaseSeed => ({
   expected: { formulas: [] },
 })
 
-/** el-drawer 测试桩：按 modelValue 渲染内容（teleport 不参与，便于 wrapper 查询）。 */
-const DrawerStub = {
-  props: ['modelValue'],
-  template: '<div v-if="modelValue" data-testid="drawer-stub"><slot /></div>',
-}
-
 async function mountView(routePath = '/recommend') {
   const pinia = createPinia()
   setActivePinia(pinia)
@@ -177,22 +171,29 @@ async function mountView(routePath = '/recommend') {
   await router.isReady()
 
   const wrapper = mount(RecommendView, {
-    global: {
-      plugins: [pinia, router],
-      stubs: { 'el-drawer': DrawerStub },
-    },
+    global: { plugins: [pinia, router] },
   })
   await flushPromises()
   return wrapper
 }
 
 beforeEach(() => {
+  localStorage.clear()
   getCasesMock.mockReset()
   postRecommendMock.mockReset()
   postChatMock.mockReset()
   getCasesMock.mockResolvedValue([])
   postRecommendMock.mockResolvedValue(makeReport())
 })
+
+/** 打开对话侧板（从 closed 状态点击悬浮胶囊）。 */
+async function openChatDock(wrapper: Awaited<ReturnType<typeof mountView>>) {
+  await wrapper.find('[data-testid="chat-fab"]').trigger('click')
+  await flushPromises()
+}
+
+const dockWidthOf = (wrapper: Awaited<ReturnType<typeof mountView>>): string =>
+  ((wrapper.find('[data-testid="chat-dock"]').element as HTMLElement | undefined)?.style.width) ?? ''
 
 describe('RecommendView 推荐工作台', () => {
   it('注入含未知字段的报告：不抛错且渲染候选卡片数 = fixture 数', async () => {
@@ -658,7 +659,7 @@ describe('RecommendView 推荐工作台', () => {
     await router.push('/recommend')
     await router.isReady()
     const wrapper = mount(RecommendView, {
-      global: { plugins: [pinia, router], stubs: { 'el-drawer': DrawerStub } },
+      global: { plugins: [pinia, router] },
     })
     await flushPromises()
 
@@ -689,18 +690,87 @@ describe('RecommendView 推荐工作台', () => {
     expect(trafficField.text()).toContain('重交通')
   })
 
-  it('追问悬浮按钮打开/收起对话抽屉（重构）', async () => {
+  it('对话侧板三态：closed→open→docked→open 恢复宽度→closed（侧板）', async () => {
     const wrapper = await mountView()
-    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(false)
+    // closed：仅悬浮胶囊，无面板
+    expect(wrapper.find('[data-testid="chat-fab"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(false)
 
-    await wrapper.find('[data-testid="chat-fab"]').trigger('click')
-    await flushPromises()
-    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(true)
+    await openChatDock(wrapper)
+    // open：面板出现（默认 480px），胶囊隐藏
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="chat-fab"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="chat-input"]').exists()).toBe(true)
+    expect(dockWidthOf(wrapper)).toBe('480px')
 
-    await wrapper.find('[data-testid="chat-close"]').trigger('click')
+    // 收起 → docked：右缘竖条
+    await wrapper.find('[data-testid="chat-dock-dock"]').trigger('click')
     await flushPromises()
-    expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chat-rail"]').exists()).toBe(true)
+
+    // docked 点击竖条 → open 且恢复记忆宽度
+    await wrapper.find('[data-testid="chat-rail"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
+    expect(dockWidthOf(wrapper)).toBe('480px')
+
+    // 头部关闭 → closed，胶囊回归
+    await wrapper.find('[data-testid="chat-dock-close"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chat-fab"]').exists()).toBe(true)
+  })
+
+  it('Esc 将侧板收为 docked（不彻底关闭）', async () => {
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="chat-rail"]').exists()).toBe(true)
+  })
+
+  it('拖拽柄调整宽度并 clamp 到 360–720', async () => {
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+
+    const handle = wrapper.find('[data-testid="chat-dock-handle"]')
+    await handle.trigger('mousedown', { clientX: 600 })
+
+    // 向左拖 400px：480+400=880 → clamp 720
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200 }))
+    await flushPromises()
+    expect(dockWidthOf(wrapper)).toBe('720px')
+
+    // 向右拖到极端：600-1200=-600 → 480-600=-120 → clamp 360
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1200 }))
+    await flushPromises()
+    expect(dockWidthOf(wrapper)).toBe('360px')
+
+    window.dispatchEvent(new MouseEvent('mouseup'))
+    await flushPromises()
+    // 拖拽结束恢复 body 可选文本
+    expect(document.body.style.userSelect).toBe('')
+  })
+
+  it('侧板宽度持久化：localStorage chat-dock-width 读与写', async () => {
+    localStorage.setItem('chat-dock-width', '600')
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+    expect(dockWidthOf(wrapper)).toBe('600px')
+
+    const handle = wrapper.find('[data-testid="chat-dock-handle"]')
+    await handle.trigger('mousedown', { clientX: 500 })
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 400 }))
+    window.dispatchEvent(new MouseEvent('mouseup'))
+    await flushPromises()
+
+    // 600 + (500-400) = 700
+    expect(localStorage.getItem('chat-dock-width')).toBe('700')
   })
 
   it('radar tooltip 文本：维度名+绝对评分+绝对值与单位（重构）', () => {
