@@ -10,9 +10,11 @@ import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@roa
 import RecommendView from '@/views/RecommendView.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
+import RadarChart from '@/components/RadarChart.vue'
 import ReportSection from '@/components/ReportSection.vue'
 import StepStepper from '@/components/StepStepper.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
+import { formatRadarTooltip } from '@/utils/radar'
 
 vi.mock('@/api/client', () => ({
   getCases: vi.fn(),
@@ -699,6 +701,24 @@ describe('RecommendView 推荐工作台', () => {
     await wrapper.find('[data-testid="chat-close"]').trigger('click')
     await flushPromises()
     expect(wrapper.find('[data-testid="drawer-stub"]').exists()).toBe(false)
+  })
+
+  it('radar tooltip 文本：维度名+绝对评分+绝对值与单位（重构）', () => {
+    expect(formatRadarTooltip('高温', 80, { perf: 'highTemp', value: 83.8, unit: '℃' })).toBe(
+      '高温：80 分（83.8℃）',
+    )
+    expect(formatRadarTooltip('疲劳', 70, undefined)).toBe('疲劳：70 分')
+    expect(formatRadarTooltip('水稳', 75, { perf: 'waterStability', value: 1000000, unit: '次' })).toBe(
+      '水稳：75 分（1,000,000次）',
+    )
+  })
+
+  it('RadarChart 图下显示八维画像说明（重构）', () => {
+    const cand = makeCandidate('cand-1')
+    const wrapper = mount(RadarChart, {
+      props: { radar: cand.radar, predictions: cand.predictions },
+    })
+    expect(wrapper.text()).toContain('八维画像 · 绝对评分（0-100）')
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

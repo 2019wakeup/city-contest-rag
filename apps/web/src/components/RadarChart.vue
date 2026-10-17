@@ -6,34 +6,42 @@ import type { EChartsType } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { onBeforeUnmount, onMounted, shallowRef, watch, useTemplateRef } from 'vue'
 
-import type { Radar } from '@road-rec/contracts'
+import type { Prediction, Radar } from '@road-rec/contracts'
+import {
+  findRadarPrediction,
+  formatRadarTooltip,
+  RADAR_INDICATORS,
+} from '@/utils/radar'
 
 echarts.use([EChartsRadarChart, RadarComponent, TooltipComponent, CanvasRenderer])
 
-const props = defineProps<{ radar: Radar }>()
-
-// 雷达图 8 维（spec §7 G3）：高温/低温/疲劳/水稳/LCC/碳排放/预期寿命/施工可行性。
-const INDICATORS = [
-  { name: '高温', key: 'highTemp' },
-  { name: '低温', key: 'lowTemp' },
-  { name: '疲劳', key: 'fatigue' },
-  { name: '水稳', key: 'waterStability' },
-  { name: 'LCC', key: 'lcc' },
-  { name: '碳排', key: 'carbon' },
-  { name: '寿命', key: 'expectedLife' },
-  { name: '施工', key: 'constructability' },
-] as const
+const props = defineProps<{
+  radar: Radar
+  /** 重构：tooltip 附绝对值+单位（从候选预测映射 perf→value/unit）。 */
+  predictions?: Prediction[]
+}>()
 
 const chartEl = useTemplateRef<HTMLDivElement>('chart')
 const chart = shallowRef<EChartsType | null>(null)
 
 function render(): void {
   const radar = props.radar ?? ({} as Radar)
-  const values = INDICATORS.map((i) => Number(radar[i.key]) || 0)
+  const values = RADAR_INDICATORS.map((i) => Number(radar[i.key]) || 0)
   chart.value?.setOption({
-    tooltip: {},
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: unknown) => {
+        const p = params as { value?: number[] }
+        const tooltipValues = p.value ?? []
+        return RADAR_INDICATORS.map((ind, idx) => {
+          const score = Number(tooltipValues[idx]) || 0
+          const prediction = findRadarPrediction(props.predictions, ind.key)
+          return formatRadarTooltip(ind.name, score, prediction)
+        }).join('<br/>')
+      },
+    },
     radar: {
-      indicator: INDICATORS.map((i) => ({ name: i.name, max: 100 })),
+      indicator: RADAR_INDICATORS.map((i) => ({ name: i.name, max: 100 })),
       radius: '62%',
       center: ['50%', '55%'],
     },
@@ -57,16 +65,26 @@ onBeforeUnmount(() => {
   chart.value?.dispose()
 })
 
-watch(() => props.radar, render)
+watch(() => [props.radar, props.predictions], render)
 </script>
 
 <template>
-  <div ref="chart" class="radar-chart"></div>
+  <div>
+    <div ref="chart" class="radar-chart"></div>
+    <p class="radar-caption">八维画像 · 绝对评分（0-100）</p>
+  </div>
 </template>
 
 <style scoped>
 .radar-chart {
   width: 100%;
   height: 260px;
+}
+
+.radar-caption {
+  margin: 4px 0 12px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--el-text-color-secondary);
 }
 </style>

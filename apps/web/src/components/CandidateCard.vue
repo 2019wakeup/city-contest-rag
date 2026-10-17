@@ -132,7 +132,11 @@ const isTop1 = computed(() => props.index === 0)
         </li>
       </ul>
 
-      <RadarChart v-if="radar" :radar="radar" />
+      <RadarChart
+        v-if="radar"
+        :radar="radar"
+        :predictions="candidate?.predictions ?? []"
+      />
 
       <WaterfallChart
         v-if="explanations.length > 0"
