@@ -1,0 +1,1933 @@
+[
+  {
+    "id": "k-binder-001",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "基质沥青（70#/90#）",
+    "specs": {
+      "标号": [
+        "70#",
+        "90#"
+      ],
+      "分级": "针入度分级",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "成本",
+        "effect": "作为通用基准胶结料，材料成本最低",
+        "direction": "+",
+        "magnitude": "70#/90# 基质沥青是各类混合料的成本基准，改性沥青均在其基础上增加改性成本",
+        "applicableScene": [
+          "k-budget",
+          "t-medium",
+          "c-mild"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "高温PG",
+        "effect": "高温等级有限，重载高温地区需改性",
+        "direction": "-",
+        "magnitude": "基质沥青高温等级多为 PG64-XX，难以满足华南高温重载场景 PG70 以上要求",
+        "applicableScene": [
+          "c-hot-humid",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2021.126063"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "基质沥青（70#/90#）",
+    "tags": [
+      "k-budget",
+      "t-medium",
+      "c-mild",
+      "c-hot-humid",
+      "t-heavy"
+    ],
+    "text": "基质沥青（70#/90#）（沥青品种；标号 70#/90#，分级 针入度分级，依据 JTG F40-2004）。对成本作为通用基准胶结料，材料成本最低：70#/90# 基质沥青是各类混合料的成本基准，改性沥青均在其基础上增加改性成本。对高温PG高温等级有限，重载高温地区需改性：基质沥青高温等级多为 PG64-XX，难以满足华南高温重载场景 PG70 以上要求。适用场景：预算受限、中等交通、温和气候、高温湿热、重载交通。"
+  },
+  {
+    "id": "k-binder-002",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "SBS 改性沥青",
+    "specs": {
+      "改性剂": "SBS",
+      "掺量": "3%~5%",
+      "标号": "I-C/I-D",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "高温PG",
+        "effect": "显著提升高温等级",
+        "direction": "+",
+        "magnitude": "SBS 改性可把 PG 从 PG64 提升至 PG70/PG76，弹性恢复与车辙因子同步改善",
+        "applicableScene": [
+          "c-hot-humid",
+          "t-heavy",
+          "d-rutting"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2021.126063"
+      },
+      {
+        "property": "弹性恢复",
+        "effect": "提升弹性恢复能力",
+        "direction": "+",
+        "magnitude": "SBS 网络结构使弹性恢复率显著高于基质沥青，是抗车辙与抗疲劳的微观基础",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "低温PG",
+        "effect": "改善低温延度与抗裂",
+        "direction": "+",
+        "magnitude": "SBS 改性沥青 5℃ 延度与低温 PG 较基质沥青明显改善，可满足 PG-28 以下低温等级",
+        "applicableScene": [
+          "c-cold",
+          "d-transverse-crack"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "疲劳",
+        "effect": "提升疲劳寿命",
+        "direction": "+",
+        "magnitude": "SBS 网络结构分散应力、延缓裂纹扩展，疲劳寿命较基质沥青提高数倍",
+        "applicableScene": [
+          "d-fatigue-crack"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "水稳TSR",
+        "effect": "提高沥青-集料黏附性",
+        "direction": "+",
+        "magnitude": "改性沥青黏度与黏附性提高，TSR 指标普遍高于基质沥青混合料",
+        "applicableScene": [
+          "c-rainy",
+          "d-water-damage"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "成本",
+        "effect": "较基质沥青增加材料成本",
+        "direction": "-",
+        "magnitude": "SBS 改性沥青较基质沥青价格高约 30%~60%，预算敏感项目需权衡",
+        "applicableScene": [
+          "k-budget"
+        ],
+        "sourceRef": "JTG F40-2004"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "SBS 改性沥青",
+    "tags": [
+      "c-hot-humid",
+      "t-heavy",
+      "d-rutting",
+      "c-cold",
+      "d-transverse-crack",
+      "d-fatigue-crack",
+      "c-rainy",
+      "d-water-damage",
+      "k-budget"
+    ],
+    "text": "SBS 改性沥青（沥青品种；改性剂 SBS，掺量 3%~5%，标号 I-C/I-D，依据 JTG F40-2004）。对高温PG显著提升高温等级：SBS 改性可把 PG 从 PG64 提升至 PG70/PG76，弹性恢复与车辙因子同步改善。对弹性恢复提升弹性恢复能力：SBS 网络结构使弹性恢复率显著高于基质沥青，是抗车辙与抗疲劳的微观基础。对低温PG改善低温延度与抗裂：SBS 改性沥青 5℃ 延度与低温 PG 较基质沥青明显改善，可满足 PG-28 以下低温等级。对疲劳提升疲劳寿命：SBS 网络结构分散应力、延缓裂纹扩展，疲劳寿命较基质沥青提高数倍。对水稳TSR提高沥青-集料黏附性：改性沥青黏度与黏附性提高，TSR 指标普遍高于基质沥青混合料。对成本较基质沥青增加材料成本：SBS 改性沥青较基质沥青价格高约 30%~60%，预算敏感项目需权衡。适用场景：高温湿热、重载交通、车辙、寒冷地区、横向裂缝、疲劳裂缝、多雨潮湿、水损害、预算受限。"
+  },
+  {
+    "id": "k-binder-003",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "SBR 改性沥青",
+    "specs": {
+      "改性剂": "SBR 丁苯橡胶胶乳",
+      "标号": "II-A/II-B",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "低温PG",
+        "effect": "显著改善低温延展性",
+        "direction": "+",
+        "magnitude": "SBR 胶乳改性重点改善低温延度，适用于寒冷地区低温抗裂需求",
+        "applicableScene": [
+          "c-cold",
+          "d-transverse-crack"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "疲劳",
+        "effect": "提升抗疲劳能力",
+        "direction": "+",
+        "magnitude": "橡胶相增韧作用延缓疲劳开裂，疲劳寿命较基质沥青提高",
+        "applicableScene": [
+          "d-fatigue-crack"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "SBR 改性沥青",
+    "tags": [
+      "c-cold",
+      "d-transverse-crack",
+      "d-fatigue-crack"
+    ],
+    "text": "SBR 改性沥青（沥青品种；改性剂 SBR 丁苯橡胶胶乳，标号 II-A/II-B，依据 JTG F40-2004）。对低温PG显著改善低温延展性：SBR 胶乳改性重点改善低温延度，适用于寒冷地区低温抗裂需求。对疲劳提升抗疲劳能力：橡胶相增韧作用延缓疲劳开裂，疲劳寿命较基质沥青提高。适用场景：寒冷地区、横向裂缝、疲劳裂缝。"
+  },
+  {
+    "id": "k-binder-004",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "橡胶粉改性沥青",
+    "specs": {
+      "改性剂": "废胎胶粉",
+      "掺量": "15%~20%",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "10.3390/polym16172414",
+    "relations": [
+      {
+        "property": "高温PG",
+        "effect": "高温性能与弹性恢复最佳",
+        "direction": "+",
+        "magnitude": "MSCR 试验中橡胶基 PG76-28 初始应变最小、弹性恢复最高，高温抗车辙与低温抗裂兼备",
+        "applicableScene": [
+          "c-hot-humid",
+          "d-rutting"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "低温PG",
+        "effect": "改善低温抗裂",
+        "direction": "+",
+        "magnitude": "橡胶相在低温下保持柔性，动态模量在低温下降低，减小冬季低温开裂风险",
+        "applicableScene": [
+          "c-cold",
+          "d-transverse-crack"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "疲劳",
+        "effect": "提升疲劳寿命",
+        "direction": "+",
+        "magnitude": "橡胶改性混合料 Sapp 表观损伤容量与弹性恢复相关性达 0.87，疲劳开裂性能突出",
+        "applicableScene": [
+          "d-fatigue-crack"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "降噪",
+        "effect": "高弹胶结料降噪",
+        "direction": "+",
+        "magnitude": "橡胶沥青弹性模量低、阻尼大，是低噪路面（含 JTG 5142 高弹胶结料降噪面层）的主流方案",
+        "applicableScene": [
+          "k-noise-ctl",
+          "d-noise"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "橡胶粉改性沥青",
+    "tags": [
+      "c-hot-humid",
+      "d-rutting",
+      "c-cold",
+      "d-transverse-crack",
+      "d-fatigue-crack",
+      "k-noise-ctl",
+      "d-noise"
+    ],
+    "text": "橡胶粉改性沥青（沥青品种；改性剂 废胎胶粉，掺量 15%~20%，依据 JTG F40-2004）。对高温PG高温性能与弹性恢复最佳：MSCR 试验中橡胶基 PG76-28 初始应变最小、弹性恢复最高，高温抗车辙与低温抗裂兼备。对低温PG改善低温抗裂：橡胶相在低温下保持柔性，动态模量在低温下降低，减小冬季低温开裂风险。对疲劳提升疲劳寿命：橡胶改性混合料 Sapp 表观损伤容量与弹性恢复相关性达 0.87，疲劳开裂性能突出。对降噪高弹胶结料降噪：橡胶沥青弹性模量低、阻尼大，是低噪路面（含 JTG 5142 高弹胶结料降噪面层）的主流方案。适用场景：高温湿热、车辙、寒冷地区、横向裂缝、疲劳裂缝、降噪要求、交通噪声。"
+  },
+  {
+    "id": "k-binder-005",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "高粘高弹改性沥青",
+    "specs": {
+      "类型": "高粘高弹",
+      "60℃动力粘度": "≥20000 Pa·s",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2020.121374",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "高粘沥青提升抗飞散与水稳",
+        "direction": "+",
+        "magnitude": "高粘高弹改性沥青是大空隙排水混合料的必需胶结料，SBS 掺量 4.5%~9.0% 梯度下飞散与 TSR 同步改善",
+        "applicableScene": [
+          "c-rainy",
+          "d-water-damage",
+          "k-drainage"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "高温PG",
+        "effect": "高温高粘等级",
+        "direction": "+",
+        "magnitude": "高粘沥青高温 PG 可达 PG82 以上，抗车辙与抗飞散能力突出",
+        "applicableScene": [
+          "c-hot-humid",
+          "d-rutting"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "降噪",
+        "effect": "排水降噪面层的胶结料基础",
+        "direction": "+",
+        "magnitude": "高粘改性沥青是 OGFC/排水降噪面层的前提，配合高孔隙率实现吸声降噪",
+        "applicableScene": [
+          "k-noise-ctl",
+          "k-drainage"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "抗滑",
+        "effect": "保障开级配表面构造耐久",
+        "direction": "+",
+        "magnitude": "高粘胶结料保障大空隙表面构造在雨水冲刷下的耐久性，维持长期抗滑",
+        "applicableScene": [
+          "k-drainage",
+          "d-skid"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "高粘高弹改性沥青",
+    "tags": [
+      "c-rainy",
+      "d-water-damage",
+      "k-drainage",
+      "c-hot-humid",
+      "d-rutting",
+      "k-noise-ctl",
+      "d-skid"
+    ],
+    "text": "高粘高弹改性沥青（沥青品种；类型 高粘高弹，60℃动力粘度 ≥20000 Pa·s，依据 JTG F40-2004）。对水稳TSR高粘沥青提升抗飞散与水稳：高粘高弹改性沥青是大空隙排水混合料的必需胶结料，SBS 掺量 4.5%~9.0% 梯度下飞散与 TSR 同步改善。对高温PG高温高粘等级：高粘沥青高温 PG 可达 PG82 以上，抗车辙与抗飞散能力突出。对降噪排水降噪面层的胶结料基础：高粘改性沥青是 OGFC/排水降噪面层的前提，配合高孔隙率实现吸声降噪。对抗滑保障开级配表面构造耐久：高粘胶结料保障大空隙表面构造在雨水冲刷下的耐久性，维持长期抗滑。适用场景：多雨潮湿、水损害、排水要求、高温湿热、车辙、降噪要求、抗滑不足。"
+  },
+  {
+    "id": "k-binder-006",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "环氧沥青",
+    "specs": {
+      "类型": "热固性环氧体系",
+      "应用": "钢桥面铺装",
+      "依据": "综述 10.1155/2021/3454029"
+    },
+    "sourceRef": "10.1155/2021/3454029",
+    "relations": [
+      {
+        "property": "高温PG",
+        "effect": "热固性体系高温性能极强",
+        "direction": "+",
+        "magnitude": "环氧固化后为热固性网络，高温稳定性远超热塑性改性沥青，适用于钢桥面等苛刻工况",
+        "applicableScene": [
+          "c-hot-humid",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1155/2021/3454029"
+      },
+      {
+        "property": "疲劳",
+        "effect": "高强高韧抗疲劳",
+        "direction": "+",
+        "magnitude": "环氧沥青兼具高强度与韧性，疲劳性能优于普通沥青铺装",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.1155/2021/3454029"
+      },
+      {
+        "property": "成本",
+        "effect": "材料与施工成本高",
+        "direction": "-",
+        "magnitude": "环氧体系造价显著高于普通沥青方案，仅用于特殊关键结构",
+        "applicableScene": [
+          "k-budget"
+        ],
+        "sourceRef": "10.1155/2021/3454029"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "环氧沥青",
+    "tags": [
+      "c-hot-humid",
+      "t-heavy",
+      "k-budget"
+    ],
+    "text": "环氧沥青（沥青品种；类型 热固性环氧体系，应用 钢桥面铺装，依据 综述 10.1155/2021/3454029）。对高温PG热固性体系高温性能极强：环氧固化后为热固性网络，高温稳定性远超热塑性改性沥青，适用于钢桥面等苛刻工况。对疲劳高强高韧抗疲劳：环氧沥青兼具高强度与韧性，疲劳性能优于普通沥青铺装。对成本材料与施工成本高：环氧体系造价显著高于普通沥青方案，仅用于特殊关键结构。适用场景：高温湿热、重载交通、预算受限。"
+  },
+  {
+    "id": "k-binder-007",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "岩沥青改性沥青",
+    "specs": {
+      "改性剂": "天然岩沥青",
+      "掺量": "8%~15%",
+      "依据": "JTG F40-2004"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "高温PG",
+        "effect": "天然沥青质提升高温等级",
+        "direction": "+",
+        "magnitude": "岩沥青高沥青质含量可提升软化点与高温等级，常用于高温重载路段改性",
+        "applicableScene": [
+          "c-hot-humid",
+          "d-rutting"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "成本",
+        "effect": "较聚合物改性成本低",
+        "direction": "-",
+        "magnitude": "岩沥青改性成本通常低于 SBS 改性，但高温增益幅度也较低",
+        "applicableScene": [
+          "k-budget"
+        ],
+        "sourceRef": "JTG F40-2004"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "岩沥青改性沥青",
+    "tags": [
+      "c-hot-humid",
+      "d-rutting",
+      "k-budget"
+    ],
+    "text": "岩沥青改性沥青（沥青品种；改性剂 天然岩沥青，掺量 8%~15%，依据 JTG F40-2004）。对高温PG天然沥青质提升高温等级：岩沥青高沥青质含量可提升软化点与高温等级，常用于高温重载路段改性。对成本较聚合物改性成本低：岩沥青改性成本通常低于 SBS 改性，但高温增益幅度也较低。适用场景：高温湿热、车辙、预算受限。"
+  },
+  {
+    "id": "k-binder-008",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "硬质沥青（30#/50#）",
+    "specs": {
+      "标号": [
+        "30#",
+        "50#"
+      ],
+      "类型": "低标号硬质沥青",
+      "依据": "10.3390/su15097574"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "硬质沥青制备高模量混合料抗车辙",
+        "direction": "+",
+        "magnitude": "以硬质沥青制备的高模量混合料（HMAM）动态模量高，车辙试验动稳定度显著优于常规混合料",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "E*",
+        "effect": "提升模量绝对值",
+        "direction": "+",
+        "magnitude": "提高结构层模量绝对值可改善抗车辙能力，55℃ 下 0.1Hz/25Hz 模量比是推荐的评价指标",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "低温PG",
+        "effect": "低标号硬质沥青低温等级受限",
+        "direction": "-",
+        "magnitude": "硬质沥青低温延度低，寒冷地区需谨慎使用或复配改性",
+        "applicableScene": [
+          "c-cold",
+          "d-transverse-crack"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "硬质沥青（30#/50#）",
+    "tags": [
+      "d-rutting",
+      "t-heavy",
+      "c-cold",
+      "d-transverse-crack"
+    ],
+    "text": "硬质沥青（30#/50#）（沥青品种；标号 30#/50#，类型 低标号硬质沥青，依据 10.3390/su15097574）。对车辙硬质沥青制备高模量混合料抗车辙：以硬质沥青制备的高模量混合料（HMAM）动态模量高，车辙试验动稳定度显著优于常规混合料。对E*提升模量绝对值：提高结构层模量绝对值可改善抗车辙能力，55℃ 下 0.1Hz/25Hz 模量比是推荐的评价指标。对低温PG低标号硬质沥青低温等级受限：硬质沥青低温延度低，寒冷地区需谨慎使用或复配改性。适用场景：车辙、重载交通、寒冷地区、横向裂缝。"
+  },
+  {
+    "id": "k-binder-009",
+    "category": "binder",
+    "type": "沥青品种",
+    "name": "Superpave PG 性能分级体系",
+    "specs": {
+      "体系": "AASHTO M 320 / ASTM D6373",
+      "示例": "PG76-22"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2021.126063",
+    "relations": [
+      {
+        "property": "高温PG",
+        "effect": "按气候区最高路面温度选高温等级",
+        "direction": "+",
+        "magnitude": "PG 高温等级按 7 天平均最高路面温度确定，华南高温区常用 PG70/PG76，重载可再提一档",
+        "applicableScene": [
+          "c-hot-humid",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2021.126063"
+      },
+      {
+        "property": "低温PG",
+        "effect": "按最低气温选低温等级",
+        "direction": "+",
+        "magnitude": "PG 低温等级按年最低气温确定，寒冷地区需 PG-28/PG-34 级别，不足会导致温缩开裂",
+        "applicableScene": [
+          "c-cold",
+          "c-freeze-thaw"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2021.126063"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "Superpave PG 性能分级体系",
+    "tags": [
+      "c-hot-humid",
+      "t-heavy",
+      "c-cold",
+      "c-freeze-thaw"
+    ],
+    "text": "Superpave PG 性能分级体系（沥青品种；体系 AASHTO M 320 / ASTM D6373，示例 PG76-22）。对高温PG按气候区最高路面温度选高温等级：PG 高温等级按 7 天平均最高路面温度确定，华南高温区常用 PG70/PG76，重载可再提一档。对低温PG按最低气温选低温等级：PG 低温等级按年最低气温确定，寒冷地区需 PG-28/PG-34 级别，不足会导致温缩开裂。适用场景：高温湿热、重载交通、寒冷地区、冻融循环。"
+  },
+  {
+    "id": "k-modifier-001",
+    "category": "modifier",
+    "type": "改性剂",
+    "name": "SBS 掺量梯度（OGFC 高粘体系）",
+    "specs": {
+      "掺量梯度": "4.5% / 6.0% / 7.5% / 9.0%"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2020.121374",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "掺量提升改善飞散与 TSR",
+        "direction": "+",
+        "magnitude": "4.5%~9.0% SBS 掺量梯度下，排水混合料飞散损失降低、TSR 提升，掺量越高抗水损越好",
+        "applicableScene": [
+          "k-drainage",
+          "c-rainy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "疲劳",
+        "effect": "高掺量改善四点弯曲疲劳",
+        "direction": "+",
+        "magnitude": "9.0% 高掺量方案在四点弯曲疲劳与汉堡车辙试验中表现最优",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "车辙",
+        "effect": "汉堡车辙性能随掺量改善",
+        "direction": "+",
+        "magnitude": "SBS 掺量 4.5%→9.0%，汉堡车辙深度逐步减小",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "SBS 掺量梯度（OGFC 高粘体系）",
+    "tags": [
+      "k-drainage",
+      "c-rainy",
+      "d-fatigue-crack",
+      "t-heavy",
+      "d-rutting"
+    ],
+    "text": "SBS 掺量梯度（OGFC 高粘体系）（改性剂；掺量梯度 4.5% / 6.0% / 7.5% / 9.0%）。对水稳TSR掺量提升改善飞散与 TSR：4.5%~9.0% SBS 掺量梯度下，排水混合料飞散损失降低、TSR 提升，掺量越高抗水损越好。对疲劳高掺量改善四点弯曲疲劳：9.0% 高掺量方案在四点弯曲疲劳与汉堡车辙试验中表现最优。对车辙汉堡车辙性能随掺量改善：SBS 掺量 4.5%→9.0%，汉堡车辙深度逐步减小。适用场景：排水要求、多雨潮湿、疲劳裂缝、重载交通、车辙。"
+  },
+  {
+    "id": "k-modifier-002",
+    "category": "modifier",
+    "type": "改性剂",
+    "name": "高模量剂（聚烯烃类）",
+    "specs": {
+      "类型": "高模量剂",
+      "复配": "硬质沥青或 SBS 体系"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "三种高模量材料中抗车辙最优",
+        "direction": "+",
+        "magnitude": "高模量剂制备的 HMAM 抗车辙能力在硬沥青/聚乙烯/溶聚聚烯烃三种方案中最优，与试验路观测一致",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "E*",
+        "effect": "降低模量频率敏感性",
+        "direction": "+",
+        "magnitude": "降低高温下模量频率敏感性可提升抗车辙，55℃ 下 0.1Hz/25Hz 模量比越小越稳定",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "成本",
+        "effect": "外掺剂方案增加成本",
+        "direction": "-",
+        "magnitude": "高模量剂需额外购置掺加，成本高于纯硬质沥青方案",
+        "applicableScene": [
+          "k-budget"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "高模量剂（聚烯烃类）",
+    "tags": [
+      "d-rutting",
+      "t-heavy",
+      "k-budget"
+    ],
+    "text": "高模量剂（聚烯烃类）（改性剂；类型 高模量剂，复配 硬质沥青或 SBS 体系）。对车辙三种高模量材料中抗车辙最优：高模量剂制备的 HMAM 抗车辙能力在硬沥青/聚乙烯/溶聚聚烯烃三种方案中最优，与试验路观测一致。对E*降低模量频率敏感性：降低高温下模量频率敏感性可提升抗车辙，55℃ 下 0.1Hz/25Hz 模量比越小越稳定。对成本外掺剂方案增加成本：高模量剂需额外购置掺加，成本高于纯硬质沥青方案。适用场景：车辙、重载交通、预算受限。"
+  },
+  {
+    "id": "k-modifier-003",
+    "category": "modifier",
+    "type": "改性剂",
+    "name": "聚乙烯（PE）改性",
+    "specs": {
+      "改性剂": "聚乙烯"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "PE 提升高模量混合料抗车辙",
+        "direction": "+",
+        "magnitude": "PE 改性 HMAM 动稳定度显著高于常规混合料，抗车辙机制为提升模量绝对值",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "E*",
+        "effect": "提升高温动态模量",
+        "direction": "+",
+        "magnitude": "PE 改性混合料在低频高温区模量保持率较好",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "聚乙烯（PE）改性",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "聚乙烯（PE）改性（改性剂；改性剂 聚乙烯）。对车辙PE 提升高模量混合料抗车辙：PE 改性 HMAM 动稳定度显著高于常规混合料，抗车辙机制为提升模量绝对值。对E*提升高温动态模量：PE 改性混合料在低频高温区模量保持率较好。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-modifier-004",
+    "category": "modifier",
+    "type": "改性剂",
+    "name": "溶聚聚烯烃改性",
+    "specs": {
+      "改性剂": "溶聚聚烯烃"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "溶聚聚烯烃提升抗车辙",
+        "direction": "+",
+        "magnitude": "溶聚聚烯烃 HMAM 车辙性能优于常规混合料，介于硬沥青与高模量剂方案之间",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "溶聚聚烯烃改性",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "溶聚聚烯烃改性（改性剂；改性剂 溶聚聚烯烃）。对车辙溶聚聚烯烃提升抗车辙：溶聚聚烯烃 HMAM 车辙性能优于常规混合料，介于硬沥青与高模量剂方案之间。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-gradation-001",
+    "category": "gradation",
+    "type": "级配",
+    "name": "AC 密级配沥青混合料",
+    "specs": {
+      "类型": "AC-13/AC-16/AC-20",
+      "空隙率": "3%~5%"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "密实结构抗渗入",
+        "direction": "+",
+        "magnitude": "密级配空隙率低，水不易进入结构内部，水稳性能优于开级配",
+        "applicableScene": [
+          "c-rainy",
+          "d-water-damage"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "施工和易性",
+        "effect": "施工工艺成熟易控",
+        "direction": "+",
+        "magnitude": "AC 是各层位通用面层类型，拌和摊铺碾压工艺最成熟，设备要求低",
+        "applicableScene": [
+          "k-schedule",
+          "t-medium"
+        ],
+        "sourceRef": "JTG F40-2004"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "AC 密级配沥青混合料",
+    "tags": [
+      "c-rainy",
+      "d-water-damage",
+      "k-schedule",
+      "t-medium"
+    ],
+    "text": "AC 密级配沥青混合料（级配；类型 AC-13/AC-16/AC-20，空隙率 3%~5%）。对水稳TSR密实结构抗渗入：密级配空隙率低，水不易进入结构内部，水稳性能优于开级配。对施工和易性施工工艺成熟易控：AC 是各层位通用面层类型，拌和摊铺碾压工艺最成熟，设备要求低。适用场景：多雨潮湿、水损害、工期紧张、中等交通。"
+  },
+  {
+    "id": "k-gradation-002",
+    "category": "gradation",
+    "type": "级配",
+    "name": "SMA 沥青玛蹄脂碎石混合料",
+    "specs": {
+      "类型": "SMA-10/SMA-13",
+      "适用": "上面层",
+      "稳定剂": "木质素纤维"
+    },
+    "sourceRef": "10.3390/polym16172414",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "骨架嵌挤抗车辙",
+        "direction": "+",
+        "magnitude": "粗集料骨架嵌挤结构抗车辙能力强，适合高温重载上面层",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "抗滑",
+        "effect": "表面构造深抗滑好",
+        "direction": "+",
+        "magnitude": "SMA 表面构造深度大，抗滑与雨天行车安全性优于 AC",
+        "applicableScene": [
+          "d-skid",
+          "k-skid-req"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "疲劳",
+        "effect": "玛蹄脂富沥青抗疲劳",
+        "direction": "+",
+        "magnitude": "高沥青玛蹄脂含量提升疲劳寿命，SMA-10 疲劳性能与胶结料弹性恢复相关性达 0.76",
+        "applicableScene": [
+          "d-fatigue-crack"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "水稳TSR",
+        "effect": "富沥青膜抗水损",
+        "direction": "+",
+        "magnitude": "厚沥青膜包裹集料，水稳性能优于普通 AC",
+        "applicableScene": [
+          "d-water-damage"
+        ],
+        "sourceRef": "JTG F40-2004"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "SMA 沥青玛蹄脂碎石混合料",
+    "tags": [
+      "d-rutting",
+      "t-heavy",
+      "d-skid",
+      "k-skid-req",
+      "d-fatigue-crack",
+      "d-water-damage"
+    ],
+    "text": "SMA 沥青玛蹄脂碎石混合料（级配；类型 SMA-10/SMA-13，适用 上面层，稳定剂 木质素纤维）。对车辙骨架嵌挤抗车辙：粗集料骨架嵌挤结构抗车辙能力强，适合高温重载上面层。对抗滑表面构造深抗滑好：SMA 表面构造深度大，抗滑与雨天行车安全性优于 AC。对疲劳玛蹄脂富沥青抗疲劳：高沥青玛蹄脂含量提升疲劳寿命，SMA-10 疲劳性能与胶结料弹性恢复相关性达 0.76。对水稳TSR富沥青膜抗水损：厚沥青膜包裹集料，水稳性能优于普通 AC。适用场景：车辙、重载交通、抗滑不足、抗滑要求、疲劳裂缝、水损害。"
+  },
+  {
+    "id": "k-gradation-003",
+    "category": "gradation",
+    "type": "级配",
+    "name": "OGFC/PA 开级配排水磨耗层",
+    "specs": {
+      "类型": "OGFC-13",
+      "空隙率": "18%~25%",
+      "胶结料": "高粘改性沥青"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2020.121374",
+    "relations": [
+      {
+        "property": "降噪",
+        "effect": "大空隙吸声降噪",
+        "direction": "+",
+        "magnitude": "18%~25% 空隙率形成吸声结构，可降低轮胎-路面噪声 3~5 dB",
+        "applicableScene": [
+          "k-noise-ctl",
+          "d-noise"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      },
+      {
+        "property": "抗滑",
+        "effect": "雨天排水保抗滑",
+        "direction": "+",
+        "magnitude": "连通空隙快速排水，减少水膜与溅水，雨天抗滑与行车安全显著改善",
+        "applicableScene": [
+          "k-drainage",
+          "d-skid"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "水稳TSR",
+        "effect": "大空隙结构需高粘胶结料保障",
+        "direction": "-",
+        "magnitude": "若胶结料粘性不足易飞散剥落，冻融区与重载下耐久性风险高于密级配",
+        "applicableScene": [
+          "c-freeze-thaw",
+          "c-rainy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      },
+      {
+        "property": "施工和易性",
+        "effect": "高粘体系施工难度大",
+        "direction": "-",
+        "magnitude": "高粘沥青拌和温度高、摊铺窗口短，对设备与工艺要求高于普通混合料",
+        "applicableScene": [
+          "k-schedule"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2020.121374"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "OGFC/PA 开级配排水磨耗层",
+    "tags": [
+      "k-noise-ctl",
+      "d-noise",
+      "k-drainage",
+      "d-skid",
+      "c-freeze-thaw",
+      "c-rainy",
+      "k-schedule"
+    ],
+    "text": "OGFC/PA 开级配排水磨耗层（级配；类型 OGFC-13，空隙率 18%~25%，胶结料 高粘改性沥青）。对降噪大空隙吸声降噪：18%~25% 空隙率形成吸声结构，可降低轮胎-路面噪声 3~5 dB。对抗滑雨天排水保抗滑：连通空隙快速排水，减少水膜与溅水，雨天抗滑与行车安全显著改善。对水稳TSR大空隙结构需高粘胶结料保障：若胶结料粘性不足易飞散剥落，冻融区与重载下耐久性风险高于密级配。对施工和易性高粘体系施工难度大：高粘沥青拌和温度高、摊铺窗口短，对设备与工艺要求高于普通混合料。适用场景：降噪要求、交通噪声、排水要求、抗滑不足、冻融循环、多雨潮湿、工期紧张。"
+  },
+  {
+    "id": "k-gradation-004",
+    "category": "gradation",
+    "type": "级配",
+    "name": "HMAM 高模量沥青混合料",
+    "specs": {
+      "类型": "EME/HMAM",
+      "适用": "中下面层",
+      "依据": "10.3390/su15097574"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "高模量层位抗车辙",
+        "direction": "+",
+        "magnitude": "HMAM 铺于中下面层可大幅降低结构层压应变，抗车辙能力显著",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "E*",
+        "effect": "模量绝对值高",
+        "direction": "+",
+        "magnitude": "55℃ 低频区模量保持率高，频率敏感性低，是评价抗车辙的两项推荐指标之一",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "HMAM 高模量沥青混合料",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "HMAM 高模量沥青混合料（级配；类型 EME/HMAM，适用 中下面层，依据 10.3390/su15097574）。对车辙高模量层位抗车辙：HMAM 铺于中下面层可大幅降低结构层压应变，抗车辙能力显著。对E*模量绝对值高：55℃ 低频区模量保持率高，频率敏感性低，是评价抗车辙的两项推荐指标之一。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-gradation-005",
+    "category": "gradation",
+    "type": "级配",
+    "name": "高 RAP 掺量再生混合料",
+    "specs": {
+      "RAP": "30%/40%/50%",
+      "FRAP": "10%/15%/20%"
+    },
+    "sourceRef": "10.3390/ma12162536",
+    "relations": [
+      {
+        "property": "成本",
+        "effect": "显著节省新沥青",
+        "direction": "+",
+        "magnitude": "30% RAP+10% FRAP 至 50% RAP+15% FRAP 组合可节省新沥青 41%~63%",
+        "applicableScene": [
+          "k-rap",
+          "k-budget"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "碳排",
+        "effect": "减少新料开采与运输碳排",
+        "direction": "+",
+        "magnitude": "旧料就地利用减少集料开采、沥青生产与运输环节碳排放",
+        "applicableScene": [
+          "k-env",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "低温PG",
+        "effect": "RAP 老化沥青降低低温性能",
+        "direction": "-",
+        "magnitude": "随 RAP/FRAP 掺量增加，低温弯拉应变下降，50%RAP+20%FRAP 接近规范限值",
+        "applicableScene": [
+          "c-cold",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "疲劳",
+        "effect": "高掺量疲劳寿命下降",
+        "direction": "-",
+        "magnitude": "同应力比下疲劳寿命随 RAP/FRAP 掺量增加而下降，FRAP 不宜超过 15%",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "水稳TSR",
+        "effect": "TSR 随掺量先增后减",
+        "direction": "+",
+        "magnitude": "TSR 随 RAP/FRAP 掺量呈抛物线变化，40%RAP+20%FRAP 抗水损最优",
+        "applicableScene": [
+          "c-rainy",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "高 RAP 掺量再生混合料",
+    "tags": [
+      "k-rap",
+      "k-budget",
+      "k-env",
+      "c-cold",
+      "d-fatigue-crack",
+      "c-rainy"
+    ],
+    "text": "高 RAP 掺量再生混合料（级配；RAP 30%/40%/50%，FRAP 10%/15%/20%）。对成本显著节省新沥青：30% RAP+10% FRAP 至 50% RAP+15% FRAP 组合可节省新沥青 41%~63%。对碳排减少新料开采与运输碳排：旧料就地利用减少集料开采、沥青生产与运输环节碳排放。对低温PGRAP 老化沥青降低低温性能：随 RAP/FRAP 掺量增加，低温弯拉应变下降，50%RAP+20%FRAP 接近规范限值。对疲劳高掺量疲劳寿命下降：同应力比下疲劳寿命随 RAP/FRAP 掺量增加而下降，FRAP 不宜超过 15%。对水稳TSRTSR 随掺量先增后减：TSR 随 RAP/FRAP 掺量呈抛物线变化，40%RAP+20%FRAP 抗水损最优。适用场景：高RAP再生、预算受限、环保低碳、寒冷地区、疲劳裂缝、多雨潮湿。"
+  },
+  {
+    "id": "k-gradation-006",
+    "category": "gradation",
+    "type": "级配",
+    "name": "乳化沥青冷再生混合料",
+    "specs": {
+      "类型": "厂拌/就地冷再生",
+      "适用": "基层/下面层"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2024.137344",
+    "relations": [
+      {
+        "property": "碳排",
+        "effect": "常温施工大幅降碳",
+        "direction": "+",
+        "magnitude": "冷再生免加热拌和，能耗与碳排放较热拌工艺显著降低",
+        "applicableScene": [
+          "k-env",
+          "k-rap"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2024.137344"
+      },
+      {
+        "property": "成本",
+        "effect": "旧料利用率高成本低",
+        "direction": "+",
+        "magnitude": "高比例旧料利用结合常温工艺，造价低于热拌再生与新建方案",
+        "applicableScene": [
+          "k-budget",
+          "k-rap"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2024.137344"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "乳化沥青冷再生混合料",
+    "tags": [
+      "k-env",
+      "k-rap",
+      "k-budget"
+    ],
+    "text": "乳化沥青冷再生混合料（级配；类型 厂拌/就地冷再生，适用 基层/下面层）。对碳排常温施工大幅降碳：冷再生免加热拌和，能耗与碳排放较热拌工艺显著降低。对成本旧料利用率高成本低：高比例旧料利用结合常温工艺，造价低于热拌再生与新建方案。适用场景：环保低碳、高RAP再生、预算受限。"
+  },
+  {
+    "id": "k-gradation-007",
+    "category": "gradation",
+    "type": "级配",
+    "name": "橡胶多孔沥青混合料",
+    "specs": {
+      "类型": "多孔降噪",
+      "胶结料": "橡胶改性沥青"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2023.131551",
+    "relations": [
+      {
+        "property": "降噪",
+        "effect": "多目标优化平衡降噪与性能",
+        "direction": "+",
+        "magnitude": "橡胶多孔沥青采用降噪-性能多目标优化设计，城市低噪路面推荐方案",
+        "applicableScene": [
+          "k-noise-ctl",
+          "d-noise"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2023.131551"
+      },
+      {
+        "property": "抗滑",
+        "effect": "多孔结构排水抗滑",
+        "direction": "+",
+        "magnitude": "孔隙结构快速排水并保持表面构造，雨天抗滑性能好",
+        "applicableScene": [
+          "k-drainage",
+          "d-skid"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2023.131551"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "橡胶多孔沥青混合料",
+    "tags": [
+      "k-noise-ctl",
+      "d-noise",
+      "k-drainage",
+      "d-skid"
+    ],
+    "text": "橡胶多孔沥青混合料（级配；类型 多孔降噪，胶结料 橡胶改性沥青）。对降噪多目标优化平衡降噪与性能：橡胶多孔沥青采用降噪-性能多目标优化设计，城市低噪路面推荐方案。对抗滑多孔结构排水抗滑：孔隙结构快速排水并保持表面构造，雨天抗滑性能好。适用场景：降噪要求、交通噪声、排水要求、抗滑不足。"
+  },
+  {
+    "id": "k-additive-001",
+    "category": "additive",
+    "type": "助剂",
+    "name": "消石灰抗剥落剂",
+    "specs": {
+      "掺量": "约 1.5%（占集料质量）",
+      "用途": "抗水损"
+    },
+    "sourceRef": "10.3390/infrastructures9100173",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "消石灰提升抗水损",
+        "direction": "+",
+        "magnitude": "1.5% 消石灰替代石灰岩矿粉，在各 PNo.4 水平下 TSR 与 IRS 均优于无消石灰方案，最优档提升 4.58%/3.96%",
+        "applicableScene": [
+          "d-water-damage",
+          "c-rainy",
+          "c-freeze-thaw"
+        ],
+        "sourceRef": "10.3390/infrastructures9100173"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "消石灰抗剥落剂",
+    "tags": [
+      "d-water-damage",
+      "c-rainy",
+      "c-freeze-thaw"
+    ],
+    "text": "消石灰抗剥落剂（助剂；掺量 约 1.5%（占集料质量），用途 抗水损）。对水稳TSR消石灰提升抗水损：1.5% 消石灰替代石灰岩矿粉，在各 PNo.4 水平下 TSR 与 IRS 均优于无消石灰方案，最优档提升 4.58%/3.96%。适用场景：水损害、多雨潮湿、冻融循环。"
+  },
+  {
+    "id": "k-additive-002",
+    "category": "additive",
+    "type": "助剂",
+    "name": "纳米二氧化硅（nano-SiO2）",
+    "specs": {
+      "掺量": "0%~6%（占沥青质量）",
+      "用途": "抗水损"
+    },
+    "sourceRef": "10.3390/infrastructures9100173",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "纳米改性显著提升抗水损",
+        "direction": "+",
+        "magnitude": "6% 掺量下 TSR 较无纳米对照提升 14.72 点、IRS 提升 15.60 点，略优于纳米 TiO2",
+        "applicableScene": [
+          "d-water-damage",
+          "c-freeze-thaw"
+        ],
+        "sourceRef": "10.3390/infrastructures9100173"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "纳米二氧化硅（nano-SiO2）",
+    "tags": [
+      "d-water-damage",
+      "c-freeze-thaw"
+    ],
+    "text": "纳米二氧化硅（nano-SiO2）（助剂；掺量 0%~6%（占沥青质量），用途 抗水损）。对水稳TSR纳米改性显著提升抗水损：6% 掺量下 TSR 较无纳米对照提升 14.72 点、IRS 提升 15.60 点，略优于纳米 TiO2。适用场景：水损害、冻融循环。"
+  },
+  {
+    "id": "k-additive-003",
+    "category": "additive",
+    "type": "助剂",
+    "name": "纳米二氧化钛（nano-TiO2）",
+    "specs": {
+      "掺量": "0%~6%（占沥青质量）",
+      "用途": "抗水损"
+    },
+    "sourceRef": "10.3390/infrastructures9100173",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "纳米改性提升抗水损",
+        "direction": "+",
+        "magnitude": "6% 掺量下 TSR 较对照提升 11.55 点、IRS 提升 12.75 点，略低于纳米 SiO2",
+        "applicableScene": [
+          "d-water-damage",
+          "c-freeze-thaw"
+        ],
+        "sourceRef": "10.3390/infrastructures9100173"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "纳米二氧化钛（nano-TiO2）",
+    "tags": [
+      "d-water-damage",
+      "c-freeze-thaw"
+    ],
+    "text": "纳米二氧化钛（nano-TiO2）（助剂；掺量 0%~6%（占沥青质量），用途 抗水损）。对水稳TSR纳米改性提升抗水损：6% 掺量下 TSR 较对照提升 11.55 点、IRS 提升 12.75 点，略低于纳米 SiO2。适用场景：水损害、冻融循环。"
+  },
+  {
+    "id": "k-additive-004",
+    "category": "additive",
+    "type": "助剂",
+    "name": "胺类抗剥落剂",
+    "specs": {
+      "类型": "胺类/液体抗剥落剂",
+      "用途": "抗水损"
+    },
+    "sourceRef": "10.3390/buildings14082458",
+    "relations": [
+      {
+        "property": "水稳TSR",
+        "effect": "改善沥青-集料黏附",
+        "direction": "+",
+        "magnitude": "三种抗剥落剂对比研究表明胺类抗剥落剂可改善混合料水敏感性与刚度保持",
+        "applicableScene": [
+          "d-water-damage",
+          "c-rainy"
+        ],
+        "sourceRef": "10.3390/buildings14082458"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "胺类抗剥落剂",
+    "tags": [
+      "d-water-damage",
+      "c-rainy"
+    ],
+    "text": "胺类抗剥落剂（助剂；类型 胺类/液体抗剥落剂，用途 抗水损）。对水稳TSR改善沥青-集料黏附：三种抗剥落剂对比研究表明胺类抗剥落剂可改善混合料水敏感性与刚度保持。适用场景：水损害、多雨潮湿。"
+  },
+  {
+    "id": "k-additive-005",
+    "category": "additive",
+    "type": "助剂",
+    "name": "玄武岩纤维",
+    "specs": {
+      "长度": "6mm",
+      "掺量": "约 0.4wt%"
+    },
+    "sourceRef": "10.3390/ma13071556",
+    "relations": [
+      {
+        "property": "疲劳",
+        "effect": "增韧抗裂抗飞散",
+        "direction": "+",
+        "magnitude": "存在最优组合（长度 6mm、掺量约 0.4wt%），纤维加筋提升抗裂与抗飞散",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "d-raveling"
+        ],
+        "sourceRef": "10.3390/ma13071556"
+      },
+      {
+        "property": "低温PG",
+        "effect": "纤维加筋改善低温抗裂",
+        "direction": "+",
+        "magnitude": "纤维三维加筋约束裂缝扩展，改善低温弯拉性能",
+        "applicableScene": [
+          "d-transverse-crack"
+        ],
+        "sourceRef": "10.3390/ma13071556"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "玄武岩纤维",
+    "tags": [
+      "d-fatigue-crack",
+      "d-raveling",
+      "d-transverse-crack"
+    ],
+    "text": "玄武岩纤维（助剂；长度 6mm，掺量 约 0.4wt%）。对疲劳增韧抗裂抗飞散：存在最优组合（长度 6mm、掺量约 0.4wt%），纤维加筋提升抗裂与抗飞散。对低温PG纤维加筋改善低温抗裂：纤维三维加筋约束裂缝扩展，改善低温弯拉性能。适用场景：疲劳裂缝、松散剥落、横向裂缝。"
+  },
+  {
+    "id": "k-additive-006",
+    "category": "additive",
+    "type": "助剂",
+    "name": "木质素纤维",
+    "specs": {
+      "掺量": "0.3% 左右",
+      "用途": "SMA/OGFC 稳定剂"
+    },
+    "sourceRef": "JTG F40-2004",
+    "relations": [
+      {
+        "property": "施工和易性",
+        "effect": "稳定沥青不析漏",
+        "direction": "+",
+        "magnitude": "SMA/OGFC 富沥青体系中防止沥青析漏，保障施工可操作性",
+        "applicableScene": [
+          "k-schedule"
+        ],
+        "sourceRef": "JTG F40-2004"
+      },
+      {
+        "property": "疲劳",
+        "effect": "与抗车辙剂复配更优",
+        "direction": "+",
+        "magnitude": "抗车辙剂与木质素纤维复配方案路用性能优于单掺",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "d-rutting"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2022.128152"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "木质素纤维",
+    "tags": [
+      "k-schedule",
+      "d-fatigue-crack",
+      "d-rutting"
+    ],
+    "text": "木质素纤维（助剂；掺量 0.3% 左右，用途 SMA/OGFC 稳定剂）。对施工和易性稳定沥青不析漏：SMA/OGFC 富沥青体系中防止沥青析漏，保障施工可操作性。对疲劳与抗车辙剂复配更优：抗车辙剂与木质素纤维复配方案路用性能优于单掺。适用场景：工期紧张、疲劳裂缝、车辙。"
+  },
+  {
+    "id": "k-additive-007",
+    "category": "additive",
+    "type": "助剂",
+    "name": "聚酯纤维",
+    "specs": {
+      "长度": "6mm/8mm/12mm",
+      "用途": "微表处/抗裂"
+    },
+    "sourceRef": "JTG 5142-2019",
+    "relations": [
+      {
+        "property": "疲劳",
+        "effect": "纤维增韧抗反射裂缝",
+        "direction": "+",
+        "magnitude": "微表处可掺 1‰~3‰ 纤维（玻璃/聚酯/矿物/玄武岩，长 6/8/12mm），提升抗裂与耐久",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "d-transverse-crack"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "聚酯纤维",
+    "tags": [
+      "d-fatigue-crack",
+      "d-transverse-crack"
+    ],
+    "text": "聚酯纤维（助剂；长度 6mm/8mm/12mm，用途 微表处/抗裂）。对疲劳纤维增韧抗反射裂缝：微表处可掺 1‰~3‰ 纤维（玻璃/聚酯/矿物/玄武岩，长 6/8/12mm），提升抗裂与耐久。适用场景：疲劳裂缝、横向裂缝。"
+  },
+  {
+    "id": "k-additive-008",
+    "category": "additive",
+    "type": "助剂",
+    "name": "抗车辙剂",
+    "specs": {
+      "类型": "聚合物类抗车辙剂",
+      "复配": "可与木质素纤维复配"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2022.128152",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "复配方案抗车辙更优",
+        "direction": "+",
+        "magnitude": "抗车辙剂+木质素纤维复配方案高温抗车辙性能优于单掺方案",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2022.128152"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "抗车辙剂",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "抗车辙剂（助剂；类型 聚合物类抗车辙剂，复配 可与木质素纤维复配）。对车辙复配方案抗车辙更优：抗车辙剂+木质素纤维复配方案高温抗车辙性能优于单掺方案。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-additive-009",
+    "category": "additive",
+    "type": "助剂",
+    "name": "温拌剂 Sasobit REDUX",
+    "specs": {
+      "溶解温度": ">85℃",
+      "降温幅度": "约 20℃"
+    },
+    "sourceRef": "10.3390/ma12081285",
+    "relations": [
+      {
+        "property": "施工和易性",
+        "effect": "降低生产温度约 20℃ 且性能达标",
+        "direction": "+",
+        "magnitude": "目标压实温度 90/100/110℃ 下 VV≈4%、稳定度≈11kN、流值≈4mm、马歇尔商>2kN/mm，压实性优于热拌",
+        "applicableScene": [
+          "k-env",
+          "k-schedule"
+        ],
+        "sourceRef": "10.3390/ma12081285"
+      },
+      {
+        "property": "碳排",
+        "effect": "降温拌和减少能耗碳排",
+        "direction": "+",
+        "magnitude": "生产温度降低约 20℃ 带来显著燃料节约与碳排放降低",
+        "applicableScene": [
+          "k-env"
+        ],
+        "sourceRef": "10.3390/ma12081285"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "温拌剂 Sasobit REDUX",
+    "tags": [
+      "k-env",
+      "k-schedule"
+    ],
+    "text": "温拌剂 Sasobit REDUX（助剂；溶解温度 >85℃，降温幅度 约 20℃）。对施工和易性降低生产温度约 20℃ 且性能达标：目标压实温度 90/100/110℃ 下 VV≈4%、稳定度≈11kN、流值≈4mm、马歇尔商>2kN/mm，压实性优于热拌。对碳排降温拌和减少能耗碳排：生产温度降低约 20℃ 带来显著燃料节约与碳排放降低。适用场景：环保低碳、工期紧张。"
+  },
+  {
+    "id": "k-additive-010",
+    "category": "additive",
+    "type": "助剂",
+    "name": "再生剂",
+    "specs": {
+      "掺量": "约 4%（最优）",
+      "配合": "RAP 每增 10% 降温 2~6℃"
+    },
+    "sourceRef": "10.3390/su15043539",
+    "relations": [
+      {
+        "property": "疲劳",
+        "effect": "恢复老化沥青性能",
+        "direction": "+",
+        "magnitude": "再生剂掺量约 4% 时路用性能最优，可部分恢复 RAP 老化沥青的延展与疲劳性能",
+        "applicableScene": [
+          "k-rap",
+          "d-fatigue-crack"
+        ],
+        "sourceRef": "10.3390/su15043539"
+      },
+      {
+        "property": "低温PG",
+        "effect": "改善再生混合料低温性能",
+        "direction": "+",
+        "magnitude": "再生剂软化老化胶结料，改善高 RAP 混合料的低温弯拉性能",
+        "applicableScene": [
+          "c-cold",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/su15043539"
+      },
+      {
+        "property": "施工和易性",
+        "effect": "RAP 掺量增加需同步降温",
+        "direction": "+",
+        "magnitude": "RAP 每增加 10%，拌和与压实温度需降低 2~6℃，配合再生剂保证和易性",
+        "applicableScene": [
+          "k-rap",
+          "k-schedule"
+        ],
+        "sourceRef": "10.3390/su15043539"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "再生剂",
+    "tags": [
+      "k-rap",
+      "d-fatigue-crack",
+      "c-cold",
+      "k-schedule"
+    ],
+    "text": "再生剂（助剂；掺量 约 4%（最优），配合 RAP 每增 10% 降温 2~6℃）。对疲劳恢复老化沥青性能：再生剂掺量约 4% 时路用性能最优，可部分恢复 RAP 老化沥青的延展与疲劳性能。对低温PG改善再生混合料低温性能：再生剂软化老化胶结料，改善高 RAP 混合料的低温弯拉性能。对施工和易性RAP 掺量增加需同步降温：RAP 每增加 10%，拌和与压实温度需降低 2~6℃，配合再生剂保证和易性。适用场景：高RAP再生、疲劳裂缝、寒冷地区、工期紧张。"
+  },
+  {
+    "id": "k-additive-011",
+    "category": "additive",
+    "type": "助剂",
+    "name": "温拌剂 Sasobit（对照）",
+    "specs": {
+      "溶解温度": ">115℃",
+      "对比": "REDUX 为 >85℃"
+    },
+    "sourceRef": "10.3390/ma12081285",
+    "relations": [
+      {
+        "property": "施工和易性",
+        "effect": "经典温拌剂，溶解温度更高",
+        "direction": "+",
+        "magnitude": "Sasobit 需 115℃ 以上才完全溶于沥青，低温拌和适应性弱于 REDUX（85℃）",
+        "applicableScene": [
+          "k-env"
+        ],
+        "sourceRef": "10.3390/ma12081285"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "温拌剂 Sasobit（对照）",
+    "tags": [
+      "k-env"
+    ],
+    "text": "温拌剂 Sasobit（对照）（助剂；溶解温度 >115℃，对比 REDUX 为 >85℃）。对施工和易性经典温拌剂，溶解温度更高：Sasobit 需 115℃ 以上才完全溶于沥青，低温拌和适应性弱于 REDUX（85℃）。适用场景：环保低碳。"
+  },
+  {
+    "id": "k-mixture-001",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "高 RAP/FRAP 热拌再生混合料",
+    "specs": {
+      "RAP": "30%/40%/50%",
+      "FRAP": "10%/15%/20%"
+    },
+    "sourceRef": "10.3390/ma12162536",
+    "relations": [
+      {
+        "property": "成本",
+        "effect": "节省新沥青 41%~63%",
+        "direction": "+",
+        "magnitude": "30-R-10 至 50-R-15 组合新沥青节约 41%~63%，材料费占混合料成本约 70%",
+        "applicableScene": [
+          "k-rap",
+          "k-budget"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "低温PG",
+        "effect": "高掺量低温性能下降",
+        "direction": "-",
+        "magnitude": "RAP/FRAP 掺量升高使低温弯拉应变下降，50-R-20 接近规范限值",
+        "applicableScene": [
+          "c-cold",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "疲劳",
+        "effect": "高掺量疲劳寿命下降",
+        "direction": "-",
+        "magnitude": "同应力比下疲劳寿命随 RAP/FRAP 掺量增加而下降，FRAP 掺量不宜超过 15%",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      },
+      {
+        "property": "水稳TSR",
+        "effect": "TSR 先增后减",
+        "direction": "+",
+        "magnitude": "TSR 随掺量呈抛物线，40-R-20 抗水损最优，整体满足规范要求",
+        "applicableScene": [
+          "c-rainy",
+          "k-rap"
+        ],
+        "sourceRef": "10.3390/ma12162536"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "高 RAP/FRAP 热拌再生混合料",
+    "tags": [
+      "k-rap",
+      "k-budget",
+      "c-cold",
+      "d-fatigue-crack",
+      "c-rainy"
+    ],
+    "text": "高 RAP/FRAP 热拌再生混合料（混合料；RAP 30%/40%/50%，FRAP 10%/15%/20%）。对成本节省新沥青 41%~63%：30-R-10 至 50-R-15 组合新沥青节约 41%~63%，材料费占混合料成本约 70%。对低温PG高掺量低温性能下降：RAP/FRAP 掺量升高使低温弯拉应变下降，50-R-20 接近规范限值。对疲劳高掺量疲劳寿命下降：同应力比下疲劳寿命随 RAP/FRAP 掺量增加而下降，FRAP 掺量不宜超过 15%。对水稳TSRTSR 先增后减：TSR 随掺量呈抛物线，40-R-20 抗水损最优，整体满足规范要求。适用场景：高RAP再生、预算受限、寒冷地区、疲劳裂缝、多雨潮湿。"
+  },
+  {
+    "id": "k-mixture-002",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "温拌沥青混合料（WMA）",
+    "specs": {
+      "压实温度": "90/100/110℃",
+      "指标": "VV≈4% 稳定度≈11kN"
+    },
+    "sourceRef": "10.3390/ma12081285",
+    "relations": [
+      {
+        "property": "施工和易性",
+        "effect": "低温可压实且性能达标",
+        "direction": "+",
+        "magnitude": "Sasobit REDUX-WMA 在 90~110℃ 压实，VV≈4%、稳定度≈11kN、流值≈4mm，压实性优于热拌",
+        "applicableScene": [
+          "k-schedule",
+          "k-env"
+        ],
+        "sourceRef": "10.3390/ma12081285"
+      },
+      {
+        "property": "碳排",
+        "effect": "降低生产温度减少碳排",
+        "direction": "+",
+        "magnitude": "生产温度降低约 20℃，燃料消耗与温室气体排放显著下降",
+        "applicableScene": [
+          "k-env"
+        ],
+        "sourceRef": "10.3390/ma12081285"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "温拌沥青混合料（WMA）",
+    "tags": [
+      "k-schedule",
+      "k-env"
+    ],
+    "text": "温拌沥青混合料（WMA）（混合料；压实温度 90/100/110℃，指标 VV≈4% 稳定度≈11kN）。对施工和易性低温可压实且性能达标：Sasobit REDUX-WMA 在 90~110℃ 压实，VV≈4%、稳定度≈11kN、流值≈4mm，压实性优于热拌。对碳排降低生产温度减少碳排：生产温度降低约 20℃，燃料消耗与温室气体排放显著下降。适用场景：工期紧张、环保低碳。"
+  },
+  {
+    "id": "k-mixture-003",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "HMAM 抗车辙模量评价指标",
+    "specs": {
+      "指标": "|E*| 与 0.1Hz/25Hz@55℃ 模量比"
+    },
+    "sourceRef": "10.3390/su15097574",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "模量指标预测抗车辙",
+        "direction": "+",
+        "magnitude": "推荐以模量绝对值与 55℃ 下 0.1Hz/25Hz 动态模量比两项指标评价 HMAM 抗车辙，比值与动稳定度相关性高",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      },
+      {
+        "property": "E*",
+        "effect": "低频模量保持率是关键",
+        "direction": "+",
+        "magnitude": "降低高温下频率敏感性（提升低频模量保持率）可改善抗车辙",
+        "applicableScene": [
+          "t-heavy"
+        ],
+        "sourceRef": "10.3390/su15097574"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "HMAM 抗车辙模量评价指标",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "HMAM 抗车辙模量评价指标（混合料；指标 |E*| 与 0.1Hz/25Hz@55℃ 模量比）。对车辙模量指标预测抗车辙：推荐以模量绝对值与 55℃ 下 0.1Hz/25Hz 动态模量比两项指标评价 HMAM 抗车辙，比值与动稳定度相关性高。对E*低频模量保持率是关键：降低高温下频率敏感性（提升低频模量保持率）可改善抗车辙。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-mixture-004",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "SMA-10 疲劳性能评价",
+    "specs": {
+      "NMAS": "10mm",
+      "方法": "AMPT+VECD（AASHTO T378/T400）"
+    },
+    "sourceRef": "10.3390/polym16172414",
+    "relations": [
+      {
+        "property": "疲劳",
+        "effect": "VECD 表观损伤容量指标",
+        "direction": "+",
+        "magnitude": "Sapp 表观损伤容量与改性沥青弹性恢复相关性 0.87、与直接拉伸循环破坏次数相关性 0.76",
+        "applicableScene": [
+          "d-fatigue-crack",
+          "t-medium"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      },
+      {
+        "property": "高温PG",
+        "effect": "橡胶改性高温模量提升",
+        "direction": "+",
+        "magnitude": "橡胶基 PG76-28 高温弹性模量最高、低温模量最低，夏季抗变形与冬季抗裂兼优",
+        "applicableScene": [
+          "c-hot-humid",
+          "c-cold"
+        ],
+        "sourceRef": "10.3390/polym16172414"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "SMA-10 疲劳性能评价",
+    "tags": [
+      "d-fatigue-crack",
+      "t-medium",
+      "c-hot-humid",
+      "c-cold"
+    ],
+    "text": "SMA-10 疲劳性能评价（混合料；NMAS 10mm，方法 AMPT+VECD（AASHTO T378/T400））。对疲劳VECD 表观损伤容量指标：Sapp 表观损伤容量与改性沥青弹性恢复相关性 0.87、与直接拉伸循环破坏次数相关性 0.76。对高温PG橡胶改性高温模量提升：橡胶基 PG76-28 高温弹性模量最高、低温模量最低，夏季抗变形与冬季抗裂兼优。适用场景：疲劳裂缝、中等交通、高温湿热、寒冷地区。"
+  },
+  {
+    "id": "k-mixture-005",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "排水降噪多目标优化混合料",
+    "specs": {
+      "类型": "橡胶多孔沥青",
+      "方法": "降噪-性能多目标优化"
+    },
+    "sourceRef": "10.1016/j.conbuildmat.2023.131551",
+    "relations": [
+      {
+        "property": "降噪",
+        "effect": "多目标优化平衡降噪与力学性能",
+        "direction": "+",
+        "magnitude": "以降噪与路用性能为双目标优化多孔混合料设计，城市低噪路面推荐方法",
+        "applicableScene": [
+          "k-noise-ctl",
+          "d-noise"
+        ],
+        "sourceRef": "10.1016/j.conbuildmat.2023.131551"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "排水降噪多目标优化混合料",
+    "tags": [
+      "k-noise-ctl",
+      "d-noise"
+    ],
+    "text": "排水降噪多目标优化混合料（混合料；类型 橡胶多孔沥青，方法 降噪-性能多目标优化）。对降噪多目标优化平衡降噪与力学性能：以降噪与路用性能为双目标优化多孔混合料设计，城市低噪路面推荐方法。适用场景：降噪要求、交通噪声。"
+  },
+  {
+    "id": "k-mixture-006",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "动态模量 E* 预测模型（WOA-XGBoost+SHAP）",
+    "specs": {
+      "模型": "XGBoost+WOA+SHAP/PDP",
+      "样本": "混合料 E* 数据集"
+    },
+    "sourceRef": "10.1016/j.aei.2025.103111",
+    "relations": [
+      {
+        "property": "E*",
+        "effect": "识别 E* 前三主导因素",
+        "direction": "+",
+        "magnitude": "对 E* 影响前三的因素为胶结料复数剪切模量、试验温度与沥青黏度；降低有效沥青体积与空隙率、优化级配可提高 E*",
+        "applicableScene": [
+          "t-heavy",
+          "t-medium"
+        ],
+        "sourceRef": "10.1016/j.aei.2025.103111"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "动态模量 E* 预测模型（WOA-XGBoost+SHAP）",
+    "tags": [
+      "t-heavy",
+      "t-medium"
+    ],
+    "text": "动态模量 E* 预测模型（WOA-XGBoost+SHAP）（混合料；模型 XGBoost+WOA+SHAP/PDP，样本 混合料 E* 数据集）。对E*识别 E* 前三主导因素：对 E* 影响前三的因素为胶结料复数剪切模量、试验温度与沥青黏度；降低有效沥青体积与空隙率、优化级配可提高 E*。适用场景：重载交通、中等交通。"
+  },
+  {
+    "id": "k-mixture-007",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "马歇尔稳定度/流值预测（Extra Trees+SHAP）",
+    "specs": {
+      "模型": "Extra Trees 回归 + CTGAN 增强",
+      "精度": "流值 R²≈99.99%"
+    },
+    "sourceRef": "10.3390/app151910779",
+    "relations": [
+      {
+        "property": "施工和易性",
+        "effect": "SHAP 识别配合比主导变量",
+        "direction": "+",
+        "magnitude": "软化点、VMA、针入度与空隙率是稳定度/流值预测的最重要特征，指导配比调整",
+        "applicableScene": [
+          "t-medium",
+          "k-schedule"
+        ],
+        "sourceRef": "10.3390/app151910779"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "马歇尔稳定度/流值预测（Extra Trees+SHAP）",
+    "tags": [
+      "t-medium",
+      "k-schedule"
+    ],
+    "text": "马歇尔稳定度/流值预测（Extra Trees+SHAP）（混合料；模型 Extra Trees 回归 + CTGAN 增强，精度 流值 R²≈99.99%）。对施工和易性SHAP 识别配合比主导变量：软化点、VMA、针入度与空隙率是稳定度/流值预测的最重要特征，指导配比调整。适用场景：中等交通、工期紧张。"
+  },
+  {
+    "id": "k-mixture-008",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "现场体积参数（VV/VMA/VFA/压实度）控制",
+    "specs": {
+      "参数": "VV/VMA/VFA/压实度"
+    },
+    "sourceRef": "10.1061/(ASCE)MT.1943-5533.0002767",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "体积参数与车辙开裂统计关联",
+        "direction": "+",
+        "magnitude": "现场 VV/VMA/VFA 与压实度同车辙、开裂性能存在显著统计关系，压实不足会加速车辙发展",
+        "applicableScene": [
+          "d-rutting",
+          "t-heavy"
+        ],
+        "sourceRef": "10.1061/(ASCE)MT.1943-5533.0002767"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "现场体积参数（VV/VMA/VFA/压实度）控制",
+    "tags": [
+      "d-rutting",
+      "t-heavy"
+    ],
+    "text": "现场体积参数（VV/VMA/VFA/压实度）控制（混合料；参数 VV/VMA/VFA/压实度）。对车辙体积参数与车辙开裂统计关联：现场 VV/VMA/VFA 与压实度同车辙、开裂性能存在显著统计关系，压实不足会加速车辙发展。适用场景：车辙、重载交通。"
+  },
+  {
+    "id": "k-mixture-009",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "微表处（MS-2/MS-3）",
+    "specs": {
+      "类型": "MS-2/MS-3",
+      "胶结料": "改性乳化沥青（改性剂≥3%）"
+    },
+    "sourceRef": "JTG 5142-2019",
+    "relations": [
+      {
+        "property": "车辙",
+        "effect": "车辙填充与预防养护",
+        "direction": "+",
+        "magnitude": "MS-3 型用于高速/一级路预防养护；≤15mm 车辙可一次刮平，15~30mm 用 V 形摊铺箱分两层填补",
+        "applicableScene": [
+          "d-rutting",
+          "t-medium",
+          "t-light"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      },
+      {
+        "property": "抗滑",
+        "effect": "恢复表面抗滑",
+        "direction": "+",
+        "magnitude": "微表处验收要求摆值≥45BPN、构造深度≥0.6mm，快速恢复抗滑",
+        "applicableScene": [
+          "d-skid"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      },
+      {
+        "property": "施工和易性",
+        "effect": "快速开放交通",
+        "direction": "+",
+        "magnitude": "60min 黏聚力达到开放交通要求，适合工期紧张的预防养护",
+        "applicableScene": [
+          "k-schedule"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "微表处（MS-2/MS-3）",
+    "tags": [
+      "d-rutting",
+      "t-medium",
+      "t-light",
+      "d-skid",
+      "k-schedule"
+    ],
+    "text": "微表处（MS-2/MS-3）（混合料；类型 MS-2/MS-3，胶结料 改性乳化沥青（改性剂≥3%））。对车辙车辙填充与预防养护：MS-3 型用于高速/一级路预防养护；≤15mm 车辙可一次刮平，15~30mm 用 V 形摊铺箱分两层填补。对抗滑恢复表面抗滑：微表处验收要求摆值≥45BPN、构造深度≥0.6mm，快速恢复抗滑。对施工和易性快速开放交通：60min 黏聚力达到开放交通要求，适合工期紧张的预防养护。适用场景：车辙、中等交通、轻交通、抗滑不足、工期紧张。"
+  },
+  {
+    "id": "k-mixture-010",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "功能性罩面（超薄/薄层/罩面）",
+    "specs": {
+      "厚度": "<6cm（预防养护）",
+      "类型": "超薄罩面/薄层罩面/罩面"
+    },
+    "sourceRef": "JTG 5142-2019",
+    "relations": [
+      {
+        "property": "抗滑",
+        "effect": "恢复表面功能",
+        "direction": "+",
+        "magnitude": "铺筑厚度小于 6cm 的功能性罩面用于修复轻微病害、改善使用功能与抗滑",
+        "applicableScene": [
+          "d-skid",
+          "k-skid-req"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      },
+      {
+        "property": "施工和易性",
+        "effect": "薄层加铺工期短",
+        "direction": "+",
+        "magnitude": "薄层罩面加铺量小、工期短，适用于城市道路快速养护",
+        "applicableScene": [
+          "k-schedule",
+          "t-light"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "功能性罩面（超薄/薄层/罩面）",
+    "tags": [
+      "d-skid",
+      "k-skid-req",
+      "k-schedule",
+      "t-light"
+    ],
+    "text": "功能性罩面（超薄/薄层/罩面）（混合料；厚度 <6cm（预防养护），类型 超薄罩面/薄层罩面/罩面）。对抗滑恢复表面功能：铺筑厚度小于 6cm 的功能性罩面用于修复轻微病害、改善使用功能与抗滑。对施工和易性薄层加铺工期短：薄层罩面加铺量小、工期短，适用于城市道路快速养护。适用场景：抗滑不足、抗滑要求、工期紧张、轻交通。"
+  },
+  {
+    "id": "k-mixture-011",
+    "category": "mixture",
+    "type": "混合料",
+    "name": "降噪沥青路面技术措施",
+    "specs": {
+      "措施": "排水沥青面层/高弹胶结料面层/弹性颗粒填充面层"
+    },
+    "sourceRef": "JTG 5142-2019",
+    "relations": [
+      {
+        "property": "降噪",
+        "effect": "三类降噪面层技术",
+        "direction": "+",
+        "magnitude": "JTG 5142 绿色养护章规定降噪路面可采用排水沥青面层、高弹胶结料沥青面层或弹性颗粒填充沥青面层",
+        "applicableScene": [
+          "k-noise-ctl",
+          "k-drainage"
+        ],
+        "sourceRef": "JTG 5142-2019"
+      }
+    ],
+    "schemaVersion": "1",
+    "title": "降噪沥青路面技术措施",
+    "tags": [
+      "k-noise-ctl",
+      "k-drainage"
+    ],
+    "text": "降噪沥青路面技术措施（混合料；措施 排水沥青面层/高弹胶结料面层/弹性颗粒填充面层）。对降噪三类降噪面层技术：JTG 5142 绿色养护章规定降噪路面可采用排水沥青面层、高弹胶结料沥青面层或弹性颗粒填充沥青面层。适用场景：降噪要求、排水要求。"
+  }
+]

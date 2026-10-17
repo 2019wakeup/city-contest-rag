@@ -1,0 +1,1381 @@
+[
+  {
+    "id": "lit-001",
+    "title": "Application of Epoxy‐Asphalt Composite in Asphalt Paving Industry: A Review with Emphasis on Physicochemical Properties and Pavement Performances",
+    "sourceRef": "10.1155/2021/3454029",
+    "authors": "Yu Chen, Nabil Hossiney, Xu Yang, Hainian Wang, et al.",
+    "journal": "Advances in Materials Science and Engineering",
+    "year": "2021",
+    "doi": "10.1155/2021/3454029",
+    "taskZh": "综述环氧沥青复合材料的固化机理、理化性能与钢桥面等路面应用性能。"
+  },
+  {
+    "id": "lit-002",
+    "title": "Initiation and Propagation of Top-Down Cracking in Asphalt Pavement",
+    "sourceRef": "10.3390/app8050774",
+    "authors": "Lijun Sun, Gang Wang, Hongchao Zhang, Liping Liu",
+    "journal": "Applied Sciences",
+    "year": "2018",
+    "doi": "10.3390/app8050774",
+    "taskZh": "通过加速加载与力学分析揭示沥青路面自上而下裂缝(纵向裂缝/龟裂)的起裂位置与扩展路径。"
+  },
+  {
+    "id": "lit-003",
+    "title": "Optimization for Asphalt Pavement Maintenance Plans at Network Level: Integrating Maintenance Funds, Pavement Performance, Road Users, and Environment",
+    "sourceRef": "10.3390/app13158842",
+    "authors": "Xinfang Guan, Hongchao Zhang, Xiaobo Du, Xiyu Zhang, et al.",
+    "journal": "Applied Sciences",
+    "year": "2023",
+    "doi": "10.3390/app13158842",
+    "taskZh": "构建路网级沥青路面养护方案多目标优化模型，同时考虑养护资金、路面性能、道路用户与碳排放。"
+  },
+  {
+    "id": "lit-004",
+    "title": "Influence of Three Different Antistripping Agents on Moisture Susceptibility, Stiffness, and Rutting Resistance of Hot-Mix Asphalt",
+    "sourceRef": "10.3390/buildings14082458",
+    "authors": "Mario Orozco, Jaime Preciado, Gilberto Martinez-Arguelles, Luis Fuentes, et al.",
+    "journal": "Buildings",
+    "year": "2024",
+    "doi": "10.3390/buildings14082458",
+    "taskZh": "对比消石灰、胺类液体与硅烷类抗剥落剂对水稳定性、刚度与抗车辙性能的影响。"
+  },
+  {
+    "id": "lit-005",
+    "title": "Design of High-Modulus Asphalt Concrete for the Middle Layer of Asphalt Pavement",
+    "sourceRef": "10.3390/coatings14020185",
+    "authors": "Bin Li, Zengxin Liu, Meng Li, Yanhua Fei, et al.",
+    "journal": "Coatings",
+    "year": "2024",
+    "doi": "10.3390/coatings14020185",
+    "taskZh": "针对沥青路面中面层抗车辙需求，设计高模量沥青混凝土并评价其高温稳定性与力学性能。"
+  },
+  {
+    "id": "lit-006",
+    "title": "A comprehensive review on the plant-mixed cold recycling technology of emulsified asphalt: Raw materials and factors affecting performances",
+    "sourceRef": "10.1016/j.conbuildmat.2024.137344",
+    "authors": "Chengwei Xing, Shixian Tang, Zhibin Chang, Zhanchuang Han, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2024",
+    "doi": "10.1016/j.conbuildmat.2024.137344",
+    "taskZh": "综述厂拌乳化沥青冷再生技术的原材料要求、破乳机理与性能影响因素。"
+  },
+  {
+    "id": "lit-007",
+    "title": "A review of phase structure of SBS modified asphalt: Affecting factors, analytical methods, phase models and improvements",
+    "sourceRef": "10.1016/j.conbuildmat.2021.123610",
+    "authors": "Mingyuan Chen, Jiuguang Geng, Caiyun Xia, Leilei He, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2021.123610",
+    "taskZh": "综述SBS改性沥青相结构的影响因素、荧光显微与流变表征方法及相形态模型。"
+  },
+  {
+    "id": "lit-008",
+    "title": "High-viscosity modified asphalt mixtures for double-layer porous asphalt pavement: Design optimization and evaluation metrics",
+    "sourceRef": "10.1016/j.conbuildmat.2020.121893",
+    "authors": "Jianying Hu, Tao Ma, Yuhao Zhu, Xiaoming Huang, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2020.121893",
+    "taskZh": "研究双层排水沥青路面用高粘改性沥青混合料的配比优化与性能评价指标体系。"
+  },
+  {
+    "id": "lit-009",
+    "title": "Performance evaluation of petroleum bitumen binders and mixtures modified by natural rock asphalt from Xinjiang China",
+    "sourceRef": "10.1016/j.conbuildmat.2017.07.182",
+    "authors": "Ke Zhong, Xu Yang, Sang Luo",
+    "journal": "Construction and Building Materials",
+    "year": "2017",
+    "doi": "10.1016/j.conbuildmat.2017.07.182",
+    "taskZh": "评价新疆天然岩沥青改性基质沥青及混合料的高温性能与改性效果。"
+  },
+  {
+    "id": "lit-010",
+    "title": "Review of the Superpave performance grading system and recent developments in the performance-based test methods for asphalt binder characterization",
+    "sourceRef": "10.1016/j.conbuildmat.2021.126063",
+    "authors": "Waleed Zeiada, Hanqi Liu, Helal Ezzat, Ghazi G. Al-Khateeb, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2022",
+    "doi": "10.1016/j.conbuildmat.2021.126063",
+    "taskZh": "回顾Superpave PG分级体系及DSR车辙因子、BBR、MSCR等性能分级试验的新进展。"
+  },
+  {
+    "id": "lit-011",
+    "title": "Ultraviolet ageing of bituminous materials: A comprehensive literature review from 2011 to 2022",
+    "sourceRef": "10.1016/j.conbuildmat.2022.128889",
+    "authors": "Rodrigo Polo-Mendoza, Gilberto Martinez-Arguelles, Lubinda F. Walubita, Fernando Moreno-Navarro, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2022",
+    "doi": "10.1016/j.conbuildmat.2022.128889",
+    "taskZh": "系统综述沥青紫外老化的化学机理、影响因素、室内模拟方法与性能评价指标。"
+  },
+  {
+    "id": "lit-012",
+    "title": "Use of the multiple stress creep recovery (MSCR) test to characterize the rutting potential of asphalt binders: A literature review",
+    "sourceRef": "10.1016/j.conbuildmat.2020.121320",
+    "authors": "Hanqi Liu, Waleed Zeiada, Ghazi G. Al-Khateeb, Abdallah Shanableh, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2020.121320",
+    "taskZh": "综述MSCR试验参数Jnr与恢复率表征沥青高温抗车辙能力的方法、限值与发展。"
+  },
+  {
+    "id": "lit-013",
+    "title": "The effect of using anti-stripping additives on moisture damage of hot mix asphalt",
+    "sourceRef": "10.1016/j.ijadhadh.2017.03.016",
+    "authors": "Gh.H. Hamedi, S.A. Tahami",
+    "journal": "International Journal of Adhesion and Adhesives",
+    "year": "2018",
+    "doi": "10.1016/j.ijadhadh.2017.03.016",
+    "taskZh": "通过表面自由能与力学试验量化抗剥落剂对热拌沥青混合料水损害(剥落)的改善效果。"
+  },
+  {
+    "id": "lit-014",
+    "title": "Climate zoning of asphalt pavement based on spatial interpolation and Fuzzy C-Means algorithm",
+    "sourceRef": "10.1080/10298436.2022.2072498",
+    "authors": "Naren Fang, Huanyu Chang, Shiqing Hu, Hao Li, et al.",
+    "journal": "International Journal of Pavement Engineering",
+    "year": "2023",
+    "doi": "10.1080/10298436.2022.2072498",
+    "taskZh": "用空间插值结合模糊C均值聚类对沥青路面进行气候分区，为分区沥青胶结料与混合料选型提供依据。"
+  },
+  {
+    "id": "lit-015",
+    "title": "Pavement skid resistance as a function of pavement surface and aggregate texture properties",
+    "sourceRef": "10.1080/10298436.2018.1525489",
+    "authors": "Qiang Joshua Li, You Zhan, Guangwei Yang, Kelvin C. P. Wang",
+    "journal": "International Journal of Pavement Engineering",
+    "year": "2020",
+    "doi": "10.1080/10298436.2018.1525489",
+    "taskZh": "建立路面抗滑值(摩阻/摆值)与路面表面构造深度、集料纹理特性之间的定量关系模型。"
+  },
+  {
+    "id": "lit-016",
+    "title": "Traffic channelisation and pavement deterioration: an investigation of the role of lateral wander on asphalt pavement rutting",
+    "sourceRef": "10.1080/10298436.2022.2118272",
+    "authors": "Renan Sinanmis, Lee Woods",
+    "journal": "International Journal of Pavement Engineering",
+    "year": "2023",
+    "doi": "10.1080/10298436.2022.2118272",
+    "taskZh": "研究车道渠化交通与轮迹横向摆动对沥青路面车辙发展的影响，量化渠化对车辙的加速作用。"
+  },
+  {
+    "id": "lit-017",
+    "title": "Effectiveness Evaluation of Preventive Maintenance Treatments on Asphalt Pavement Performance Using LTPP Data",
+    "sourceRef": "10.1007/s42947-021-00078-2",
+    "authors": "Xiaohua Luo, Feng Wang, Haitao Gong, Jueqiang Tao, et al.",
+    "journal": "International Journal of Pavement Research and Technology",
+    "year": "2022",
+    "doi": "10.1007/s42947-021-00078-2",
+    "taskZh": "基于LTPP长期性能数据定量评价雾封层、碎石封层、微表处等预防性养护措施对路面性能的改善效果与时机。"
+  },
+  {
+    "id": "lit-018",
+    "title": "Machine learning-based climate zoning and asphalt selection for pavement infrastructure under changing climate: A focused study of Ningxia, China",
+    "sourceRef": "10.1016/j.ijtst.2024.10.001",
+    "authors": "Feipeng Xiao, Zhitao Zhang, Zichao Wu, Wentao He, et al.",
+    "journal": "International Journal of Transportation Science and Technology",
+    "year": "2025",
+    "doi": "10.1016/j.ijtst.2024.10.001",
+    "taskZh": "以机器学习开展气候变化情景下的沥青路面气候分区与沥青PG等级选择，给出宁夏地区分区选材结果。"
+  },
+  {
+    "id": "lit-019",
+    "title": "An Overview of Pavement Degradation Prediction Models",
+    "sourceRef": "10.1155/2022/7783588",
+    "authors": "Amir Shtayat, Sara Moridpour, Berthold Best, Shahriar Rumi",
+    "journal": "Journal of Advanced Transportation",
+    "year": "2022",
+    "doi": "10.1155/2022/7783588",
+    "taskZh": "系统梳理以PCI与IRI为指标的路面性能衰变预测模型，比较确定性、概率型与机器学习/神经网络方法的优缺点及影响参数。"
+  },
+  {
+    "id": "lit-020",
+    "title": "Evaluation on the rejuvenation and diffusion characteristics of waste cooking oil on aged SBS asphalt based on molecular dynamics method",
+    "sourceRef": "10.1016/j.jclepro.2023.136998",
+    "authors": "Huanan Yu, Jinguo Ge, Guoping Qian, Chao Zhang, et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2023",
+    "doi": "10.1016/j.jclepro.2023.136998",
+    "taskZh": "用分子动力学模拟废弃食用油再生剂在老化SBS沥青中的扩散速率与再生恢复效果。"
+  },
+  {
+    "id": "lit-021",
+    "title": "The impact of climate change on variations in rutting resilience of asphalt pavement across the climate zones in China",
+    "sourceRef": "10.1016/j.jclepro.2024.144016",
+    "authors": "Tiancheng Liu, Shu Yang, Linyi Yao, Jiwang Jiang",
+    "journal": "Journal of Cleaner Production",
+    "year": "2024",
+    "doi": "10.1016/j.jclepro.2024.144016",
+    "taskZh": "评估气候变化下中国各气候区沥青路面抗车辙能力的时空变化，识别高温高风险区域。"
+  },
+  {
+    "id": "lit-022",
+    "title": "Towards sustainable roads: A State-of-the-art review on the use of recycling agents in recycled asphalt mixtures",
+    "sourceRef": "10.1016/j.jclepro.2023.136994",
+    "authors": "Gulzar S. et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2023",
+    "doi": "10.1016/j.jclepro.2023.136994",
+    "taskZh": "综述再生剂类型、掺量设计与RAP高掺量混合料性能平衡的最新方法。"
+  },
+  {
+    "id": "lit-023",
+    "title": "State-of-the-Art Review of the Evaluation of Asphalt Mixtures’ Resistance to Reflective Cracking in Laboratory",
+    "sourceRef": "10.1061/(asce)mt.1943-5533.0003254",
+    "authors": "Ipshit Ibne Idris, Husam Sadek, Marwa Hassan",
+    "journal": "Journal of Materials in Civil Engineering",
+    "year": "2020",
+    "doi": "10.1061/(asce)mt.1943-5533.0003254",
+    "taskZh": "综述沥青加铺层反射裂缝的室内评价方法、试验装置与指标，评述各类方法的适用性与局限。"
+  },
+  {
+    "id": "lit-024",
+    "title": "Review on the diffusive and interfacial performance of bituminous materials: From a perspective of molecular dynamics simulation",
+    "sourceRef": "10.1016/j.molliq.2022.120363",
+    "authors": "Shisong Ren, Xueyan Liu, Peng Lin, Yangming Gao, et al.",
+    "journal": "Journal of Molecular Liquids",
+    "year": "2022",
+    "doi": "10.1016/j.molliq.2022.120363",
+    "taskZh": "综述分子动力学在沥青自愈合扩散、集料界面黏附与相容性研究中的建模方法。"
+  },
+  {
+    "id": "lit-025",
+    "title": "Evaluation of the Properties of Asphalt Mixes Modified with Diatomite and Lignin Fiber: A Review",
+    "sourceRef": "10.3390/ma12030400",
+    "authors": "Yanchao Yue, Moustafa Abdelsalam, Dong Luo, Ahmed Khater, et al.",
+    "journal": "Materials",
+    "year": "2019",
+    "doi": "10.3390/ma12030400",
+    "taskZh": "综述木质素纤维与硅藻土改性沥青混合料的性能改善效果、机理与最佳掺量。"
+  },
+  {
+    "id": "lit-026",
+    "title": "Recent Advances in Basalt Fiber Reinforced Asphalt Mixture for Pavement Applications",
+    "sourceRef": "10.3390/ma15196826",
+    "authors": "Yingxin Hui, Guangyu Men, Peng Xiao, Qin Tang, et al.",
+    "journal": "Materials",
+    "year": "2022",
+    "doi": "10.3390/ma15196826",
+    "taskZh": "综述玄武岩纤维增强沥青混合料的增强增韧机理、最佳掺量与路用性能进展。"
+  },
+  {
+    "id": "lit-027",
+    "title": "The Structure of Bitumen: Conceptual Models and Experimental Evidences",
+    "sourceRef": "10.3390/ma15030905",
+    "authors": "Michele Porto, Ruggero Angelico, Paolino Caputo, Abraham A. Abe, et al.",
+    "journal": "Materials",
+    "year": "2022",
+    "doi": "10.3390/ma15030905",
+    "taskZh": "系统综述沥青SARA四组分、胶体结构模型与沥青质聚集行为的实验证据与理论模型。"
+  },
+  {
+    "id": "lit-028",
+    "title": "A review of rutting in asphalt concrete pavement",
+    "sourceRef": "10.1515/eng-2022-0463",
+    "authors": "Amjad H. Albayati",
+    "journal": "Open Engineering",
+    "year": "2023",
+    "doi": "10.1515/eng-2022-0463",
+    "taskZh": "系统综述沥青路面车辙的类型(失稳型/磨耗型/结构型)、成因机理、影响因素与处治措施。"
+  },
+  {
+    "id": "lit-029",
+    "title": "Automatic Detection of Pothole Distress in Asphalt Pavement Using Improved Convolutional Neural Networks",
+    "sourceRef": "10.3390/rs14163892",
+    "authors": "Danyu Wang, Zhen Liu, Xingyu Gu, Wenxiu Wu, et al.",
+    "journal": "Remote Sensing",
+    "year": "2022",
+    "doi": "10.3390/rs14163892",
+    "taskZh": "改进卷积神经网络实现沥青路面坑槽病害的自动检测与定位，提升小目标与复杂背景下的识别精度。"
+  },
+  {
+    "id": "lit-030",
+    "title": "A comprehensive review of warm-mix asphalt mixtures: mix design, construction temperatures determination, performance and life-cycle assessment",
+    "sourceRef": "10.1080/14680629.2023.2268194",
+    "authors": "Ning Liu, Liping Liu, Mingchen Li, Lijun Sun",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2024",
+    "doi": "10.1080/14680629.2023.2268194",
+    "taskZh": "综述温拌沥青混合料配合比设计、施工温度确定方法、路用性能与生命周期评价。"
+  },
+  {
+    "id": "lit-031",
+    "title": "Consideration of dynamic loads in the determination of axle load spectra for pavement design",
+    "sourceRef": "10.1080/14680629.2019.1687006",
+    "authors": "Dawid Rys",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2021",
+    "doi": "10.1080/14680629.2019.1687006",
+    "taskZh": "将车辆动态荷载效应纳入轴载谱测定与建模，改进沥青路面设计中交通荷载参数的确定方法。"
+  },
+  {
+    "id": "lit-032",
+    "title": "Prediction of network level pavement treatment types using multi-classification machine learning algorithms",
+    "sourceRef": "10.1080/14680629.2021.2019091",
+    "authors": "Fritz J. Jooste, Seosamh B. Costello, Sean Rainsford",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2023",
+    "doi": "10.1080/14680629.2021.2019091",
+    "taskZh": "用多种多分类机器学习算法由路网路况数据预测应采取的养护措施类型，替代传统决策树/决策矩阵。"
+  },
+  {
+    "id": "lit-033",
+    "title": "Review of methodology for life cycle assessment and life cycle cost analysis of asphalt pavements",
+    "sourceRef": "10.1080/14680629.2023.2278149",
+    "authors": "Fardzanela Suwarto, Tony Parry, Gordon Airey",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2024",
+    "doi": "10.1080/14680629.2023.2278149",
+    "taskZh": "综述沥青路面寿命周期评价(LCA)与寿命周期成本分析(LCCA)的方法框架、边界设定、清单数据与评价指标。"
+  },
+  {
+    "id": "lit-034",
+    "title": "Prediction of highway asphalt pavement performance based on Markov chain and artificial neural network approach",
+    "sourceRef": "10.1007/s11227-020-03329-4",
+    "authors": "Zhichen Wang, Naisheng Guo, Shuang Wang, Yang Xu",
+    "journal": "The Journal of Supercomputing",
+    "year": "2021",
+    "doi": "10.1007/s11227-020-03329-4",
+    "taskZh": "将马尔可夫链与人工神经网络结合预测高速公路沥青路面性能衰变，比较状态转移与数据驱动方法的效果。"
+  },
+  {
+    "id": "lit-035",
+    "title": "公路技术状况评定标准 (JTG 5210—2018)",
+    "sourceRef": "中华人民共和国交通运输部行业标准, 2018",
+    "authors": "交通运输部公路科学研究院 et al.",
+    "journal": "中华人民共和国交通运输部行业标准",
+    "year": "2018",
+    "taskZh": "规定路面状况指数PCI、行驶质量指数RQI、车辙深度指数RDI、抗滑指数SRI、路面破损率DR与结构强度PSSI的检测与评定方法及优/良/中/次/差分级阈值。"
+  },
+  {
+    "id": "lit-036",
+    "title": "公路沥青路面养护技术规范 (JTG 5142—2019)",
+    "sourceRef": "中华人民共和国交通运输部行业标准, 2019",
+    "authors": "交通运输部公路科学研究院 et al.",
+    "journal": "中华人民共和国交通运输部行业标准",
+    "year": "2019",
+    "taskZh": "规定沥青路面各类病害(裂缝、车辙、坑槽、松散、泛油等)的判定与处治要求，以及预防性养护、微表处、稀浆封层、罩面、再生等养护措施适用条件。"
+  },
+  {
+    "id": "lit-037",
+    "title": "公路沥青路面设计规范 (JTG D50—2017)",
+    "sourceRef": "中华人民共和国交通运输部行业标准, 2017",
+    "authors": "中交路桥技术有限公司 et al.",
+    "journal": "中华人民共和国交通运输部行业标准",
+    "year": "2017",
+    "taskZh": "规定沥青路面结构组合(上面层/中面层/下面层/基层/垫层)设计方法、交通荷载等级、材料与结构验算指标。"
+  },
+  {
+    "id": "lit-038",
+    "title": "公路工程沥青及沥青混合料试验规程（JTG 3410-2025）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（强制性）, 2025",
+    "authors": "交通运输部",
+    "journal": "中华人民共和国交通运输部行业标准（强制性）",
+    "year": "2025",
+    "taskZh": "规定针入度、软化点、延度、60℃动力粘度、135℃布氏粘度、RTFO/PAV老化等沥青试验方法。"
+  },
+  {
+    "id": "lit-039",
+    "title": "AASHTO M 320 / T 283 / T 324 / R 35（PG 分级沥青结合料规范、抗水损害试验、汉堡车辙试验与 Superpave 体积设计方法）",
+    "sourceRef": "AASHTO Standard Specifications for Transportation Materials and Methods of Sampling and Testing",
+    "authors": "American Association of State Highway and Transportation Officials (AASHTO)",
+    "journal": "AASHTO Standard Specifications for Transportation Materials and Methods of Sampling and Testing",
+    "taskZh": "给出 PG 分级沥青结合料技术要求、混合料抗水损害与车辙性能试验方法及 Superpave 体积设计流程，是沥青材料方案推荐中性能门槛的国际对标依据。"
+  },
+  {
+    "id": "lit-040",
+    "title": "ASTM D6373-21 Standard Specification for Performance-Graded Asphalt Binder",
+    "sourceRef": "ASTM Annual Book of Standards, 2021",
+    "authors": "ASTM International (Committee D04 on Road and Paving Materials)",
+    "journal": "ASTM Annual Book of Standards",
+    "year": "2021",
+    "taskZh": "规定按使用温度等级（PG XX-YY）对沥青结合料进行性能分级的技术要求与试验方法，是改性沥青选材与跨国产学研数据对齐的基准。"
+  },
+  {
+    "id": "lit-041",
+    "title": "NCHRP 1-37A Guide for Mechanistic-Empirical Design of New and Rehabilitated Pavement Structures（MEPDG，后发展为 AASHTOWare Pavement ME Design）",
+    "sourceRef": "NCHRP Project 1-37A 最终报告（TRB 存档）, 2004",
+    "authors": "National Cooperative Highway Research Program (NCHRP), Transportation Research Board",
+    "journal": "NCHRP Project 1-37A 最终报告（TRB 存档）",
+    "year": "2004",
+    "taskZh": "提出力学-经验法路面设计体系与性能预测模型（车辙、疲劳开裂、IRI 等），是数据驱动路面性能预测模型的机理对照与特征设计来源。"
+  },
+  {
+    "id": "lit-042",
+    "title": "NCHRP Report 547: Simple Performance Tests: Summary of Recommended Methods and Database（NCHRP 9-19 Superpave 性能模型与简单性能试验）",
+    "sourceRef": "NCHRP Report 547（TRB 出版）, 2005",
+    "authors": "National Cooperative Highway Research Program (NCHRP), Transportation Research Board",
+    "journal": "NCHRP Report 547（TRB 出版）",
+    "year": "2005",
+    "taskZh": "总结 Superpave 混合料性能模型所需的简单性能试验方法与配套试验数据库，为沥青混合料性能指标选取与数据建模提供方法学基础。"
+  },
+  {
+    "id": "lit-043",
+    "title": "JTG 3410-2025 公路工程沥青及沥青混合料试验规程（强制性行业标准，2025-10-01 施行，替代 JTG E20-2011）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2025",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2025",
+    "taskZh": "统一沥青与沥青混合料全部试验方法（针入度/软化点、PG 分级、车辙、水稳定性、低温性能等），是材料性能数据采集与机器学习特征工程的试验依据。"
+  },
+  {
+    "id": "lit-044",
+    "title": "JTG 5142-2019 公路沥青路面养护技术规范（现行，替代 JTJ 073.2-2001）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2019",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2019",
+    "taskZh": "规定沥青路面养护检查、病害判定、养护对策选择与养护工程质量要求，是养护决策规则库与处治方案推荐的核心条文来源。"
+  },
+  {
+    "id": "lit-045",
+    "title": "JTG 5210-2018 公路技术状况评定标准（现行，替代 JTG H20-2007，注意 H20 已废止）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2018",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2018",
+    "taskZh": "规定路面 PCI、RQI、RDI、SRI 等指标的检测与计算方法及优次等级评定标准，是路面性能标签构造与养护优先排序的基准。"
+  },
+  {
+    "id": "lit-046",
+    "title": "JTG 5421-2018 公路沥青路面养护设计规范（现行，2019-03-01 施行）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2018",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2018",
+    "taskZh": "规定沥青路面养护设计流程、路况调查与评价、养护方案比选及加铺/翻修结构设计，为项目级养护方案智能推荐提供规范约束。"
+  },
+  {
+    "id": "lit-047",
+    "title": "JTG D50-2017 公路沥青路面设计规范（现行，替代 JTG D50-2006）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2017",
+    "authors": "交通运输部 发布；中交路桥技术有限公司 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2017",
+    "taskZh": "规定沥青路面结构组合设计、交通荷载分级、材料设计参数与结构验算指标，为路面结构与材料方案匹配提供设计准则。"
+  },
+  {
+    "id": "lit-048",
+    "title": "JTG F40-2004 公路沥青路面施工技术规范（强制性行业标准，现行）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2004",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2004",
+    "taskZh": "规定各等级公路沥青路面施工的材料要求、配合比设计、拌和摊铺碾压工艺与质量控制，是沥青混合料选材与施工工艺的强制性依据。"
+  },
+  {
+    "id": "lit-049",
+    "title": "JTG/T 5142-01-2021 公路沥青路面预防养护技术规范（推荐性行业标准，2021-12-01 施行）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2021",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2021",
+    "taskZh": "规定预防性养护的适用条件、时机判定、技术措施（雾封层、微表处、超薄罩面等）与效果评价，支撑预防性养护时机与措施推荐模型。"
+  },
+  {
+    "id": "lit-050",
+    "title": "JTG/T 5521-2019 公路沥青路面再生技术规范（推荐性行业标准，2019-11-01 施行，替代 JTG F41-2008）",
+    "sourceRef": "中华人民共和国交通运输部行业标准（工程建设标准）, 2019",
+    "authors": "交通运输部 发布；交通运输部公路科学研究院 主编",
+    "journal": "中华人民共和国交通运输部行业标准（工程建设标准）",
+    "year": "2019",
+    "taskZh": "规定厂拌/就地热再生、冷再生与全深式再生的材料要求、配合比设计与施工控制，是再生沥青材料方案推荐的直接依据。"
+  },
+  {
+    "id": "lit-051",
+    "title": "2024年交通运输行业发展统计公报（全国公路 549.04 万公里、高速 19.07 万公里）",
+    "sourceRef": "交通运输部年度统计公报（中国政府网发布）, 2025",
+    "authors": "交通运输部",
+    "journal": "交通运输部年度统计公报（中国政府网发布）",
+    "year": "2025",
+    "taskZh": "公布全国公路里程、等级构成、养护与投资规模等年度基础数据，为课题立项依据中的路网规模与养护需求测算提供权威数据源。"
+  },
+  {
+    "id": "lit-052",
+    "title": "Pavement asset management systems and technologies: A review",
+    "sourceRef": "10.1016/j.autcon.2020.103336",
+    "authors": "Naga Siva Pavani Peraka, Krishna Prapoorna Biligiri",
+    "journal": "Automation in Construction",
+    "year": "2020",
+    "doi": "10.1016/j.autcon.2020.103336",
+    "taskZh": "系统梳理路面资产管理系统的数据采集技术、性能预测模型与养护决策优化方法，明确数据驱动养护决策的技术路线与瓶颈。"
+  },
+  {
+    "id": "lit-053",
+    "title": "A review of polymer-modified asphalt binder: Modification mechanisms and mechanical properties",
+    "sourceRef": "10.1016/j.clema.2024.100255",
+    "authors": "Qilin Yang, Jiao Lin, Xiaowei Wang, Dawei Wang, et al.",
+    "journal": "Cleaner Materials",
+    "year": "2024",
+    "doi": "10.1016/j.clema.2024.100255",
+    "taskZh": "综述 SBS、SBR、EVA 等聚合物改性沥青的改性机理与力学性能提升规律，为改性沥青类型与掺量方案推荐提供定量参考。"
+  },
+  {
+    "id": "lit-054",
+    "title": "The preparation process, service performances and interaction mechanisms of crumb rubber modified asphalt (CRMA) by wet process: A comprehensive review",
+    "sourceRef": "10.1016/j.conbuildmat.2022.129168",
+    "authors": "Fan Li, Xiao Zhang, Linbing Wang, Ruixin Zhai",
+    "journal": "Construction and Building Materials",
+    "year": "2022",
+    "doi": "10.1016/j.conbuildmat.2022.129168",
+    "taskZh": "综述湿法橡胶粉改性沥青的制备工艺、路用性能与橡胶-沥青溶胀降解交互机理。"
+  },
+  {
+    "id": "lit-055",
+    "title": "Deep Learning in Data-Driven Pavement Image Analysis and Automated Distress Detection: A Review",
+    "sourceRef": "10.3390/data3030028",
+    "authors": "Kasthurirangan Gopalakrishnan",
+    "journal": "Data",
+    "year": "2018",
+    "doi": "10.3390/data3030028",
+    "taskZh": "综述深度学习在路面图像分析与病害自动识别中的应用，比较 CNN 等模型在裂缝、坑槽检测上的数据集与精度，支撑病害多模态感知。"
+  },
+  {
+    "id": "lit-056",
+    "title": "A comprehensive review on the blending condition between virgin and RAP asphalt binders in hot recycled asphalt mixtures: Mechanisms, evaluation methods, and influencing factors",
+    "sourceRef": "10.1016/j.jclepro.2023.136515",
+    "authors": "Chengwei Xing, Mingchen Li, Liyuan Liu, Rong Lu, et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2023",
+    "doi": "10.1016/j.jclepro.2023.136515",
+    "taskZh": "综述新旧沥青混融机理、混融度评价方法与影响因素，为再生沥青混合料中 RAP 掺量与再生剂方案的智能推荐提供机理支撑。"
+  },
+  {
+    "id": "lit-057",
+    "title": "Warm mix asphalt technology: An up to date review",
+    "sourceRef": "10.1016/j.jclepro.2020.122128",
+    "authors": "Goshtasp Cheraghian, Augusto Cannone Falchetto, Zhanping You, Siyu Chen, et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2020",
+    "doi": "10.1016/j.jclepro.2020.122128",
+    "taskZh": "综述各类温拌沥青技术（有机添加剂、发泡、化学添加剂）的降黏机理、流变与路用性能及环境效益，支撑温拌材料方案推荐。"
+  },
+  {
+    "id": "lit-058",
+    "title": "Review on Machine Learning Techniques for Developing Pavement Performance Prediction Models",
+    "sourceRef": "10.3390/su13095248",
+    "authors": "Rita Justo-Silva, Adelino Ferreira, Gerardo Flintsch",
+    "journal": "Sustainability",
+    "year": "2021",
+    "doi": "10.3390/su13095248",
+    "taskZh": "综述用于路面性能预测的机器学习算法（回归、树模型、神经网络等）及其输入特征与精度表现，为性能预测模型选型提供依据。"
+  },
+  {
+    "id": "lit-059",
+    "title": "A Comprehensive Survey on Automatic Knowledge Graph Construction",
+    "sourceRef": "10.1145/3618295",
+    "authors": "Lingfeng Zhong, Jia Wu, Qian Li, Hao Peng, et al.",
+    "journal": "ACM Computing Surveys",
+    "year": "2024",
+    "doi": "10.1145/3618295",
+    "taskZh": "综述从非结构化文本自动构建知识图谱的实体、关系与事件抽取技术"
+  },
+  {
+    "id": "lit-060",
+    "title": "Deep Learning Based Recommender System",
+    "sourceRef": "10.1145/3285029",
+    "authors": "Shuai Zhang, Lina Yao, Aixin Sun, Yi Tay",
+    "journal": "ACM Computing Surveys",
+    "year": "2020",
+    "doi": "10.1145/3285029",
+    "taskZh": "综述基于深度学习的推荐系统模型、评测体系与研究挑战"
+  },
+  {
+    "id": "lit-061",
+    "title": "Graph Retrieval-Augmented Generation: A Survey",
+    "sourceRef": "10.1145/3777378",
+    "authors": "Boci Peng, Yun Zhu, Yongchao Liu, Xiaohe Bo, et al.",
+    "journal": "ACM Transactions on Information Systems",
+    "year": "2026",
+    "doi": "10.1145/3777378",
+    "taskZh": "系统综述GraphRAG技术，形式化图索引、图引导检索与图增强生成三阶段方法论"
+  },
+  {
+    "id": "lit-062",
+    "title": "Exploring bridge maintenance knowledge graph by leveraging GrapshSAGE and text encoding",
+    "sourceRef": "10.1016/j.autcon.2024.105634",
+    "authors": "Yan Gao, Guanyu Xiong, Haijiang Li, Jarrod Richards",
+    "journal": "Automation in Construction",
+    "year": "2024",
+    "doi": "10.1016/j.autcon.2024.105634",
+    "taskZh": "用GraphSAGE图神经网络与文本编码挖掘桥梁养护知识图谱并做关系推理"
+  },
+  {
+    "id": "lit-063",
+    "title": "Text-based automatic knowledge graph construction for road infrastructure operations management",
+    "sourceRef": "10.1016/j.autcon.2025.106733",
+    "authors": "Yafei Sun, Xuesong Shen, Sisi Zlatanova, Khalegh Barati, et al.",
+    "journal": "Automation in Construction",
+    "year": "2026",
+    "doi": "10.1016/j.autcon.2025.106733",
+    "taskZh": "从道路基础设施运维文本自动构建知识图谱，支撑运维管理知识检索"
+  },
+  {
+    "id": "lit-064",
+    "title": "Multi-Criteria Decision-Making Framework (AHP-TOPSIS): Pavement Preventive Maintenance Case Study for Ordinary National Trunk Highways",
+    "sourceRef": "10.3390/buildings14103048",
+    "authors": "Yaohan Liu, Chun Yu, Feiyang Guo, Xin Zhao, et al.",
+    "journal": "Buildings",
+    "year": "2024",
+    "doi": "10.3390/buildings14103048",
+    "taskZh": "构建AHP-TOPSIS多准则决策框架，用于国省干线沥青路面预防性养护方案排序"
+  },
+  {
+    "id": "lit-065",
+    "title": "Large language models for knowledge graph extraction from tables in materials science",
+    "sourceRef": "10.1039/d4dd00362d",
+    "authors": "Max Dreger, Kourosh Malek, Michael Eikerling",
+    "journal": "Digital Discovery",
+    "year": "2025",
+    "doi": "10.1039/d4dd00362d",
+    "taskZh": "用大语言模型从材料科学表格文献中抽取知识三元组并构建知识图谱"
+  },
+  {
+    "id": "lit-066",
+    "title": "A Novel Multi-Criteria Decision-Making Model for Building Material Supplier Selection Based on Entropy-AHP Weighted TOPSIS",
+    "sourceRef": "10.3390/e22020259",
+    "authors": "Chun-Ho Chen",
+    "journal": "Entropy",
+    "year": "2020",
+    "doi": "10.3390/e22020259",
+    "taskZh": "提出熵权与AHP组合赋权的TOPSIS模型，用于建筑材料方案与供应商优选"
+  },
+  {
+    "id": "lit-067",
+    "title": "BERT and hierarchical cross attention-based question answering over bridge inspection knowledge graph",
+    "sourceRef": "10.1016/j.eswa.2023.120896",
+    "authors": "Jianxi Yang, Xiaoxia Yang, Ren Li, Mengting Luo, et al.",
+    "journal": "Expert Systems with Applications",
+    "year": "2023",
+    "doi": "10.1016/j.eswa.2023.120896",
+    "taskZh": "基于BERT与层次交叉注意力实现桥梁检测知识图谱问答"
+  },
+  {
+    "id": "lit-068",
+    "title": "A Survey on Knowledge Graphs: Representation, Acquisition, and Applications",
+    "sourceRef": "10.1109/tnnls.2021.3070843",
+    "authors": "Shaoxiong Ji, Shirui Pan, Erik Cambria, Pekka Marttinen, et al.",
+    "journal": "IEEE Transactions on Neural Networks and Learning Systems",
+    "year": "2022",
+    "doi": "10.1109/tnnls.2021.3070843",
+    "taskZh": "综述知识图谱的表示学习、知识获取与下游应用全流程"
+  },
+  {
+    "id": "lit-069",
+    "title": "Large Language Model-Based Autonomous Agents",
+    "sourceRef": "10.1007/s11704-024-40231-1",
+    "authors": "Prerak Garg, Divya Beeram",
+    "journal": "International Journal of Computer Trends and Technology",
+    "year": "2024",
+    "doi": "10.1007/s11704-024-40231-1",
+    "taskZh": "系统综述大模型自主智能体的构建、记忆、规划与工具调用框架"
+  },
+  {
+    "id": "lit-070",
+    "title": "Knowledge graph and CBR-based approach for automated analysis of bridge operational accidents: Case representation and retrieval",
+    "sourceRef": "10.1371/journal.pone.0294130",
+    "authors": "Hui Xu, Yuxi Wei, Yonggang Cai, Bin Xing",
+    "journal": "PLOS ONE",
+    "year": "2023",
+    "doi": "10.1371/journal.pone.0294130",
+    "taskZh": "融合知识图谱与案例推理，实现桥梁事故案例的结构化表示与相似案例检索"
+  },
+  {
+    "id": "lit-071",
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "sourceRef": "10.18653/v1/2020.emnlp-main.550",
+    "authors": "Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick Lewis, et al.",
+    "journal": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    "year": "2020",
+    "doi": "10.18653/v1/2020.emnlp-main.550",
+    "taskZh": "提出双塔稠密向量检索器，用语义嵌入替代稀疏检索显著提升开放域问答召回率"
+  },
+  {
+    "id": "lit-072",
+    "title": "Milvus: A Purpose-Built Vector Data Management System",
+    "sourceRef": "10.1145/3448016.3457550",
+    "authors": "Wang Jianguo et al.",
+    "journal": "Proceedings of the 2021 International Conference on Management of Data (SIGMOD)",
+    "year": "2021",
+    "doi": "10.1145/3448016.3457550",
+    "taskZh": "提出面向向量数据的专用管理系统，支持异构索引与亿级近似最近邻检索"
+  },
+  {
+    "id": "lit-073",
+    "title": "Neural Collaborative Filtering",
+    "sourceRef": "10.1145/3038912.3052569",
+    "authors": "He Xiangnan et al.",
+    "journal": "Proceedings of the 26th International Conference on World Wide Web (WWW)",
+    "year": "2017",
+    "doi": "10.1145/3038912.3052569",
+    "taskZh": "用神经网络替代内积建模用户与物品交互，提出NCF协同过滤框架"
+  },
+  {
+    "id": "lit-074",
+    "title": "Reciprocal rank fusion outperforms condorcet and individual rank learning methods",
+    "sourceRef": "10.1145/1571941.1572114",
+    "authors": "Cormack Gordon V. et al.",
+    "journal": "Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval",
+    "year": "2009",
+    "doi": "10.1145/1571941.1572114",
+    "taskZh": "提出无需训练的倒数排名融合RRF算法，统一融合多路检索结果"
+  },
+  {
+    "id": "lit-075",
+    "title": "MatKG: An autonomously generated knowledge graph in Material Science",
+    "sourceRef": "10.1038/s41597-024-03039-z",
+    "authors": "Vineeth Venugopal, Elsa Olivetti",
+    "journal": "Scientific Data",
+    "year": "2024",
+    "doi": "10.1038/s41597-024-03039-z",
+    "taskZh": "自动抽取文献构建材料科学大规模知识图谱MatKG并开放数据"
+  },
+  {
+    "id": "lit-076",
+    "title": "The effect of mix design method on performance of asphalt mixtures containing reclaimed asphalt pavement and recycling agents: Superpave versus balanced mix design",
+    "sourceRef": "10.1016/j.cscm.2023.e01931",
+    "authors": "Ziari Hassan et al.",
+    "journal": "Case Studies in Construction Materials",
+    "year": "2023",
+    "doi": "10.1016/j.cscm.2023.e01931",
+    "taskZh": "对含RAP与再生剂的沥青混合料分别采用Superpave体积设计法与平衡配合比设计（BMD）法，对比两种方法所得最佳沥青用量及车辙、中低温开裂等性能，说明BMD在兼顾抗车辙与抗开裂上的优势及不同交通/气候条件下的设计方法选择依据。"
+  },
+  {
+    "id": "lit-077",
+    "title": "Evaluation of open-grade friction course (OGFC) mixtures with high content SBS polymer modified asphalt",
+    "sourceRef": "10.1016/j.conbuildmat.2020.121374",
+    "authors": "Jiawei Zhang, Weidong Huang, Gengren Hao, Chuanqi Yan, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2020.121374",
+    "taskZh": "以4.5%、6.0%、7.5%、9.0%四档SBS掺量制备OGFC排水磨耗层混合料，经布氏黏度、频率扫描、肯塔堡飞散、TSR、汉堡车辙与四点弯曲试验表明：提高SBS掺量使沥青更富弹性、降低黏度温度敏感性并提高复数模量，从而提升飞散抗力、水稳定性与高温抗车辙、改善疲劳抗裂。"
+  },
+  {
+    "id": "lit-078",
+    "title": "Laboratory investigation and statistical analysis of the rutting and fatigue resistance of asphalt mixtures containing crumb-rubber and wax-based warm mix asphalt additive",
+    "sourceRef": "10.1016/j.conbuildmat.2021.125165",
+    "authors": "Yazdipanah Farzad et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2021.125165",
+    "taskZh": "针对橡胶粉与蜡基温拌剂复配的沥青混合料，采用动态蠕变与间接拉伸疲劳试验评价其抗车辙与抗疲劳性能，并用统计分析方法（方差分析类）辨识橡胶粉掺量与温拌剂掺量各因素对两种性能影响的显著性排序。"
+  },
+  {
+    "id": "lit-079",
+    "title": "Optimization design of rubberized porous asphalt mixture based on noise reduction and pavement performance",
+    "sourceRef": "10.1016/j.conbuildmat.2023.131551",
+    "authors": "Lei Xu, Yi Zhang, Zhenshan Zhang, Hangtian Ni, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2023",
+    "doi": "10.1016/j.conbuildmat.2023.131551",
+    "taskZh": "以交通降噪效果与路用性能为双目标，对橡胶粉多孔（排水）沥青混合料进行配合比优化设计，确定橡胶粉掺量、空隙率与级配的最优组合，在保证渗水与降噪功能的同时兼顾耐久性与力学性能，给出功能-性能平衡的推荐配比。"
+  },
+  {
+    "id": "lit-080",
+    "title": "Performance evaluation of asphalt mixtures containing warm mix asphalt (WMA) additives and reclaimed asphalt pavement (RAP)",
+    "sourceRef": "10.1016/j.conbuildmat.2020.121200",
+    "authors": "Afshar Yousefi, Ali Behnood, Ata Nowruzi, Hamzeh Haghshenas",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2020.121200",
+    "taskZh": "对比Sasobit、Kaowax、Zeolite、PAWMA四种温拌剂在0%与50%RAP掺量下的性能：54.4℃动态蠕变、5/25/40℃回弹模量、25℃间接拉伸强度、SCB断裂与TSR，结论为WMA+RAP混合料力学与耐久性能强烈依赖温拌剂类型，为50%高掺量RAP的温拌方案选型提供依据。"
+  },
+  {
+    "id": "lit-081",
+    "title": "Performance evaluation of lignin-fibre reinforced asphalt mixture modified by anti-rutting agent",
+    "sourceRef": "10.1016/j.conbuildmat.2022.128152",
+    "authors": "Wu Xing et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2022",
+    "doi": "10.1016/j.conbuildmat.2022.128152",
+    "taskZh": "评价木质素纤维与抗车辙剂复配改性沥青混合料的高温稳定性、低温抗裂性、水稳定性与疲劳性能，比较不同复配掺量方案相对单掺方案的性能提升幅度，给出兼顾高温与低温性能的复配掺量建议。"
+  },
+  {
+    "id": "lit-082",
+    "title": "Enhancing Moisture Damage Resistance in Asphalt Concrete: The Role of Mix Variables, Hydrated Lime and Nanomaterials",
+    "sourceRef": "10.3390/infrastructures9100173",
+    "authors": "Noor N. Adwar, Amjad H. Albayati",
+    "journal": "Infrastructures",
+    "year": "2024",
+    "doi": "10.3390/infrastructures9100173",
+    "taskZh": "以沥青用量与4号筛通过率为配合比变量，用消石灰按矿料质量1.5%等量替代石灰石矿粉，并掺入占沥青质量0%~6%的纳米SiO2与纳米TiO2，通过冻融劈裂强度比TSR与残留强度指标IRS量化各因素对水损害抗力的贡献与最优掺量区间。"
+  },
+  {
+    "id": "lit-083",
+    "title": "Fatigue performance characterization of styrene-butadiene-styrene and crumb rubber composite modified asphalt binders with high crumb rubber contents",
+    "sourceRef": "10.1016/j.jclepro.2021.129979",
+    "authors": "Chenguang Shi, Wenxin Zhou, Tianling Wang, Xing Cai, et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2022",
+    "doi": "10.1016/j.jclepro.2021.129979",
+    "taskZh": "研究高橡胶粉掺量条件下SBS与橡胶粉复合改性沥青的疲劳性能表征方法，比较不同SBS/胶粉配比组合的疲劳抗力差异并给出更优的复合改性配比方向，为高胶粉掺量改性沥青的疲劳设计提供定量依据。"
+  },
+  {
+    "id": "lit-084",
+    "title": "Effects of In-Place Volumetric Properties on Field Rutting and Cracking Performance of Asphalt Pavement",
+    "sourceRef": "10.1061/(asce)mt.1943-5533.0002767",
+    "authors": "Weiguang Zhang, Shihui Shen, Shenghua Wu, Xiao Chen, et al.",
+    "journal": "Journal of Materials in Civil Engineering",
+    "year": "2019",
+    "doi": "10.1061/(asce)mt.1943-5533.0002767",
+    "taskZh": "基于实体工程现场（in-place）实测体积参数（空隙率、矿料间隙率、沥青饱和度、压实度等）与路段车辙、开裂病害调查数据，统计分析现场体积指标对车辙与开裂性能的影响规律，为体积参数控制范围提供依据。"
+  },
+  {
+    "id": "lit-085",
+    "title": "Evaluation of the Potential of Sasobit REDUX Additive to Lower Warm-Mix Asphalt Production Temperature",
+    "sourceRef": "10.3390/ma12081285",
+    "authors": "Almeida Arminda et al.",
+    "journal": "Materials",
+    "year": "2019",
+    "doi": "10.3390/ma12081285",
+    "taskZh": "在90、100、110℃三个目标击实温度下，用马歇尔试验与和易性（压实）试验评价Sasobit REDUX温拌剂，并以热拌HMA为对照：温拌混合料空隙率约4%、稳定度约11 kN、流值约4 mm、马歇尔商大于2 kN/mm，且三个温度下和易性差异小于0.4%，据此判定可降低生产温度约20℃。"
+  },
+  {
+    "id": "lit-086",
+    "title": "Laboratory Performance of Hot Mix Asphalt with High Reclaimed Asphalt Pavement (RAP) and Fine Reclaimed Asphalt Pavement (FRAP) Content",
+    "sourceRef": "10.3390/ma12162536",
+    "authors": "Sen Han, Xianpeng Cheng, Yamin Liu, Yacai Zhang",
+    "journal": "Materials",
+    "year": "2019",
+    "doi": "10.3390/ma12162536",
+    "taskZh": "制备RAP掺量30%、40%、50%与细RAP（FRAP，0~5 mm）掺量10%、15%、20%的热拌再生混合料，经低温弯曲、疲劳与水稳定性试验得出：可节省新沥青41%（30-R-10）至63%（50-R-15），但低温与疲劳性能随掺量增加而下降，水稳定性呈先升后降趋势。"
+  },
+  {
+    "id": "lit-087",
+    "title": "Mechanistic Fatigue Performance Evaluation of Stone Mastic Asphalt Mixtures: Effect of Asphalt Performance Grade and Elastic Recovery",
+    "sourceRef": "10.3390/polym16172414",
+    "authors": "Jongsub Lee, Sungjin Lee, Yujoong Hwang, Ohsun Kwon, et al.",
+    "journal": "Polymers",
+    "year": "2024",
+    "doi": "10.3390/polym16172414",
+    "taskZh": "对6种改性沥青按AASHTO M 320与T 350的PG等级及MSCR弹性恢复分类，采用公称最大粒径10 mm的SMA级配，经AMPT动态模量与直接拉伸循环疲劳试验并基于VECD理论计算疲劳指数Sapp与容许重车等级；其中橡胶基PG76-28初始应变最小、弹性恢复最高，疲劳表现最优。"
+  },
+  {
+    "id": "lit-088",
+    "title": "Predicting rutting performance of asphalt mixture from binder properties and mixture design variables",
+    "sourceRef": "10.1080/14680629.2020.1820890",
+    "authors": "Chuanqi Yan, Yuan Zhang, Hussain U. Bahia",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2022",
+    "doi": "10.1080/14680629.2020.1820890",
+    "taskZh": "采集10个州22种厂拌混合料与5种室内混合料（涵盖不同PG等级、集料、RAP掺量与配合比），将Superpave胶结料车辙因子G*/sinδ与MSCR参数Jnr3.2同混合料动态模量、汉堡车辙试验结果建立相关关系，实现由胶结料指标与配合比变量预测混合料抗车辙性能。"
+  },
+  {
+    "id": "lit-089",
+    "title": "Analysis of Modulus Properties of High-Modulus Asphalt Mixture and Its New Evaluation Index of Rutting Resistance",
+    "sourceRef": "10.3390/su15097574",
+    "authors": "Guojing Huang, Jiupeng Zhang, Bing Hui, Hongfei Zhang, et al.",
+    "journal": "Sustainability",
+    "year": "2023",
+    "doi": "10.3390/su15097574",
+    "taskZh": "对比硬质沥青、聚乙烯、溶解型聚烯烃三类高模量沥青混合料（HMAM）与两种SBS改性混合料的动态模量与车辙试验，发现55℃下0.1 Hz与25 Hz动态模量之比与动稳定度相关性最好，提出以模量绝对值与该比值作为抗车辙评价指标，并判定高模量剂方案抗车辙最优。"
+  },
+  {
+    "id": "lit-090",
+    "title": "Enhancing understanding of asphalt mixture dynamic modulus prediction through interpretable machine learning method",
+    "sourceRef": "10.1016/j.aei.2025.103111",
+    "authors": "Ke Zhang, Zhaohui Min, Xiatong Hao, Theunis F.P. Henning, et al.",
+    "journal": "Advanced Engineering Informatics",
+    "year": "2025",
+    "doi": "10.1016/j.aei.2025.103111",
+    "taskZh": "对比多种机器学习模型预测E*，并用SHAP等可解释方法量化级配、沥青与体积参数的贡献，给出高精度且可解释的E*代理模型。"
+  },
+  {
+    "id": "lit-091",
+    "title": "Regression-Based Performance Prediction in Asphalt Mixture Design and Input Analysis with SHAP",
+    "sourceRef": "10.3390/app151910779",
+    "authors": "Kemal Muhammet Erten, Remzi Gürfidan",
+    "journal": "Applied Sciences",
+    "year": "2025",
+    "doi": "10.3390/app151910779",
+    "taskZh": "用回归与集成学习预测马歇尔试件力学性能，并以SHAP量化各组成输入对性能的贡献与方向，服务于配合比设计输入筛选。"
+  },
+  {
+    "id": "lit-092",
+    "title": "Coupled prediction of viscoelastic properties of asphalt mixtures using a multi-task physics-constrained neural network",
+    "sourceRef": "10.1016/j.aei.2026.104437",
+    "authors": "Bingyan Cui, Hao Wang",
+    "journal": "Advanced Engineering Informatics",
+    "year": "2026",
+    "doi": "10.1016/j.aei.2026.104437",
+    "taskZh": "多任务物理约束神经网络一次前向同时输出动态模量与相位角，共享表征并施加黏弹一致性约束，实现耦合高精度预测。"
+  },
+  {
+    "id": "lit-093",
+    "title": "BoTorch: A Framework for Efficient Monte-Carlo Bayesian Optimization",
+    "sourceRef": "Advances in Neural Information Processing Systems 33 (NeurIPS 2020), 2020",
+    "authors": "Maximilian Balandat et al.",
+    "journal": "Advances in Neural Information Processing Systems 33 (NeurIPS 2020)",
+    "year": "2020",
+    "taskZh": "发布开源蒙特卡洛贝叶斯优化框架 BoTorch，统一提供批量、多目标、约束采集函数（含 qEHVI/qNEHVI）与自动微分优化器。"
+  },
+  {
+    "id": "lit-094",
+    "title": "Sample-efficient Multi-objective Molecular Optimization with GFlowNets",
+    "sourceRef": "10.52202/075280-3487",
+    "authors": "Yiheng Zhu, Jialu Wu, Chaowen Hu, Jiahuan Yan, et al.",
+    "journal": "Advances in Neural Information Processing Systems 36",
+    "year": "2023",
+    "doi": "10.52202/075280-3487",
+    "taskZh": "用超网络条件化的GFlowNet（HN-GFN）充当多目标贝叶斯优化的采集函数优化器，一次采样即给出覆盖整个Pareto前沿的多样化候选分子。"
+  },
+  {
+    "id": "lit-095",
+    "title": "Parallel Bayesian Optimization of Multiple Noisy Objectives with Expected Hypervolume Improvement",
+    "sourceRef": "Advances in Neural Information Processing Systems 36 (NeurIPS 2021), 2021",
+    "authors": "Samuel Daulton et al.",
+    "journal": "Advances in Neural Information Processing Systems 36 (NeurIPS 2021)",
+    "year": "2021",
+    "taskZh": "提出 qNEHVI，用蒙特卡洛样本近似期望超体积改进，解决多目标、带观测噪声、可批量并行下料的贝叶斯优化难题。"
+  },
+  {
+    "id": "lit-096",
+    "title": "Accuracy of Dynamic Modulus Models of Asphalt Mixtures Containing Reclaimed Asphalt (RA)",
+    "sourceRef": "10.3390/app142210505",
+    "authors": "Majda Belhaj, Jan Valentin, Nicola Baldo",
+    "journal": "Applied Sciences",
+    "year": "2024",
+    "doi": "10.3390/app142210505",
+    "taskZh": "以0%/30%/40%/50%再生料混合料的室内试验为基准，评估Witczak sigmoid主曲线模型与广义Huet-Sayegh(2S2P1D)流变模型的E*预测精度，结论为Witczak精度最佳而2S2P1D在低频/高频段偏差较大。"
+  },
+  {
+    "id": "lit-097",
+    "title": "A mix design–supporting multi-objective optimization framework for ultra-high-performance concrete balancing mechanical strength, workability, cost efficiency, and carbon emission criteria",
+    "sourceRef": "10.1016/j.cscm.2026.e06043",
+    "authors": "Minh Huy Nguyen, Minh Hai Nguyen, Thi Minh Truc Huynh, Phuong Nam Huynh, et al.",
+    "journal": "Case Studies in Construction Materials",
+    "year": "2026",
+    "doi": "10.1016/j.cscm.2026.e06043",
+    "taskZh": "构建支持配合比设计的四目标优化框架，同时权衡抗压强度、工作性、成本效率与碳排放，输出可直接使用的配合比方案集。"
+  },
+  {
+    "id": "lit-098",
+    "title": "Enhancing Asphalt Mix Design with Transfer Learning and Hybrid Artificial Intelligence",
+    "sourceRef": "10.1016/j.cscm.2025.e05258",
+    "authors": "Yared Bitew Kebede, Ming-Der Yang, Henok Desalegn Shiku",
+    "journal": "Case Studies in Construction Materials",
+    "year": "2025",
+    "doi": "10.1016/j.cscm.2025.e05258",
+    "taskZh": "用迁移学习与混合人工智能（集成多种机器学习模型）提升沥青混合料配合比设计的性能预测精度，缓解配合比试验数据小样本问题。"
+  },
+  {
+    "id": "lit-099",
+    "title": "Physics-informed TVAE and probabilistic learning for uncertainty-aware prediction of tensile strength and moisture susceptibility in sustainable asphalt mixtures",
+    "sourceRef": "10.1016/j.clema.2026.100404",
+    "authors": "Asim Abbas, Aman Kumar, Moncef L. Nehdi",
+    "journal": "Cleaner Materials",
+    "year": "2026",
+    "doi": "10.1016/j.clema.2026.100404",
+    "taskZh": "用物理信息约束的表格变分自编码器(TVAE)扩充小样本，再以概率学习同时预测抗拉强度与水稳定性(TSR)，并输出不确定性区间而非点值。"
+  },
+  {
+    "id": "lit-100",
+    "title": "Developing a prediction model for rutting depth of asphalt mixtures using gene expression programming",
+    "sourceRef": "10.1016/j.conbuildmat.2020.120543",
+    "authors": "Hamed Majidifard, Behnam Jahangiri, Punyaslok Rath, Loreto Urra Contreras, et al.",
+    "journal": "Construction and Building Materials",
+    "year": "2021",
+    "doi": "10.1016/j.conbuildmat.2020.120543",
+    "taskZh": "用基因表达式编程(GEP)直接从胶结料PG、级配、沥青用量与试验条件生成车辙深度显式预测公式，精度高且形式透明可审查。"
+  },
+  {
+    "id": "lit-101",
+    "title": "Research on prediction models for low-temperature cracking characteristics of asphalt mixtures by integrating laboratory experiments and machine learning",
+    "sourceRef": "10.1016/j.conbuildmat.2026.146545",
+    "authors": "Mengmeng Zhou, Meng Guo, Xiupeng Yao, Xiuli Du",
+    "journal": "Construction and Building Materials",
+    "year": "2026",
+    "doi": "10.1016/j.conbuildmat.2026.146545",
+    "taskZh": "融合室内低温试验数据与机器学习，预测低温开裂特征指标（低温弯曲应变/劲度类），支撑低温环境下的材料选型。"
+  },
+  {
+    "id": "lit-102",
+    "title": "XGBoost-SHAP framework for asphalt pavement condition evaluation",
+    "sourceRef": "10.1016/j.conbuildmat.2024.136182",
+    "authors": "Aakash Gupta, Sachin Gowda, Achyut Tiwari, Ashok Kumar Gupta",
+    "journal": "Construction and Building Materials",
+    "year": "2024",
+    "doi": "10.1016/j.conbuildmat.2024.136182",
+    "taskZh": "以XGBoost建模路面状况并耦合SHAP解释，识别主导影响因素，预测精度显著优于传统回归基线。"
+  },
+  {
+    "id": "lit-103",
+    "title": "Physics-informed machine learning for asphalt mixture dynamic modulus: Balancing high accuracy with stability and rationality",
+    "sourceRef": "10.1016/j.engappai.2026.115997",
+    "authors": "Jiahao Sheng, Li Liu, Zhaohui Liu, Da Yang, et al.",
+    "journal": "Engineering Applications of Artificial Intelligence",
+    "year": "2026",
+    "doi": "10.1016/j.engappai.2026.115997",
+    "taskZh": "以级配、沥青PG等级、体积参数及加载频率/温度为输入预测动态模量E*，把主曲线/黏弹机理约束嵌入损失函数，提升外推稳定性与合理性。"
+  },
+  {
+    "id": "lit-104",
+    "title": "Uncertainty-aware prediction of asphalt pavement roughness using probabilistic machine learning",
+    "sourceRef": "10.1016/j.engappai.2026.116515",
+    "authors": "Abolfazl Afshin, Soodeh Asgari, Ali Behnood",
+    "journal": "Engineering Applications of Artificial Intelligence",
+    "year": "2026",
+    "doi": "10.1016/j.engappai.2026.116515",
+    "taskZh": "用概率机器学习预测路面平整度IRI，同时给出预测区间以量化认知与数据不确定性，而非单一确定值。"
+  },
+  {
+    "id": "lit-105",
+    "title": "A fast and elitist multiobjective genetic algorithm: NSGA-II",
+    "sourceRef": "10.1109/4235.996017",
+    "authors": "K. Deb, A. Pratap, S. Agarwal, T. Meyarivan",
+    "journal": "IEEE Transactions on Evolutionary Computation",
+    "year": "2002",
+    "doi": "10.1109/4235.996017",
+    "taskZh": "提出快速非支配排序与拥挤度距离的精英保留多目标遗传算法，无需指定权重即可一次性获得均匀Pareto最优解集。"
+  },
+  {
+    "id": "lit-106",
+    "title": "An Evolutionary Many-Objective Optimization Algorithm Using Reference-Point-Based Nondominated Sorting Approach, Part I: Solving Problems With Box Constraints",
+    "sourceRef": "10.1109/tevc.2013.2281535",
+    "authors": "Kalyanmoy Deb, Himanshu Jain",
+    "journal": "IEEE Transactions on Evolutionary Computation",
+    "year": "2014",
+    "doi": "10.1109/tevc.2013.2281535",
+    "taskZh": "提出基于参考点的非支配排序（NSGA-III），用均匀参考点维持多样性，解决4个及以上目标时Pareto解退化的问题。"
+  },
+  {
+    "id": "lit-107",
+    "title": "MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition",
+    "sourceRef": "10.1109/tevc.2007.892759",
+    "authors": "Qingfu Zhang, Hui Li",
+    "journal": "IEEE Transactions on Evolutionary Computation",
+    "year": "2007",
+    "doi": "10.1109/tevc.2007.892759",
+    "taskZh": "把多目标问题分解为一组单目标子问题并用邻域协同进化求解，权重向量扫描即可得到分布均匀的Pareto解集。"
+  },
+  {
+    "id": "lit-108",
+    "title": "Predicting the dynamic modulus of asphalt mixture using hybridized artificial neural network and grey wolf optimizer",
+    "sourceRef": "10.1080/10298436.2021.2005056",
+    "authors": "Emadaldin Mohammadi Golafshani, Ali Behnood, Mohammad M. Karimi",
+    "journal": "International Journal of Pavement Engineering",
+    "year": "2023",
+    "doi": "10.1080/10298436.2021.2005056",
+    "taskZh": "用灰狼优化器自动搜索ANN超参数预测E*，精度显著优于传统回归与Witczak类经验模型，给出可用的元启发式-神经网络混合流程。"
+  },
+  {
+    "id": "lit-109",
+    "title": "Prediction of moisture susceptibility of asphalt mixtures containing RAP materials using machine learning algorithms",
+    "sourceRef": "10.1080/10298436.2024.2431610",
+    "authors": "Abolfazl Afshin, Ali Behnood",
+    "journal": "International Journal of Pavement Engineering",
+    "year": "2024",
+    "doi": "10.1080/10298436.2024.2431610",
+    "taskZh": "输入RAP掺量、级配与体积参数，用多种机器学习算法预测水稳定性指标TSR，树类集成模型精度最高。"
+  },
+  {
+    "id": "lit-110",
+    "title": "Optimization of asphalt mix design considering mixture performance, environmental impact, and life cycle cost",
+    "sourceRef": "10.1016/j.jclepro.2025.145618",
+    "authors": "Jiarui Wang, Runhua Zhang, Hang Zhou, Weidong Huang, et al.",
+    "journal": "Journal of Cleaner Production",
+    "year": "2025",
+    "doi": "10.1016/j.jclepro.2025.145618",
+    "taskZh": "以路用性能、环境影响与全寿命周期成本为目标，对沥青混合料配合比（材料组成）做多目标优化并给出权衡方案。"
+  },
+  {
+    "id": "lit-111",
+    "title": "Modeling the rutting performance of asphalt pavements: a review",
+    "sourceRef": "10.1186/s43065-023-00082-9",
+    "authors": "Yong Deng, Xianming Shi",
+    "journal": "Journal of Infrastructure Preservation and Resilience",
+    "year": "2023",
+    "doi": "10.1186/s43065-023-00082-9",
+    "taskZh": "系统综述车辙性能建模方法（经验模型、力学-经验模型到数据驱动/机器学习模型），梳理输入变量体系、精度水平与适用局限。"
+  },
+  {
+    "id": "lit-112",
+    "title": "Predicting the Fatigue Life of Asphalt Concrete Using Neural Networks",
+    "sourceRef": "10.1061/jmcee7.mteng-20929",
+    "authors": "Jakub Houlík, Jan Valentin, Václav Nežerka",
+    "journal": "Journal of Materials in Civil Engineering",
+    "year": "2026",
+    "doi": "10.1061/jmcee7.mteng-20929",
+    "taskZh": "以应变水平、沥青用量与空隙率为输入，用ANN（2隐层×200神经元、MSLE损失、四折交叉验证）预测四点弯曲疲劳寿命，全数据集R²约0.90，并给出部分依赖图。"
+  },
+  {
+    "id": "lit-113",
+    "title": "Asphalt Pavement Performance Prediction Using Ensemble Learning Methods",
+    "sourceRef": "10.1007/978-3-032-04774-8_23",
+    "authors": "Tiago Tamagusko, Adelino Ferreira",
+    "journal": "Lecture Notes in Mobility",
+    "year": "2026",
+    "doi": "10.1007/978-3-032-04774-8_23",
+    "taskZh": "用随机森林/梯度提升等树集成模型预测路面性能（平整度IRI等），配合特征重要性分析支撑养护管理决策。"
+  },
+  {
+    "id": "lit-114",
+    "title": "Machine learning-based inverse design methods considering data characteristics and design space size in materials design and manufacturing: a review",
+    "sourceRef": "10.1039/d3mh00039g",
+    "authors": "Junhyeong Lee, Donggeun Park, Mingyu Lee, Hugon Lee, et al.",
+    "journal": "Materials Horizons",
+    "year": "2023",
+    "doi": "10.1039/d3mh00039g",
+    "taskZh": "按数据量与设计空间规模把机器学习逆向设计方法分为优化型、生成型与判别型三类，并给出方法选型指南与挑战梳理。"
+  },
+  {
+    "id": "lit-115",
+    "title": "Physics-guided neural network for predicting asphalt mixture rutting with balanced accuracy, stability and rationality",
+    "sourceRef": "10.1016/j.neunet.2023.12.039",
+    "authors": "Yong Deng, Haifeng Wang, Xianming Shi",
+    "journal": "Neural Networks",
+    "year": "2024",
+    "doi": "10.1016/j.neunet.2023.12.039",
+    "taskZh": "输入级配、沥青与体积参数，用物理引导（PINN思路）神经网络预测车辙深度，在精度、单调稳定性与外推合理性上取得平衡，优于纯数据驱动模型。"
+  },
+  {
+    "id": "lit-116",
+    "title": "Evolution-guided Bayesian optimization for constrained multi-objective optimization in self-driving labs",
+    "sourceRef": "10.1038/s41524-024-01274-x",
+    "authors": "Andre K. Y. Low, Flore Mekki-Berrada, Abhishek Gupta, Aleksandr Ostudin, et al.",
+    "journal": "npj Computational Materials",
+    "year": "2024",
+    "doi": "10.1038/s41524-024-01274-x",
+    "taskZh": "把进化算法与批量贝叶斯优化耦合，在硬约束下做多目标优化，并把该策略用于自驱动实验室的自动化材料/配方探索闭环。"
+  },
+  {
+    "id": "lit-117",
+    "title": "Particle swarm optimization",
+    "sourceRef": "10.1109/icnn.1995.488968",
+    "authors": "J. Kennedy, R. Eberhart",
+    "journal": "Proceedings of ICNN'95 - International Conference on Neural Networks",
+    "year": "2002",
+    "doi": "10.1109/icnn.1995.488968",
+    "taskZh": "提出粒子群优化算法，用个体最优与群体最优引导速度更新，实现连续空间全局搜索，参数少、收敛快。"
+  },
+  {
+    "id": "lit-118",
+    "title": "Differentiable Expected Hypervolume Improvement for Parallel Multi-Objective Bayesian Optimization",
+    "sourceRef": "Proceedings of the 37th International Conference on Machine Learning (ICML 2020), 2020",
+    "authors": "Samuel Daulton et al.",
+    "journal": "Proceedings of the 37th International Conference on Machine Learning (ICML 2020)",
+    "year": "2020",
+    "taskZh": "提出可微分的期望超体积改进 qEHVI 及其精确梯度，使多目标贝叶斯优化能一次推荐一批候选配比并高效优化采集函数。"
+  },
+  {
+    "id": "lit-119",
+    "title": "Taking the Human Out of the Loop: A Review of Bayesian Optimization",
+    "sourceRef": "10.1109/jproc.2015.2494218",
+    "authors": "Bobak Shahriari, Kevin Swersky, Ziyu Wang, Ryan P. Adams, et al.",
+    "journal": "Proceedings of the IEEE",
+    "year": "2016",
+    "doi": "10.1109/jproc.2015.2494218",
+    "taskZh": "系统综述贝叶斯优化的概率代理模型、采集函数（EI/UCB/ES/Knowledge Gradient）与收敛理论，是黑箱昂贵函数优化的方法总纲。"
+  },
+  {
+    "id": "lit-120",
+    "title": "Data-driven efficient prediction and design optimisation for high-temperature performance of asphalt mixture",
+    "sourceRef": "10.1080/14680629.2026.2669991",
+    "authors": "Jinhong Tan, Shiqi Wang, Gang Xu, Xianhua Chen",
+    "journal": "Road Materials and Pavement Design",
+    "year": "2026",
+    "doi": "10.1080/14680629.2026.2669991",
+    "taskZh": "建立数据驱动模型预测沥青混合料高温性能（车辙类指标），并反向优化组成设计，形成“高效预测→配比寻优”闭环。"
+  },
+  {
+    "id": "lit-121",
+    "title": "Bayesian Optimization for Materials Design",
+    "sourceRef": "10.1007/978-3-319-23871-5_3",
+    "authors": "Peter I. Frazier, Jialei Wang",
+    "journal": "Springer Series in Materials Science",
+    "year": "2016",
+    "doi": "10.1007/978-3-319-23871-5_3",
+    "taskZh": "面向材料设计的贝叶斯优化工作流：以高斯过程为代理、以采集函数指导下一组实验，在实验昂贵稀少时高效逼近最优材料配方。"
+  },
+  {
+    "id": "lit-122",
+    "title": "Revised Predictive Model for Dynamic (Complex) Modulus of Asphalt Mixtures",
+    "sourceRef": "10.1177/0361198196154000103",
+    "authors": "M. W. Witczak, O. A. Fonseca",
+    "journal": "Transportation Research Record: Journal of the Transportation Research Board",
+    "year": "1996",
+    "doi": "10.1177/0361198196154000103",
+    "taskZh": "提出（修正）Witczak动态模量经验预测模型：以级配、沥青黏度/复数模量与体积参数回归E*主曲线，是后续所有ML代理模型的标准对比基线。"
+  },
+  {
+    "id": "lit-123",
+    "title": "数据驱动下的沥青混合料材料组成设计方法",
+    "sourceRef": "10.11896/cldb.24010230",
+    "authors": "刘朝晖 et al. (LIU Zhaohui et al.)",
+    "journal": "材料导报 (Materials Reports)",
+    "year": "2025",
+    "doi": "10.11896/cldb.24010230",
+    "taskZh": "以沥青种类、空隙率等材料组成为输入、动稳定度与动态模量等性能为输出建BP/XGBoost/RF模型并建MySQL性能库，再用SQL按性能条件反向匹配出材料组成参考值。"
+  },
+  {
+    "id": "lit-124",
+    "title": "High-Resolution Texture/Friction Dataset: Characterizing Asphalt Pavements and Aggregate Mosaics at Varied Polishing Stages for Measured Friction Analysis",
+    "sourceRef": "文献, 2024",
+    "authors": "Mendeley Data 发布者（数据集条目）",
+    "year": "2024",
+    "taskZh": "不同抛光阶段沥青路面与集料马赛克的高分辨率表面纹理与摩擦系数数据集，用于抗滑性能与表面功能评价。"
+  },
+  {
+    "id": "lit-125",
+    "title": "Long-Term Pavement Performance (LTPP) 长期路面性能数据库",
+    "sourceRef": "文献, 2026",
+    "authors": "Federal Highway Administration (FHWA) et al.",
+    "year": "2026",
+    "taskZh": "美国/加拿大2500余个沥青与水泥路面试验段的长期性能、交通、气候、结构与养护数据，用于路面性能衰变建模与养护决策。"
+  },
+  {
+    "id": "lit-126",
+    "title": "Pavement Performance Data（Utah Hive 研究数据仓储）",
+    "sourceRef": "文献, 2025",
+    "authors": "Jeremiah Adejube et al. (University of Utah)",
+    "year": "2025",
+    "taskZh": "11种沥青混合料低温（0至-24℃）BBR动态模量与胶结料性能、RAP掺量、体积参数数据集，含Hirsch模型对比。"
+  },
+  {
+    "id": "lit-127",
+    "title": "中国统计年鉴（国家统计局，交通运输章节：公路里程、等级公路与养护数据）",
+    "sourceRef": "文献, 2025",
+    "authors": "国家统计局",
+    "year": "2025",
+    "taskZh": "全国及分省公路总里程、等级公路构成、路网密度等年度统计，用于养护需求规模测算与区域选材决策背景数据。"
+  },
+  {
+    "id": "lit-128",
+    "title": "交通运输部政府信息公开平台（统计与公路养护相关公开数据）",
+    "sourceRef": "文献, 2026",
+    "authors": "中华人民共和国交通运输部",
+    "year": "2026",
+    "taskZh": "发布公路养护统计、交通行业发展统计公报等官方口径数据，用于中国养护规模与政策依据引用。"
+  },
+  {
+    "id": "lit-129",
+    "title": "Dataset used to develop soft computing models that predict the stiffness modulus of bituminous mixtures",
+    "sourceRef": "10.1016/j.dib.2024.110382",
+    "authors": "Lee P. Leon, Hector Martin, Upaka Rathnayake, Portia Felix",
+    "journal": "Data in Brief",
+    "year": "2024",
+    "doi": "10.1016/j.dib.2024.110382",
+    "taskZh": "360组沥青混合料（HMA/SMA）刚度模量数据集，含沥青黏度、沥青含量、温度、体积指标等，用于模量预测建模。"
+  },
+  {
+    "id": "lit-130",
+    "title": "Factors affecting asphalt concrete permanent deformation: Experimental dataset for uniaxial repeated load test",
+    "sourceRef": "10.1016/j.dib.2024.110224",
+    "authors": "Amjad H. Albayati",
+    "journal": "Data in Brief",
+    "year": "2024",
+    "doi": "10.1016/j.dib.2024.110224",
+    "taskZh": "沥青混凝土单轴重复加载永久变形（车辙）试验数据集，覆盖级配、胶结料与荷载条件，用于车辙本构与预测。"
+  },
+  {
+    "id": "lit-131",
+    "title": "Concrete Compressive Strength（UCI Machine Learning Repository）",
+    "sourceRef": "10.24432/c5pk67",
+    "authors": "I-Cheng Yeh",
+    "journal": "UCI Machine Learning Repository",
+    "year": "2007",
+    "doi": "10.24432/c5pk67",
+    "taskZh": "1030条混凝土抗压强度记录，8个配合比与龄期特征，是材料信息学与配合比-性能回归的经典基准数据。"
+  },
+  {
+    "id": "lit-132",
+    "title": "LangChain: Building applications with LLMs through composability",
+    "sourceRef": "文献, 2026",
+    "authors": "Harrison Chase et al. (LangChain, Inc.)",
+    "year": "2026",
+    "taskZh": "大模型应用编排框架，用于构建“规范-材料-案例”知识库检索问答与养护方案智能推荐的解释生成链路。"
+  },
+  {
+    "id": "lit-133",
+    "title": "PyCaret: An open source, low-code machine learning library in Python",
+    "sourceRef": "文献, 2024",
+    "authors": "Moez Ali",
+    "year": "2024",
+    "taskZh": "低代码AutoML库，可一键完成多模型对比、调参与部署，用于快速筛选最优沥青性能预测模型。"
+  },
+  {
+    "id": "lit-134",
+    "title": "InterpretML: A Unified Framework for Machine Learning Interpretability",
+    "sourceRef": "arXiv / Microsoft Research, 2019",
+    "authors": "Harsha Nori et al. (Microsoft)",
+    "journal": "arXiv / Microsoft Research",
+    "year": "2019",
+    "taskZh": "统一可解释机器学习框架，含EBM玻璃盒模型与SHAP/LIME解释器，可与黑盒推荐模型对比以提升决策可信度。"
+  },
+  {
+    "id": "lit-135",
+    "title": "Pymoo: Multi-Objective Optimization in Python",
+    "sourceRef": "10.1109/access.2020.2990567",
+    "authors": "Julian Blank, Kalyanmoy Deb",
+    "journal": "IEEE Access",
+    "year": "2020",
+    "doi": "10.1109/access.2020.2990567",
+    "taskZh": "多目标进化优化框架（NSGA-II/III、MOEA/D等），用于在造价、路用性能、碳排放之间做沥青方案Pareto优选。"
+  },
+  {
+    "id": "lit-136",
+    "title": "DEAP: Evolutionary Algorithms Made Easy",
+    "sourceRef": "Journal of Machine Learning Research, 2012",
+    "authors": "Félix-Antoine Fortin et al.",
+    "journal": "Journal of Machine Learning Research",
+    "year": "2012",
+    "taskZh": "进化算法框架，支持遗传算法/遗传编程与NSGA-II，用于养护方案组合优化与材料配比搜索。"
+  },
+  {
+    "id": "lit-137",
+    "title": "MAPIE: A scikit-learn-compatible module for estimating prediction intervals",
+    "sourceRef": "Journal of Open Source Software, 2022",
+    "authors": "V. Taquet et al. (MAPIE contributors)",
+    "journal": "Journal of Open Source Software",
+    "year": "2022",
+    "taskZh": "符合预测(conformal prediction)与预测区间估计库，为路面性能预测与养护时机决策提供不确定性量化。"
+  },
+  {
+    "id": "lit-138",
+    "title": "LightGBM: A Highly Efficient Gradient Boosting Decision Tree",
+    "sourceRef": "NeurIPS 2017, 2017",
+    "authors": "Guolin Ke et al. (Microsoft)",
+    "journal": "NeurIPS 2017",
+    "year": "2017",
+    "taskZh": "高效梯度提升框架，适合中小规模路面/材料表格数据的高精度建模与超参数调优，作为推荐系统核心回归器。"
+  },
+  {
+    "id": "lit-139",
+    "title": "SHAP (SHapley Additive exPlanations)",
+    "sourceRef": "NeurIPS 2017, 2017",
+    "authors": "Scott M. Lundberg et al.",
+    "journal": "NeurIPS 2017",
+    "year": "2017",
+    "taskZh": "基于Shapley值的模型可解释性工具，输出各配合比/环境特征对性能预测的贡献，支撑养护决策可解释性与方案溯源。"
+  },
+  {
+    "id": "lit-140",
+    "title": "GPyTorch: Blackbox Matrix-Matrix Gaussian Process Inference with GPU Acceleration",
+    "sourceRef": "NeurIPS 2018, 2018",
+    "authors": "Jacob R. Gardner et al.",
+    "journal": "NeurIPS 2018",
+    "year": "2018",
+    "taskZh": "GPU加速高斯过程库，用于小样本沥青性能建模与贝叶斯优化代理模型，输出带方差的预测。"
+  },
+  {
+    "id": "lit-141",
+    "title": "XGBoost",
+    "sourceRef": "10.1145/2939672.2939785",
+    "authors": "Tianqi Chen, Carlos Guestrin",
+    "journal": "Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+    "year": "2016",
+    "doi": "10.1145/2939672.2939785",
+    "taskZh": "梯度提升树工具箱，用于由配合比/体积参数/气候特征回归预测模量、车辙与疲劳寿命并做特征重要性分析。"
+  },
+  {
+    "id": "lit-142",
+    "title": "Optuna",
+    "sourceRef": "10.1145/3292500.3330701",
+    "authors": "Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, et al.",
+    "journal": "Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining",
+    "year": "2019",
+    "doi": "10.1145/3292500.3330701",
+    "taskZh": "定义-运行式超参数优化框架，支持TPE剪枝与并行调参，用于材料性能模型与推荐策略的自动寻优。"
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "tags": [
+    { "id": "c-hot-humid", "label": "高温湿热", "kind": "climate", "synonyms": ["华南高温", "炎热多雨", "亚热带"] },
+    { "id": "c-hot-dry", "label": "高温干燥", "kind": "climate", "synonyms": ["西北高温", "夏季炎热"] },
+    { "id": "c-cold", "label": "寒冷地区", "kind": "climate", "synonyms": ["低温", "严寒", "冬季低温"] },
+    { "id": "c-freeze-thaw", "label": "冻融循环", "kind": "climate", "synonyms": ["冰冻", "冻融", "季节冻土区"] },
+    { "id": "c-rainy", "label": "多雨潮湿", "kind": "climate", "synonyms": ["多雨", "潮湿", "降水集中"] },
+    { "id": "c-mild", "label": "温和气候", "kind": "climate", "synonyms": ["气候温和", "四季分明"] },
+
+    { "id": "t-heavy", "label": "重载交通", "kind": "traffic", "synonyms": ["重交通", "超载", "大交通量"] },
+    { "id": "t-medium", "label": "中等交通", "kind": "traffic", "synonyms": ["中等交通量"] },
+    { "id": "t-light", "label": "轻交通", "kind": "traffic", "synonyms": ["轻交通量", "低交通量"] },
+    { "id": "t-channelized", "label": "渠化交通", "kind": "traffic", "synonyms": ["渠化", "轮迹集中", "重载车道"] },
+
+    { "id": "d-rutting", "label": "车辙", "kind": "distress", "synonyms": ["永久变形", "推移", "拥包"] },
+    { "id": "d-transverse-crack", "label": "横向裂缝", "kind": "distress", "synonyms": ["温缩裂缝", "低温裂缝", "反射裂缝"] },
+    { "id": "d-longitudinal-crack", "label": "纵向裂缝", "kind": "distress", "synonyms": ["自上而下裂缝"] },
+    { "id": "d-fatigue-crack", "label": "疲劳裂缝", "kind": "distress", "synonyms": ["龟裂", "网裂", "块裂"] },
+    { "id": "d-water-damage", "label": "水损害", "kind": "distress", "synonyms": ["水损坏", "剥落", "唧浆", "坑槽"] },
+    { "id": "d-raveling", "label": "松散剥落", "kind": "distress", "synonyms": ["松散", "麻面", "露骨"] },
+    { "id": "d-skid", "label": "抗滑不足", "kind": "distress", "synonyms": ["打滑", "磨光", "抗滑衰减"] },
+    { "id": "d-noise", "label": "交通噪声", "kind": "distress", "synonyms": ["噪声", "噪音"] },
+    { "id": "d-pothole", "label": "坑槽", "kind": "distress", "synonyms": ["坑洞", "脱皮"] },
+
+    { "id": "k-budget", "label": "预算受限", "kind": "constraint", "synonyms": ["成本控制", "造价", "资金有限"] },
+    { "id": "k-schedule", "label": "工期紧张", "kind": "constraint", "synonyms": ["工期", "快速开放交通", "夜间施工"] },
+    { "id": "k-env", "label": "环保低碳", "kind": "constraint", "synonyms": ["碳减排", "绿色", "节能减排"] },
+    { "id": "k-noise-ctl", "label": "降噪要求", "kind": "constraint", "synonyms": ["低噪声", "静音路面"] },
+    { "id": "k-drainage", "label": "排水要求", "kind": "constraint", "synonyms": ["排水路面", "雨天行车安全"] },
+    { "id": "k-rap", "label": "高RAP再生", "kind": "constraint", "synonyms": ["旧料利用", "再生", "旧路改造"] },
+    { "id": "k-skid-req", "label": "抗滑要求", "kind": "constraint", "synonyms": ["抗滑", "摩擦系数"] },
+    { "id": "k-longevity", "label": "长寿命耐久", "kind": "constraint", "synonyms": ["耐久", "预期寿命", "长寿命路面"] }
+  ]
+}

@@ -1,0 +1,130 @@
+[
+  {
+    "schemaVersion": "1",
+    "id": "case-01",
+    "title": "华南高温重载车辙",
+    "summary": "华南湿热地区、重载渠化交通，路面车辙深度大、推挤拥包严重，目标性能优先级：高温抗车辙 > 抗滑 > 疲劳。",
+    "tags": ["c-hot-humid", "t-heavy", "d-rutting"],
+    "scene": {
+      "schemaVersion": "1",
+      "climate": { "zone": "1-4 华南湿热区", "pgHigh": 76, "pgLow": -10 },
+      "traffic": { "level": "heavy", "esal": 30000000 },
+      "pavement": { "layer": "surface", "structure": "半刚性基层沥青路面" },
+      "distresses": [
+        { "type": "rutting", "severity": "severe" },
+        { "type": "shoving", "severity": "moderate" }
+      ],
+      "constraints": { "budget": 500, "schedule": 30, "env": "normal", "noise": "none" },
+      "notes": "高温多雨地区重载道路上面层维修，车辙深度 20mm，要求快速恢复通车。"
+    },
+    "expected": {
+      "formulas": [
+        { "binder": { "type": "SBS改性沥青", "grade": "I-D", "pg": "PG76-22" }, "modifier": { "type": "SBS", "dosage": 4.5 }, "gradation": { "type": "SMA-13" }, "additives": [{ "type": "木质素纤维", "dosage": 0.3 }], "oilStoneRatio": 6.0, "airVoids": 4.0 },
+        { "binder": { "type": "SBS改性沥青", "grade": "I-D", "pg": "PG76-22" }, "modifier": { "type": "高模量剂", "dosage": 0.6 }, "gradation": { "type": "HMAM-20（中面层）" }, "additives": [], "oilStoneRatio": 4.5, "airVoids": 4.0 },
+        { "binder": { "type": "基质沥青", "grade": "70#", "pg": "PG70-22" }, "modifier": { "type": "抗车辙剂", "dosage": 0.4 }, "gradation": { "type": "AC-16" }, "additives": [{ "type": "木质素纤维", "dosage": 0.3 }], "oilStoneRatio": 4.8, "airVoids": 4.0 }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "1",
+    "id": "case-02",
+    "title": "寒冷地区横向裂缝",
+    "summary": "寒冷冻融地区，路面横向温缩裂缝密集、伴随疲劳龟裂，目标性能优先级：低温抗裂 > 疲劳 > 水稳。",
+    "tags": ["c-cold", "c-freeze-thaw", "d-transverse-crack", "d-fatigue-crack"],
+    "scene": {
+      "schemaVersion": "1",
+      "climate": { "zone": "2-2 东北寒冷区", "pgHigh": 58, "pgLow": -34 },
+      "traffic": { "level": "medium", "esal": 10000000 },
+      "pavement": { "layer": "surface", "structure": "半刚性基层沥青路面" },
+      "distresses": [
+        { "type": "transverse-crack", "severity": "severe" },
+        { "type": "fatigue-crack", "severity": "moderate" }
+      ],
+      "constraints": { "budget": 400, "schedule": 45, "env": "normal", "noise": "none" },
+      "notes": "冬季最低气温约 -35℃，横向裂缝间距小于 20m，需低温抗裂方案。"
+    },
+    "expected": {
+      "formulas": [
+        { "binder": { "type": "橡胶粉改性沥青", "grade": "废胎胶粉改性", "pg": "PG64-34" }, "modifier": { "type": "废胎胶粉", "dosage": 18 }, "gradation": { "type": "SMA-13" }, "additives": [{ "type": "玄武岩纤维", "dosage": 0.4 }], "oilStoneRatio": 6.2, "airVoids": 4.0 },
+        { "binder": { "type": "SBR改性沥青", "grade": "II-B", "pg": "PG58-34" }, "modifier": { "type": "SBR", "dosage": 4 }, "gradation": { "type": "AC-13" }, "additives": [{ "type": "聚酯纤维", "dosage": 0.3 }], "oilStoneRatio": 5.5, "airVoids": 3.5 }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "1",
+    "id": "case-03",
+    "title": "多雨冻融水损害",
+    "summary": "多雨且冬季冻融频繁地区，路面松散剥落、坑槽与水损害严重，目标性能优先级：水稳 > 高温 > 疲劳。",
+    "tags": ["c-rainy", "c-freeze-thaw", "d-water-damage", "d-raveling"],
+    "scene": {
+      "schemaVersion": "1",
+      "climate": { "zone": "1-3 江淮湿润区", "pgHigh": 64, "pgLow": -22 },
+      "traffic": { "level": "medium", "esal": 15000000 },
+      "pavement": { "layer": "surface", "structure": "半刚性基层沥青路面" },
+      "distresses": [
+        { "type": "raveling", "severity": "severe" },
+        { "type": "pothole", "severity": "moderate" },
+        { "type": "water-damage", "severity": "severe" }
+      ],
+      "constraints": { "budget": 350, "schedule": 40, "env": "normal", "noise": "none" },
+      "notes": "年降水集中、冬春冻融循环频繁，水损害与松散剥落为主，需强化抗水损。"
+    },
+    "expected": {
+      "formulas": [
+        { "binder": { "type": "SBS改性沥青", "grade": "I-D", "pg": "PG70-22" }, "modifier": { "type": "SBS", "dosage": 4.5 }, "gradation": { "type": "AC-13" }, "additives": [{ "type": "消石灰", "dosage": 1.5 }], "oilStoneRatio": 5.2, "airVoids": 3.5 },
+        { "binder": { "type": "SBS改性沥青", "grade": "I-D", "pg": "PG70-22" }, "modifier": { "type": "SBS", "dosage": 4.5 }, "gradation": { "type": "SMA-13" }, "additives": [{ "type": "胺类抗剥落剂", "dosage": 0.4 }], "oilStoneRatio": 6.0, "airVoids": 4.0 },
+        { "binder": { "type": "基质沥青", "grade": "70#", "pg": "PG64-22" }, "modifier": { "type": "无", "dosage": 0 }, "gradation": { "type": "AC-13" }, "additives": [{ "type": "消石灰", "dosage": 1.5 }, { "type": "纳米SiO2", "dosage": 6 }], "oilStoneRatio": 5.0, "airVoids": 3.5 }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "1",
+    "id": "case-04",
+    "title": "旧路高RAP再生",
+    "summary": "旧路改造项目，要求高 RAP 掺量再生、预算受限且注重低碳，目标性能优先级：成本/碳排 > 高温 > 低温。",
+    "tags": ["k-rap", "k-env", "k-budget", "t-heavy"],
+    "scene": {
+      "schemaVersion": "1",
+      "climate": { "zone": "2-1 华北温区", "pgHigh": 64, "pgLow": -22 },
+      "traffic": { "level": "heavy", "esal": 20000000 },
+      "pavement": { "layer": "binder", "structure": "旧沥青路面铣刨再生" },
+      "distresses": [
+        { "type": "rutting", "severity": "moderate" },
+        { "type": "fatigue-crack", "severity": "moderate" }
+      ],
+      "constraints": { "budget": 300, "schedule": 60, "env": "strict", "noise": "none" },
+      "notes": "业主明确要求 RAP 掺量不低于 40%，预算受限，优先低碳再生方案。"
+    },
+    "expected": {
+      "formulas": [
+        { "binder": { "type": "基质沥青+再生剂", "grade": "70#", "pg": "PG64-22" }, "modifier": { "type": "再生剂", "dosage": 4 }, "gradation": { "type": "AC-20（40% RAP）" }, "additives": [{ "type": "温拌剂Sasobit REDUX", "dosage": 1.5 }], "oilStoneRatio": 4.6, "airVoids": 4.0 },
+        { "binder": { "type": "SBS改性沥青+再生剂", "grade": "I-C", "pg": "PG70-22" }, "modifier": { "type": "再生剂", "dosage": 4 }, "gradation": { "type": "AC-20（50% RAP）" }, "additives": [{ "type": "温拌剂Sasobit REDUX", "dosage": 1.5 }], "oilStoneRatio": 4.8, "airVoids": 4.0 }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "1",
+    "id": "case-05",
+    "title": "城市低噪排水路面",
+    "summary": "城市干道，居民区段有降噪与雨天排水要求、抗滑要求高，目标性能优先级：降噪/排水 > 抗滑 > 耐久。",
+    "tags": ["k-noise-ctl", "k-drainage", "d-skid", "t-light"],
+    "scene": {
+      "schemaVersion": "1",
+      "climate": { "zone": "1-4 华南湿热区", "pgHigh": 70, "pgLow": -10 },
+      "traffic": { "level": "light", "esal": 5000000 },
+      "pavement": { "layer": "surface", "structure": "城市道路沥青路面" },
+      "distresses": [
+        { "type": "skid", "severity": "moderate" },
+        { "type": "noise", "severity": "severe" }
+      ],
+      "constraints": { "budget": 600, "schedule": 50, "env": "strict", "noise": "strict" },
+      "notes": "居民区段噪声投诉集中，雨天路面积水影响通行，需降噪排水与抗滑兼顾。"
+    },
+    "expected": {
+      "formulas": [
+        { "binder": { "type": "高粘高弹改性沥青", "grade": "高粘型", "pg": "PG76-22" }, "modifier": { "type": "SBS高粘", "dosage": 7.5 }, "gradation": { "type": "OGFC-13" }, "additives": [{ "type": "木质素纤维", "dosage": 0.3 }], "oilStoneRatio": 4.8, "airVoids": 20 },
+        { "binder": { "type": "橡胶粉改性沥青", "grade": "橡胶改性", "pg": "PG76-28" }, "modifier": { "type": "废胎胶粉", "dosage": 18 }, "gradation": { "type": "橡胶多孔沥青 PAC-13" }, "additives": [], "oilStoneRatio": 5.2, "airVoids": 20 }
+      ]
+    }
+  }
+]
