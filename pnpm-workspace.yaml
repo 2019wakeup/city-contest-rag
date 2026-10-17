@@ -1,0 +1,11 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm ≥11 原生构建白名单（旧 onlyBuiltDependencies 已废弃）。
+# 显式放行已知可信的原生依赖；未列出的依赖默认拒绝执行构建脚本。
+allowBuilds:
+  esbuild: true
+  better-sqlite3: true
+  '@lancedb/lancedb': true
+  onnxruntime-node: true
