@@ -43,11 +43,11 @@
 
 | 角色 | 拥有任务 | 写边界（workspace 相对路径） |
 |---|---|---|
-| **Lead**（本会话） | T14、T15、集成与验收、任务板调度 | `docs/`、`scripts/e2e-*`、根级 README 等交付文档 |
+| **critic** | 评审门 R1–R5（T2/T4/T10/T13/T14 完成后） | 仅写 `docs/reviews/rN-*.md`；代码只读，发现需改代码的问题一律反馈 Lead 派单，不自行改 |
+| **Lead**（文档/验收写区） | T14、T15 | `docs/reviews/e2e-*`、`docs/reviews/screenshots/`、其余 `docs/`、`scripts/e2e-*` |
 | **builder-backend** | T1、T2、T6、T7、T8、T9、T10 | `packages/contracts/`、`packages/retrieval/src/`（除 `lancedb.ts`）、`apps/server/`、`prompts/`、根 `package.json`/`pnpm-workspace.yaml`/`tsconfig*.json`/`.env.example` |
 | **builder-data** | T3、T4、T5 | `data/corpus/`、`scripts/`（除 `e2e-*`）、`packages/embedding/`、`packages/retrieval/src/lancedb.ts` |
 | **builder-frontend** | T11、T12、T13 | `apps/web/` |
-| **critic** | 评审门 R1–R5（T2/T4/T10/T13/T14 完成后） | 仅写 `docs/reviews/`；代码只读，发现需改代码的问题一律反馈 Lead 派单，不自行改 |
 
 **协作规则**：任务板用 team_task（含 write_scopes 与 blocked_by）；跨角色依赖只通过已合入 main 的接口（Interfaces 块）；每天 Lead 集成一次 `git pull`-等价同步（共享工作区直接可见）；critic 评审结论 = task 能否 complete 的门。
 
@@ -71,7 +71,7 @@
 
 - [ ] **Step 1: 写失败测试** `packages/contracts/test/contracts.test.ts`：① `SceneInput.parse({...合法样例, extraField: 1})` 成功且输出保留 `extraField`；② 每个顶层 schema 含 `schemaVersion` 枚举 `'1'`；③ `toJsonSchema(SceneInput)` 返回 object 含 `$schema`、`type:'object'`；④ `FIELD_REGISTRY` 覆盖 `climate.zone/climate.pgHigh/climate.pgLow/traffic.level/distresses/constraints.budget/notes` 七条路径且各有 `label/control`。
 - [ ] **Step 2: 运行测试确认失败** Run: `pnpm -C packages/contracts test` Expected: FAIL（模块不存在）
-- [ ] **Step 3: 实现**：zod schema（类型结构按 spec §7 契约核心段）；`FIELD_REGISTRY` 中文 label（"气候分区/PG高温等级/PG低温等级/交通荷载等级/病害类型/预算/备注"）；`toJsonSchema` 用 `zod-to-json-schema`（写入 packages/contracts 依赖）。根 package.json 的 workspace glob：`apps/*`、`packages/*`。
+- [ ] **Step 3: 实现**：zod schema（类型结构按 spec §7 契约核心段）；`FIELD_REGISTRY` 中文 label（"气候分区/PG高温等级/PG低温等级/交通荷载等级/病害类型/预算/备注"）；`toJsonSchema` 用 `zod-to-json-schema`（写入 packages/contracts 依赖）。根 package.json 的 workspace glob：`apps/*`、`packages/*`；**根 devDeps 预置 `typescript/tsx/vitest/xlsx`（T3/T4 脚本要用，避免跨 owner 改根文件）**。
 - [ ] **Step 4: 运行测试确认通过** Run: `pnpm -C packages/contracts test` Expected: 4 组断言 PASS
 - [ ] **Step 5: Commit** `git add -A && git commit -m "feat(contracts): monorepo scaffold + zod 契约包（passthrough/版本/字段注册表）"`
 
@@ -84,7 +84,7 @@
 **Interfaces:**
 - Consumes: T1 的 `CorpusChunk / SearchHit`（来自 packages/contracts）
 - Produces:
-  - `interface VectorStore { add(chunks: CorpusChunk[], vectors: number[][]): Promise<void>; search(q: {vector: number[]; text: string; topK: number; filter?: {docTypes?: string[]; tags?: string[]}}): Promise<SearchHit[]>; delete(docId: string): Promise<void>; rebuild(): Promise<void>; stats(): Promise<{count: number; docTypes: Record<string, number>}> }`
+  - `interface VectorStore { add(chunks: CorpusChunk[], vectors: number[][]): Promise<void>; search(q: {vector?: number[]; text: string; topK: number; filter?: {docTypes?: string[]; tags?: string[]}}): Promise<SearchHit[]>; delete(docId: string): Promise<void>; rebuild(): Promise<void>; stats(): Promise<{count: number; docTypes: Record<string, number>}> }`（`vector` 省略 = 纯 BM25 检索，供金标准评估与 LLM 未配置环境使用）
   - `rrf(rankings: Array<Array<{id: string; score: number}>>, k?: number): {id: string; score: number}[]`
   - `class SqliteVectorStore implements VectorStore`（构造 `new SqliteVectorStore(dbPath: string)`）：FTS5 表存 text（BM25）+ chunks 表存向量 JSON；KNN 用 JS 精确余弦（不引入原生 sqlite-vec，理由见任务内说明）；`search` 融合 = RRF(BM25 top-40, 余弦 top-40) 后按 filter 过滤再截 topK；`rebuild` 清空重建表。
 - 注：`SearchHit` 字段 `{chunkId, text, score, docType, tags, provenance}`。
@@ -98,13 +98,13 @@
 ## Task 3: 语料内容工程——知识条目/规范条文/案例/标签词典（builder-data）
 
 **Files:**
-- Create: `data/corpus/scene-tags.json`、`data/corpus/knowledge/entries.json`、`data/corpus/standards/*.md`（8 份规范各一文件，按条文分节）、`data/corpus/cases/cases.json`、`data/corpus/literature/from-xlsx.json`（占位，T3 只建目录与校验）、`scripts/validate-corpus.ts`、`scripts/convert-literature.ts`
+- Create: `data/corpus/scene-tags.json`、`data/corpus/knowledge/entries.json`、`data/corpus/standards/*.md`（8 份规范各一文件，按条文分节）、`data/corpus/cases/cases.json`、`scripts/validate-corpus.ts`、`scripts/convert-literature.ts`（产出 `data/corpus/literature/from-xlsx.json`）
 - Test: `scripts/validate-corpus.ts` 本身即校验器（vitest 包装 `scripts/test/validate-corpus.test.ts`）
 
 **Interfaces:**
 - Consumes: T1 的 `KnowledgeEntry / CaseSeed` 类型（import 校验）
 - Produces（数据约定，后续任务依赖其 shape）:
-  - `entries.json`: `KnowledgeEntry[]`——id 格式 `k-<category>-<nnn>`（category ∈ binder|modifier|gradation|additive|mixture），每条含 `relations[]`（property/effect/direction(±)/magnitude 定量描述/applicableScene 标签数组/sourceRef DOI 或规范号）。**首版 ≥40 条**（5 案例方向各 ≥6 条，其余通用），原料 = 文献调研报告 §3.2/3.3 + `reference/材料-性能关系/` 全文。
+  - `entries.json`: `KnowledgeEntry[]`——id 格式 `k-<category>-<nnn>`（category ∈ binder|modifier|gradation|additive|mixture），每条含 `relations[]`（property/effect/direction(±)/magnitude 定量描述/applicableScene 标签数组/sourceRef DOI 或规范号）。**首版 ≥40 条**（5 案例方向各 ≥6 条，其余通用；spec 目标 80~120 条，赛后增量补齐），原料 = 文献调研报告 §3.2/3.3 + `reference/材料-性能关系/` 全文。
   - `scene-tags.json`: `{tags: [{id, label, kind: 'climate'|'traffic'|'distress'|'constraint', synonyms?: string[]}]}`，覆盖 5 案例全部标签（华南高温/重载/车辙/低温/横向裂缝/冻融/水损害/RAP再生/降噪排水/预算/工期/环保…）。
   - `cases/cases.json`: 5 条 `CaseSeed`——id `case-01` 华南高温重载车辙 / `case-02` 寒冷地区横向裂缝 / `case-03` 多雨冻融水损害 / `case-04` 旧路高RAP再生 / `case-05` 城市低噪排水；每条含完整 `scene`（所有必填字段）+ `expected.formulas`（2~3 个期望配方方向）。
   - `standards/*.md`: 每条规范条文 `## <规范号>-<条号> <主题>` + 正文 200~500 字 + 文末 `<!-- source: <规范名+条号> -->`。
@@ -125,7 +125,7 @@
 - Produces:
   - `createEmbedder(opts: {model?: 'bge-m3' | 'multilingual-e5-small'; cacheDir?: string}): Promise<Embedder>`；`Embedder = { embed(texts: string[]): Promise<number[][]>; dim: number; modelName: string; modelVersion: string }`（@huggingface/transformers，`env.remoteHost` 读 HF_ENDPOINT）
   - `class LanceDBVectorStore implements VectorStore`（`new LanceDBVectorStore(dbPath: string)`，`@lancedb/lancedb`，collection `chunks` + FTS 索引，混合检索 RRF 复用 T2 fusion）
-  - `scripts/build-index.ts` CLI：`--rebuild` / `--backend=sqlite|lancedb`；流程 = 读 corpus → 切块（entry/条文/题录 各一 chunk）→ contentHash（sha256 text）→ 幂等跳过已入库同 hash → embed → 写 provenance（`pipelineRev` = git rev-parse HEAD 前 7 位，`embeddingModel/modelVersion/dim` 取自 embedder）→ VectorStore.add → 打印 stats。
+  - `buildIndex(opts: {corpusDir: string; store: VectorStore; embedder: Embedder; rebuild?: boolean}): Promise<{added: number; skipped: number; total: number}>`——**放在 `packages/retrieval/src/build.ts`**（server 的 kb/rebuild 路由与 CLI 共用）；`scripts/build-index.ts` 仅为 CLI 薄封装（`--rebuild` / `--backend=sqlite|lancedb`）；流程 = 读 corpus → 切块（entry/条文/题录 各一 chunk）→ contentHash（sha256 text）→ 幂等跳过已入库同 hash → embed → 写 provenance（`pipelineRev` = git rev-parse HEAD 前 7 位，`embeddingModel/modelVersion/dim` 取自 embedder）→ store.add → 返回统计。
 - [ ] **Step 1: 写失败测试**：`embedder.test.ts`——stub pipeline 下 `embed` 返回 n×dim 矩阵、provenance 字段齐全；`build-index.test.ts`——fake embedder（固定向量）+ SqliteVectorStore，跑两遍断言第二遍 skip 数 >0 且 count 不变（幂等，Review Focus #6）；`--rebuild` 后 count 与首遍一致。
 - [ ] **Step 2: 运行确认失败** Expected: FAIL
 - [ ] **Step 3: 实现**：embedder（`@huggingface/transformers`，feature-extraction pipeline，池化 mean；model 名 `Xenova/bge-m3`，备选 `Xenova/multilingual-e5-small`）；`lancedb.ts`（add/search/delete/rebuild/stats 全接口）；`build-index.ts`（tsx 运行）。
@@ -143,7 +143,7 @@
 - Produces: `scripts/golden-eval.ts <backend> [--json]` → 每用例 recall@k（k=5）打印表，任一用例低于 `minRecallAt5` 则 exit 1；用例 shape `{id, query, expectedDocIds: string[], minRecallAt5: number}`。**20 条用例** = 5 案例 × 4 类语料（knowledge/standard/literature/enterprise 各一条 query，enterprise 暂用揭榜需求相关 query）；expectedDocIds 用 T3 中真实 id（如 `k-binder-001`、`std-jtg5142-4`、`lit-012`）。
 - [ ] **Step 1: 写失败测试**：fake VectorStore 返回固定 hits——① 命中达标用例 PASS ② 缺命中用例 FAIL 并 exit 1 ③ `--json` 输出含 recall 字段。
 - [ ] **Step 2: 运行确认失败** Expected: FAIL
-- [ ] **Step 3: 实现**：golden.json（20 条）+ 评估脚本（embed query 用 T4 embedder；或先用「BM25-only」模式跑通——评估器只依赖 VectorStore.search）。
+- [ ] **Step 3: 实现**：golden.json（20 条）+ 评估脚本——**query 只传 `text`（纯 BM25 检索，`vector` 省略，不依赖模型下载，评估器不 import embedder）**。
 - [ ] **Step 4: 运行确认通过** Expected: PASS
 - [ ] **Step 5: Commit** `git commit -m "feat(eval): 金标准20条 recall@5 回归集与评估脚本"`
 
@@ -192,17 +192,18 @@
 **Interfaces:**
 - Consumes: T2 `VectorStore`；T6 `filterByScene`；T7 `mapSceneToTargets/predictFormulas`；T4 `createEmbedder`
 - Produces: `recommend(scene: SceneInput, deps: {store, embedder, relationDb}): Promise<RecommendationReport>`——六步：① zod 解析场景（notes 非空时走 LLM 抽取，LLM_OFF 时忽略 notes）② mapSceneToTargets ③ `filterByScene` 组装候选 Formula（binder×gradation×modifier×additive 组合上限 5）④ predictFormulas ⑤ 加权排序（Σ priorities.weight×归一化预测值 + 约束惩罚）+ 雷达图 8 维 0-100 分 + LCC/碳排/寿命/施工可行性规则估算（规则表 + 假设写在代码注释）⑥ 证据检索（每候选按类型标签 search top3）→ 组装 report。向量库空 → `evidence:[]` + `warnings:['知识库为空，请执行 pnpm build:index']`，主流程仍完成（Review Focus #4）。
-- REST：`POST /api/v1/recommend`（body=SceneInput，200=RecommendationReport）；`GET /api/v1/cases`、`GET /api/v1/cases/:id`（返回 cases 表内容 + 是否可预跑）；`GET /api/v1/health`（`{vectorStore:{backend,count,ok}, llm:{configured}, adapters:{a,c}}`）；`POST /api/v1/feedback`（200 `{received:true}`，stub）。Hono + `@hono/zod-openapi` 自动文档挂 `/openapi`。
+- REST：`POST /api/v1/recommend`（body=SceneInput，200=RecommendationReport；**server 端口 = `process.env.PORT ?? 3000`，Vite proxy 固定指向 3000**）；`GET /api/v1/cases`、`GET /api/v1/cases/:id`（返回 cases 表内容 + 是否可预跑）；`GET /api/v1/health`（`{vectorStore:{backend,count,ok}, llm:{configured}, adapters:{a,c}}`）；`POST /api/v1/feedback`（200 `{received:true}`，stub）。Hono + `@hono/zod-openapi` 自动文档挂 `/openapi`。
 - [ ] **Step 1: 写失败测试**：mock 全链路——case-01 scene → report 断言：`candidates.length===5`、`evidence` 非空（先 seed 一条 chunk）、`radar` 每候选 8 维 0-100、`llmStatus==='ok'|'degraded'`、确定性两次调用 report 数值一致；空库场景 → `warnings` 含 `build:index` 且 200。
 - [ ] **Step 2: 运行确认失败** Expected: FAIL
-- [ ] **Step 3: 实现**：orchestrator 六步；步骤耗时记录进 report 隐藏字段 `steps: {name, ms}[]`（前端步进条数据源）。
+- [ ] **Step 3: 实现**：Hono app + orchestrator 六步；候选组装规则 = `filterByScene` 返回的 binder×gradation 笛卡尔积按 relations 命中数降序取前 5（modifier/additive 取与场景标签匹配的 relation 指向 material，每候选至多各 1）；步骤耗时记录进 report 隐藏字段 `steps: {name, ms}[]`（前端步进条数据源）。
 - [ ] **Step 4: 运行确认通过** Expected: PASS
 - [ ] **Step 5: Commit** `git commit -m "feat(server): 六步orchestrator与recommend/cases/health/feedback路由"`
 
 ## Task 9: LLM 报告生成 + 对话面板（builder-backend）
 
 **Files:**
-- Create: `apps/server/src/llm/client.ts`、`src/report/fallback.ts`、`src/routes/recommend-report.ts`（或并入 T8 的 recommend 流程）、`src/routes/chat.ts`、`prompts/report.md`、`prompts/extract-scene.md`、`prompts/chat.md`
+- Create: `apps/server/src/llm/client.ts`、`src/report/fallback.ts`、`src/routes/chat.ts`、`prompts/report.md`、`prompts/extract-scene.md`、`prompts/chat.md`
+- Modify: `apps/server/src/orchestrator.ts`（把第六步接入 `buildReportSections`，替换 T8 的占位 sections）
 - Test: `apps/server/test/llm.test.ts`（fake LLM 注入 + LLM_OFF）
 
 **Interfaces:**

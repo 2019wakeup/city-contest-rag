@@ -108,7 +108,7 @@ Hono 后端
 ② 调模块A     adapters: 场景 → 目标性能向量 + 优先级权重（mock=内置JTG简化查表基线）
 ③ 召回(核心B) 关系表 SQL 硬过滤 → 混合检索(向量+BM25, RRF 融合) → Top-N 候选（默认 N=5，可配 3–8）+ 证据引用
 ④ 调模块C     adapters: 每个候选配方 → 多性能预测值+置信区间（mock=基准表+固定seed扰动）
-⑤ 确定性排序  按A权重对C预测加权 + 约束惩罚；雷达图6维/LCC/碳排放 全规则计算
+⑤ 确定性排序  按A权重对C预测加权 + 约束惩罚；雷达图8维/LCC/碳排放 全规则计算
 ⑥ LLM报告生成 DeepSeek 写推荐理由与结论文案（结构化输出 zod 校验重试≤2）
    附：对话面板  以当前报告+证据为上下文回答追问（单次无工具 LLM 调用，SSE 流式）
 ```
@@ -175,7 +175,7 @@ Hono 后端
 - 模块 A：`POST /mapping {SceneInput} → TargetProfile {targets:[{perf,value,unit}], priorities:[{perf,weight}]}`
 - `Formula`：binder{type,grade,pg} / modifier{type,dosage} / gradation{type} / additives[{type,dosage}] / oilStoneRatio / airVoids / construction{mixingTemp,pavingTemp,compaction}（施工工艺参数 optional，回应需求瓶颈三）
 - 模块 C：`POST /predict {formulas[]} → [{formula, predictions:[{perf,value,ciLow,ciHigh,unit}], explanations?:[{feature,contribution}]}]`（explanations 承接队友 SHAP 输出，G4）
-- `RecommendationReport`：scene / targets / candidates[] / evidence[] / charts（雷达图6维：关键性能·LCC·碳排放·预期寿命·施工可行性，G3）/ benchmark（vs 规范查表基线对比行，G6）/ llm_status / adapter_mode / schemaVersion
+- `RecommendationReport`：scene / targets / candidates[] / evidence[] / charts（雷达图 **8 维**：高温·低温·疲劳·水稳·LCC·碳排放·预期寿命·施工可行性，G3）/ benchmark（vs 规范查表基线对比行，G6）/ llm_status / adapter_mode / schemaVersion
 
 **后端 REST（Hono + zod-openapi）**：
 
@@ -197,7 +197,7 @@ Hono 后端
 
 **三视图 + 对话面板**：
 
-1. **推荐工作台**（主视图）：左栏 = schema 驱动场景表单 + 5 案例一键填入 + 微调面板；右栏 = 步骤状态条（解析→映射→召回→预测→排序→报告，每步状态/耗时）→ 目标性能+权重 → 结果区（多方案卡片 / 6 维雷达图 / 与基准对比表 / 证据链 / 报告 / 对话面板）。微调参数→重新推荐复用同 pipeline（G5）。
+1. **推荐工作台**（主视图）：左栏 = schema 驱动场景表单 + 5 案例一键填入 + 微调面板；右栏 = 步骤状态条（解析→映射→召回→预测→排序→报告，每步状态/耗时）→ 目标性能+权重 → 结果区（多方案卡片 / 8 维雷达图 / 与基准对比表 / 证据链 / 报告 / 对话面板）。微调参数→重新推荐复用同 pipeline（G5）。
 2. **典型案例页**：5 案例卡片（高温重载 / 寒冷裂缝 / 水损害 / 高RAP再生 / 低噪排水）→ 一键载入工作台跑通 + 预跑结果。
 3. **知识库管理页**：统计（文档/chunk/类型分布）+ 上传（企业资料 PDF/MD/粘贴文本）+ 检索测试框（top-k 命中 + 来源元数据 + 分数）+ 重建索引按钮。
 
