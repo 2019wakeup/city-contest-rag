@@ -34,6 +34,7 @@ function makeChunk(chunkId: string, docId: string, text: string, docType: 'knowl
 }
 
 const vec = (seed: number): number[] => Array.from({ length: DIM }, (_, i) => Math.sin(seed + i));
+const vecN = (n: number, seed: number): number[] => Array.from({ length: n }, (_, i) => Math.sin(seed + i));
 
 describe.skipIf(!process.env.LANCEDB_TEST)('LanceDBVectorStore（LANCEDB_TEST=1）', () => {
   it('add/search(文本+向量)/stats/delete/rebuild 全接口', async () => {
@@ -72,5 +73,41 @@ describe.skipIf(!process.env.LANCEDB_TEST)('LanceDBVectorStore（LANCEDB_TEST=1�
     expect((await store.stats()).count).toBe(1);
     await store.rebuild();
     expect((await store.stats()).count).toBe(0);
+  });
+
+  it('dim=384 构造：add 384 维向量通过（与 multilingual-e5-small 对齐）', async () => {
+    const { LanceDBVectorStore } = await import('../../packages/retrieval/src/lancedb');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lancedb-384-'));
+    const store: VectorStore = new LanceDBVectorStore(path.join(dir, 'test384.lance'), { dim: 384 });
+
+    const chunk = {
+      schemaVersion: '1',
+      chunkId: 'doc-384:0',
+      text: 'e5-small 384 维嵌入测试文本。',
+      docType: 'knowledge',
+      tags: [] as string[],
+      provenance: {
+        sourceDocId: 'doc-384',
+        contentHash: 'hash-384',
+        embeddingModel: 'Xenova/multilingual-e5-small',
+        modelVersion: 'fake-1',
+        dim: 384,
+        pipelineRev: 'testrev',
+        embeddedAt: new Date().toISOString(),
+      },
+    };
+    await store.add([chunk], [vecN(384, 7)]);
+    expect((await store.stats()).count).toBe(1);
+    const hits = await store.search({ text: '', vector: vecN(384, 7), topK: 5 });
+    expect(hits[0].chunkId).toBe('doc-384:0');
+  });
+
+  it('dim 不匹配：add 报错', async () => {
+    const { LanceDBVectorStore } = await import('../../packages/retrieval/src/lancedb');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lancedb-mismatch-'));
+    const store: VectorStore = new LanceDBVectorStore(path.join(dir, 'test8.lance'), { dim: 8 });
+    await expect(
+      store.add([makeChunk('doc-x:0', 'doc-x', '维度不匹配测试。', 'knowledge')], [vecN(384, 1)]),
+    ).rejects.toThrow(/向量维度不匹配/);
   });
 });
