@@ -19,3 +19,4 @@ __pycache__/
 *.pyc
 *.bak
 .audit-words.txt
+literature_md/
