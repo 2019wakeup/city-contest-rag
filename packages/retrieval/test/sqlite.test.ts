@@ -167,4 +167,20 @@ describe('SqliteVectorStore', () => {
     expect(hits.map((h) => h.chunkId)).toContain('doc-b:0:v1');
     expect(hits.map((h) => h.chunkId)).not.toContain('doc-a:0:v1');
   });
+
+  it('空格分隔的多词查询按字面短语 AND 命中（R1-C6）', async () => {
+    await store.add(
+      [
+        makeChunk('doc-a:0:v1', '车辙处治方案采用改性沥青混凝土'),
+        makeChunk('doc-b:0:v1', '低温开裂处治方案'),
+      ],
+      [
+        [1, 0],
+        [0, 1],
+      ],
+    );
+    const hits = await store.search({ text: '车辙处治 改性沥青', topK: 5 });
+    expect(hits.map((h) => h.chunkId)).toContain('doc-a:0:v1');
+    expect(hits.map((h) => h.chunkId)).not.toContain('doc-b:0:v1');
+  });
 });

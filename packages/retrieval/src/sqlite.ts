@@ -136,10 +136,11 @@ export class SqliteVectorStore implements VectorStore {
   private bm25Search(text: string, limit: number): RankedItem[] {
     const q = text.trim();
     if (!q) return [];
-    // trigram tokenizer 不支持 <3 字符查询 → 子串兜底
-    if (Array.from(q).length < 3) return this.substringSearch(q, limit);
-    // 整串引号包裹 + 引号加倍转义：AND/OR/NOT/NEAR 等 FTS 操作符按字面短语检索
-    const ftsQuery = `"${q.replace(/"/g, '""')}"`;
+    const tokens = q.split(/\s+/).filter(Boolean);
+    // trigram tokenizer 不支持 <3 字符查询 → 子串兜底（多词时逐词 AND）
+    if (tokens.some((t) => Array.from(t).length < 3)) return this.substringSearch(q, limit);
+    // 逐 token 引号包裹 + 引号加倍：空格 = 隐式 AND，AND/OR/NOT/NEAR 等操作符按字面短语检索
+    const ftsQuery = tokens.map((t) => `"${t.replace(/"/g, '""')}"`).join(' ');
     try {
       const rows = this.db
         .prepare(
@@ -155,11 +156,20 @@ export class SqliteVectorStore implements VectorStore {
   }
 
   private substringSearch(q: string, limit: number): RankedItem[] {
+    const tokens = q.split(/\s+/).filter(Boolean);
     const rows = this.db
-      .prepare('SELECT chunk_id AS id, text FROM chunks WHERE instr(text, ?) > 0')
-      .all(q) as unknown as Array<{ id: string; text: string }>;
+      .prepare('SELECT chunk_id AS id, text FROM chunks')
+      .all() as unknown as Array<{ id: string; text: string }>;
     return rows
-      .map((r) => ({ id: r.id, score: countOccurrences(r.text, q), len: r.text.length }))
+      .map((r) => ({
+        id: r.id,
+        // 多词 = 逐词 AND：每个 token 都出现才命中；分数 = 出现次数总和
+        score: tokens.every((t) => r.text.includes(t))
+          ? tokens.reduce((acc, t) => acc + countOccurrences(r.text, t), 0)
+          : -1,
+        len: r.text.length,
+      }))
+      .filter((r) => r.score > 0)
       .sort((a, b) => b.score - a.score || a.len - b.len || a.id.localeCompare(b.id))
       .slice(0, limit)
       .map(({ id, score }) => ({ id, score }));
