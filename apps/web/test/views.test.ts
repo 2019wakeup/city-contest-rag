@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getCases, kbRebuild, kbSearch, kbStats, kbUpload, kbUploadFile } from '@/api/client'
 import type { CaseSeed, SceneInput, SearchHit } from '@road-rec/contracts'
+import App from '@/App.vue'
 import CaseCard from '@/components/CaseCard.vue'
 import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
@@ -168,6 +169,22 @@ describe('CaseCard 场景行中文标签（UI#11）', () => {
     expect(sceneText).not.toContain('heavy')
     expect(sceneText).not.toContain('rutting')
     expect(sceneText).not.toContain('shoving')
+  })
+})
+
+describe('App 侧栏品牌（UI#10）', () => {
+  it('含主题色块 logo 与副标题', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', component: { template: '<div />' } }],
+    })
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    expect(wrapper.find('[data-testid="app-logo-mark"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('数智选材')
+    expect(wrapper.text()).toContain('沥青材料智能推荐')
   })
 })
 

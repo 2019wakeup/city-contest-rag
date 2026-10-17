@@ -1,0 +1,28 @@
+/* 全局视觉基线（UI#3/#4/#7/#8）：字体渲染、字号节奏、等宽数字、按压缩放反馈。 */
+
+html,
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+}
+
+/* 变化数值用等宽数字，避免对比时视觉跳动（UI#4）。 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 卡片 header 统一 15px/600（UI#7）。 */
+.el-card__header {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* 主按钮按压缩放反馈（UI#8）。 */
+.el-button--primary {
+  transition: transform 0.15s ease;
+}
+
+.el-button--primary:active {
+  transform: scale(0.96);
+}

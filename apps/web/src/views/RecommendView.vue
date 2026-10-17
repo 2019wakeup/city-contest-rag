@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 
 import { getCases } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
+import { formatNumber } from '@/utils/format'
 import type { CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
@@ -85,7 +86,8 @@ async function applyAdjust(): Promise<void> {
 
 const weightOf = (perf: string): string => {
   const p = report.value?.targets?.priorities?.find((x) => x.perf === perf)
-  return p?.weight != null ? String(p.weight) : '—'
+  if (p?.weight == null || !Number.isFinite(p.weight)) return '—'
+  return `${(p.weight * 100).toFixed(1)}%`
 }
 
 // ---- 候选卡折叠（UI#1）：默认只展开 top-1，其余折叠为摘要行 ----
@@ -201,7 +203,7 @@ function toggleCandidate(id: string): void {
             class="status-alert"
           />
 
-          <StepStepper :steps="report.steps ?? []" class="panel" />
+          <StepStepper :steps="report.steps ?? []" :running="store.status === 'running'" class="panel" />
 
           <el-card shadow="never" class="panel">
             <template #header>目标性能与权重</template>
@@ -209,11 +211,13 @@ function toggleCandidate(id: string): void {
               <el-table-column prop="perf" label="性能指标" />
               <el-table-column label="目标值">
                 <template #default="{ row }">
-                  {{ row.value }} {{ row.unit ?? '' }}
+                  <span class="tabular">{{ formatNumber(row.value) }} {{ row.unit ?? '' }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="权重">
-                <template #default="{ row }">{{ weightOf(row.perf) }}</template>
+                <template #default="{ row }">
+                  <span class="tabular">{{ weightOf(row.perf) }}</span>
+                </template>
               </el-table-column>
             </el-table>
           </el-card>
@@ -252,7 +256,7 @@ function toggleCandidate(id: string): void {
 
 <style scoped>
 .panel {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .case-select {

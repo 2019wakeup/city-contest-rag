@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { ElInputNumber } from 'element-plus'
+import { ElInputNumber, ElSteps } from 'element-plus'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,6 +10,7 @@ import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@roa
 import RecommendView from '@/views/RecommendView.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
+import StepStepper from '@/components/StepStepper.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
 
 vi.mock('@/api/client', () => ({
@@ -339,6 +340,70 @@ describe('RecommendView 推荐工作台', () => {
     await flushPromises()
 
     expect(wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists()).toBe(true)
+  })
+
+  it('目标表：权重显示百分比、长数字千分位（UI#6）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.report = makeReport({
+      targets: {
+        schemaVersion: '1',
+        targets: [{ perf: '疲劳', value: 1000000, unit: '次' }],
+        priorities: [{ perf: '疲劳', weight: 0.2697 }],
+      },
+    })
+    store.status = 'done'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('27.0%')
+    expect(wrapper.text()).toContain('1,000,000 次')
+  })
+
+  it('StepStepper running 时 active 为最后一步之前（UI#9）', () => {
+    const steps = [
+      { name: 'parse', ms: 1 },
+      { name: 'mapping', ms: 2 },
+      { name: 'recall', ms: 3 },
+    ]
+    const running = mount(StepStepper, { props: { steps, running: true } })
+    expect(running.findComponent(ElSteps).props('active')).toBe(2)
+
+    const done = mount(StepStepper, { props: { steps, running: false } })
+    expect(done.findComponent(ElSteps).props('active')).toBe(3)
+  })
+
+  it('对话面板：LLM 未配置时提示配置 API Key（UI#12）', async () => {
+    const healthFetch = vi.fn(async () =>
+      new Response(JSON.stringify({ llm: { configured: false } }), {
+        headers: { 'content-type': 'application/json' },
+      }),
+    )
+    vi.stubGlobal('fetch', healthFetch)
+    try {
+      const wrapper = await mountView()
+      await flushPromises()
+
+      // 空输入时给输入提示
+      expect(wrapper.find('[data-testid="chat-hint"]').text()).toContain('请输入问题')
+
+      const input = wrapper.find('[data-testid="chat-input"]')
+      await input.setValue('为什么推荐它？')
+      await flushPromises()
+
+      expect(wrapper.find('[data-testid="chat-hint"]').text()).toContain('配置 DEEPSEEK_API_KEY 后可用')
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

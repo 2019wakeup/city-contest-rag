@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { computed, onMounted, shallowRef } from 'vue'
 
 import { postChat } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
@@ -11,6 +11,28 @@ const store = useRecommendStore()
 const question = shallowRef('')
 const sending = shallowRef(false)
 const streaming = shallowRef('')
+
+// LLM 配置状态（UI#12）：健康检查失败时未知，不显示提示。
+const llmConfigured = shallowRef<boolean | null>(null)
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/v1/health')
+    const data = (await res.json()) as { llm?: { configured?: boolean } }
+    llmConfigured.value = data.llm?.configured ?? null
+  } catch {
+    llmConfigured.value = null
+  }
+})
+
+const hint = computed(() => {
+  if (sending.value) return '回复中…'
+  if (!question.value.trim()) return '请输入问题'
+  if (llmConfigured.value === false) {
+    return 'LLM 未配置：配置 DEEPSEEK_API_KEY 后可用（当前为降级模式）'
+  }
+  return ''
+})
 
 async function send(): Promise<void> {
   const q = question.value.trim()
@@ -73,6 +95,7 @@ function onEnterKey(event: KeyboardEvent): void {
         <div class="chat-bubble">{{ streaming }}…</div>
       </div>
     </div>
+    <div v-if="hint" data-testid="chat-hint" class="chat-hint">{{ hint }}</div>
     <div class="chat-input-row">
       <el-input
         v-model="question"
@@ -135,5 +158,11 @@ function onEnterKey(event: KeyboardEvent): void {
   display: flex;
   gap: 8px;
   align-items: flex-end;
+}
+
+.chat-hint {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
 }
 </style>

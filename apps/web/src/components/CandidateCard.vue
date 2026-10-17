@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 
 import type { AdapterMode, Candidate, EvidenceRef } from '@road-rec/contracts'
+import { formatNumber } from '@/utils/format'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
@@ -81,12 +82,12 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 
       <ul class="candidate-predictions">
         <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`" class="tabular">
-          {{ perfLabel(p.perf) }}：{{ p.value }}<template v-if="p.ciLow != null && p.ciHigh != null">
-            （{{ p.ciLow }} ~ {{ p.ciHigh }}）</template> {{ p.unit ?? '' }}
+          {{ perfLabel(p.perf) }}：{{ formatNumber(p.value) }}<template v-if="p.ciLow != null && p.ciHigh != null">
+            （{{ formatNumber(p.ciLow) }} ~ {{ formatNumber(p.ciHigh) }}）</template> {{ p.unit ?? '' }}
         </li>
         <li class="candidate-kpis tabular">
-          LCC {{ candidate?.lcc ?? '—' }} 万元 · 碳排 {{ candidate?.carbon ?? '—' }} tCO2e
-          · 预期寿命 {{ candidate?.expectedLife ?? '—' }} 年
+          LCC {{ formatNumber(candidate?.lcc) }} 万元 · 碳排 {{ formatNumber(candidate?.carbon) }} tCO2e
+          · 预期寿命 {{ formatNumber(candidate?.expectedLife) }} 年
         </li>
       </ul>
 
@@ -108,7 +109,7 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 
 <style scoped>
 .candidate-card {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .candidate-header {
@@ -150,7 +151,7 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 }
 
 .candidate-predictions li {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .candidate-kpis {
@@ -158,6 +159,6 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 }
 
 .candidate-waterfall {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 </style>

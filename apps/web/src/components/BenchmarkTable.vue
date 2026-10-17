@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { formatNumber } from '@/utils/format'
 import type { BenchmarkRow } from '@road-rec/contracts'
 
 const props = defineProps<{ rows: BenchmarkRow[] }>()
@@ -18,12 +19,12 @@ const candidateIds = computed(() => [
       <el-table-column prop="label" label="指标" />
       <el-table-column label="规范基线">
         <template #default="{ row }">
-          {{ row.baseline ?? '—' }} {{ row.unit ?? '' }}
+          <span class="tabular">{{ formatNumber(row.baseline) }} {{ row.unit ?? '' }}</span>
         </template>
       </el-table-column>
       <el-table-column v-for="cid in candidateIds" :key="cid" :label="cid">
         <template #default="{ row }">
-          {{ row.candidates?.[cid] ?? '—' }}
+          <span class="tabular">{{ formatNumber(row.candidates?.[cid]) }}</span>
         </template>
       </el-table-column>
     </el-table>
