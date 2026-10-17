@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { ElInputNumber, ElSteps } from 'element-plus'
+import { ElInputNumber, ElSelect, ElSteps } from 'element-plus'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,6 +10,7 @@ import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@roa
 import RecommendView from '@/views/RecommendView.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
+import ReportSection from '@/components/ReportSection.vue'
 import StepStepper from '@/components/StepStepper.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
 
@@ -404,6 +405,173 @@ describe('RecommendView 推荐工作台', () => {
     } finally {
       vi.unstubAllGlobals()
     }
+  })
+
+  it('结果区顶部渲染 KPI hero：首选方案+得分+三指标+徽章（UI二轮）', async () => {
+    const wrapper = await mountView()
+
+    const hero = wrapper.find('[data-testid="kpi-hero"]')
+    expect(hero.exists()).toBe(true)
+    expect(hero.text()).toContain('SBS改性沥青 + SMA-13')
+    expect(hero.text()).toContain('0.850')
+    expect(hero.text()).toContain('预期寿命')
+    expect(hero.text()).toContain('LCC')
+    expect(hero.text()).toContain('碳排')
+    expect(hero.find('[data-testid="mock-badge"]').exists()).toBe(true)
+  })
+
+  it('报告段落中证据 id 渲染为可点击角标并 emit cite（UI二轮）', async () => {
+    const sections = [
+      {
+        title: '推荐理由',
+        paragraphs: ['依据 k-modifier-002:0 的研究结论，SBS 改性效果显著。'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const cite = wrapper.find('[data-testid="evidence-cite"]')
+    expect(cite.exists()).toBe(true)
+    expect(cite.text()).toBe('k-modifier-002:0')
+    await cite.trigger('click')
+
+    expect(wrapper.emitted('cite')?.[0]?.[0]).toBe('k-modifier-002:0')
+  })
+
+  it('点击报告角标 → 含该证据的折叠候选卡自动展开（UI二轮）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    const rep = makeReport({
+      sections: [
+        {
+          title: '推荐理由',
+          paragraphs: ['依据 k-binder-001:0 的规范条文。'],
+          evidenceIds: [],
+        },
+      ],
+    })
+    // 两个候选都引用 k-binder-001:0
+    for (const c of rep.candidates) c.evidenceIds = ['k-binder-001:0']
+    rep.evidence = [
+      {
+        ...rep.evidence[0],
+        chunkId: 'k-binder-001:0',
+      },
+    ]
+    store.report = rep
+    store.status = 'done'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    // cand-2 默认折叠
+    expect(
+      wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists(),
+    ).toBe(false)
+
+    await wrapper.find('[data-testid="evidence-cite"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      wrapper.findAll('[data-testid="candidate-card"]')[1].find('[data-testid="evidence-panel"]').exists(),
+    ).toBe(true)
+  })
+
+  it('running 状态渲染骨架屏（报告区+卡片区），无计算中提示（UI二轮）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.status = 'running'
+    store.report = null
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="skeleton-report"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="skeleton-cards"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('推荐计算中')
+  })
+
+  it('StepStepper running 且无 steps 时显示六步占位（UI二轮）', () => {
+    const w = mount(StepStepper, { props: { steps: [], running: true } })
+    const titles = w.findAll('.el-step__title').map((n) => n.text())
+    expect(titles).toEqual(['解析', '映射', '召回', '预测', '排序', '报告'])
+    expect(w.findComponent(ElSteps).props('active')).toBe(0)
+  })
+
+  it('折叠候选卡显示雷达三强项，index 0 带首选徽章（UI二轮）', () => {
+    const cand = makeCandidate('cand-1')
+    const wrapper = mount(CandidateCard, {
+      props: {
+        candidate: cand,
+        index: 0,
+        adapterMode: { a: 'mock', c: 'mock' },
+        evidence: [],
+        expanded: false,
+      },
+    })
+    expect(wrapper.text()).toContain('高温 80 · 施工 80 · 水稳 75')
+    expect(wrapper.find('[data-testid="top1-badge"]').exists()).toBe(true)
+
+    const second = mount(CandidateCard, {
+      props: {
+        candidate: makeCandidate('cand-2'),
+        index: 1,
+        adapterMode: { a: 'mock', c: 'mock' },
+        evidence: [],
+        expanded: false,
+      },
+    })
+    expect(second.find('[data-testid="top1-badge"]').exists()).toBe(false)
+  })
+
+  it('空态引导卡：两个行动按钮，查看案例跳转 /cases（UI二轮）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.status = 'idle'
+    store.report = null
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/recommend', component: RecommendView },
+        { path: '/cases', component: { template: '<div />' } },
+      ],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    const guide = wrapper.find('[data-testid="empty-guide"]')
+    expect(guide.exists()).toBe(true)
+
+    await wrapper.find('[data-testid="goto-cases"]').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/cases')
+
+    await router.push('/recommend')
+    const select = wrapper.findComponent(ElSelect)
+    const focusSpy = vi.spyOn(select.vm, 'focus')
+    await wrapper.find('[data-testid="focus-case-select"]').trigger('click')
+    expect(focusSpy).toHaveBeenCalled()
   })
 
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {

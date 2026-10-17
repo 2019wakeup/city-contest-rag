@@ -4,7 +4,12 @@ import { computed } from 'vue'
 import { scoreDisplayText } from '@/utils/score'
 import type { EvidenceRef } from '@road-rec/contracts'
 
-const props = defineProps<{ evidence: EvidenceRef[]; ids: string[] }>()
+const props = defineProps<{
+  evidence: EvidenceRef[]
+  ids: string[]
+  /** UI二轮：报告角标点击后高亮定位的 chunkId。 */
+  highlightId?: string | null
+}>()
 
 const DOC_TYPE_LABELS: Record<string, string> = {
   knowledge: '知识条目',
@@ -44,6 +49,8 @@ const docTypeLabel = (docType: string): string => DOC_TYPE_LABELS[docType] ?? do
       <el-collapse-item
         v-for="hit in matches"
         :key="hit.chunkId"
+        :data-evidence-id="hit.chunkId"
+        :class="{ 'is-highlighted': highlightId === hit.chunkId }"
         :title="`[${docTypeLabel(hit.docType ?? '')}] ${(hit.text ?? '').slice(0, 40)}`"
       >
         <p class="evidence-text">{{ hit.text }}</p>
@@ -71,5 +78,10 @@ const docTypeLabel = (docType: string): string => DOC_TYPE_LABELS[docType] ?? do
   margin: 0;
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+
+.evidence-panel :deep(.el-collapse-item.is-highlighted) {
+  border: 1px solid var(--el-color-primary);
+  border-radius: var(--app-radius-inner);
 }
 </style>

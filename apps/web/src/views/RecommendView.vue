@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, shallowRef, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, nextTick, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { getCases } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import { formatNumber } from '@/utils/format'
-import type { CaseSeed, SceneInput } from '@road-rec/contracts'
+import type { Candidate, CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import ChatPanel from '@/components/ChatPanel.vue'
@@ -13,8 +13,9 @@ import ReportSection from '@/components/ReportSection.vue'
 import SceneForm from '@/components/SceneForm.vue'
 import StepStepper from '@/components/StepStepper.vue'
 
-// 推荐工作台：左栏（案例一键填入 + schema 驱动表单 + 微调面板）· 右栏（步进/目标/对比/候选/证据/报告/对话）。
+// 推荐工作台：左栏（案例一键填入 + schema 驱动表单 + 微调面板）· 右栏（KPI hero/报告/步进/目标/对比/候选/对话）。
 const route = useRoute()
+const router = useRouter()
 const store = useRecommendStore()
 
 const cases = shallowRef<CaseSeed[]>([])
@@ -22,6 +23,7 @@ const selectedCaseId = shallowRef<string | null>(null)
 const initialScene = shallowRef<SceneInput | null>(null)
 
 const report = computed(() => store.report)
+const topCandidate = computed<Candidate | null>(() => report.value?.candidates?.[0] ?? null)
 const isMock = computed(() => {
   const mode = report.value?.adapterMode
   return mode?.a === 'mock' || mode?.c === 'mock'
@@ -111,6 +113,34 @@ function toggleCandidate(id: string): void {
   }
   expandedIds.value = next
 }
+
+// ---- 报告证据角标（UI二轮）：点击 → 高亮 + 展开所属候选 + 滚动定位 ----
+const highlightId = shallowRef<string | null>(null)
+const caseSelectRef = useTemplateRef('caseSelect')
+
+async function onCite(evidenceId: string): Promise<void> {
+  highlightId.value = evidenceId
+  const ownerIds = (report.value?.candidates ?? [])
+    .filter((c) => (c.evidenceIds ?? []).includes(evidenceId))
+    .map((c) => c.id)
+  if (ownerIds.length > 0) {
+    const next = new Set(expandedIds.value)
+    for (const id of ownerIds) next.add(id)
+    expandedIds.value = next
+  }
+  await nextTick()
+  const el = document.querySelector(`[data-evidence-id="${CSS.escape(evidenceId)}"]`)
+  ;(el as HTMLElement | null)?.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+}
+
+// ---- 空态引导卡（UI二轮）----
+function focusCaseSelect(): void {
+  caseSelectRef.value?.focus()
+}
+
+function gotoCases(): void {
+  void router.push('/cases')
+}
 </script>
 
 <template>
@@ -120,6 +150,7 @@ function toggleCandidate(id: string): void {
         <el-card shadow="never" class="panel">
           <template #header>典型案例一键填入</template>
           <el-select
+            ref="caseSelect"
             v-model="selectedCaseId"
             placeholder="选择预置案例"
             clearable
@@ -174,26 +205,66 @@ function toggleCandidate(id: string): void {
           :title="`推荐失败：${store.errorMessage}`"
           class="status-alert"
         />
-        <el-alert
-          v-if="store.status === 'running'"
-          type="info"
-          :closable="false"
-          title="推荐计算中，请稍候…"
-          class="status-alert"
-        />
 
-        <template v-if="report">
-          <el-tag v-if="isMock" type="warning" data-testid="mock-badge" class="mode-badge">
-            模拟数据：模块适配器当前为内置 mock 模式
-          </el-tag>
-          <el-alert
-            v-if="report.llmStatus === 'degraded'"
-            type="info"
-            :closable="false"
-            show-icon
-            title="文案模板降级：LLM 不可用，以下文案由模板生成，确定性数据不受影响"
-            class="status-alert"
-          />
+        <!-- UI二轮：running 骨架屏（替代计算中提示） -->
+        <template v-if="store.status === 'running'">
+          <div data-testid="skeleton-report" class="panel app-skeleton" style="height: 180px"></div>
+          <div data-testid="skeleton-cards" class="panel">
+            <div v-for="n in 3" :key="n" class="app-skeleton" style="height: 96px; margin-bottom: 16px"></div>
+          </div>
+        </template>
+
+        <template v-else-if="report">
+          <!-- KPI hero（UI二轮）：首选方案 + 得分 + 核心三指标 + 徽章收纳于此 -->
+          <el-card shadow="hover" data-testid="kpi-hero" class="panel kpi-hero">
+            <div class="kpi-hero-row">
+              <div class="kpi-hero-main">
+                <div class="kpi-hero-kicker">
+                  首选方案
+                  <el-tag v-if="isMock" type="warning" data-testid="mock-badge" size="small">
+                    模拟数据
+                  </el-tag>
+                  <el-tag
+                    v-if="report.llmStatus === 'degraded'"
+                    type="info"
+                    size="small"
+                  >
+                    文案模板降级
+                  </el-tag>
+                </div>
+                <div class="kpi-hero-mix">
+                  {{ topCandidate?.formula?.binder?.type ?? '—' }}
+                  +
+                  {{ topCandidate?.formula?.gradation?.type ?? '—' }}
+                </div>
+                <div class="kpi-hero-score tabular">
+                  {{ (topCandidate?.score ?? 0).toFixed(3) }}
+                  <span class="kpi-hero-score-label">综合得分</span>
+                </div>
+              </div>
+              <div class="kpi-hero-metrics">
+                <div class="kpi-hero-metric">
+                  <div class="kpi-hero-metric-label">预期寿命</div>
+                  <div class="kpi-hero-metric-value tabular">
+                    {{ formatNumber(topCandidate?.expectedLife) }} 年
+                  </div>
+                </div>
+                <div class="kpi-hero-metric">
+                  <div class="kpi-hero-metric-label">LCC</div>
+                  <div class="kpi-hero-metric-value tabular">
+                    {{ formatNumber(topCandidate?.lcc) }} 万元
+                  </div>
+                </div>
+                <div class="kpi-hero-metric">
+                  <div class="kpi-hero-metric-label">碳排</div>
+                  <div class="kpi-hero-metric-value tabular">
+                    {{ formatNumber(topCandidate?.carbon) }} tCO2e
+                  </div>
+                </div>
+              </div>
+            </div>
+          </el-card>
+
           <el-alert
             v-for="(w, i) in report.warnings ?? []"
             :key="i"
@@ -203,7 +274,14 @@ function toggleCandidate(id: string): void {
             class="status-alert"
           />
 
-          <StepStepper :steps="report.steps ?? []" :running="store.status === 'running'" class="panel" />
+          <ReportSection
+            :sections="report.sections ?? []"
+            :llm-status="report.llmStatus ?? 'degraded'"
+            class="panel"
+            @cite="onCite"
+          />
+
+          <StepStepper :steps="report.steps ?? []" :running="false" class="panel" />
 
           <el-card shadow="never" class="panel">
             <template #header>目标性能与权重</template>
@@ -224,12 +302,6 @@ function toggleCandidate(id: string): void {
 
           <BenchmarkTable :rows="report.benchmark ?? []" class="panel" />
 
-          <ReportSection
-            :sections="report.sections ?? []"
-            :llm-status="report.llmStatus ?? 'degraded'"
-            class="panel"
-          />
-
           <CandidateCard
             v-for="(c, i) in report.candidates ?? []"
             :key="c.id"
@@ -238,17 +310,44 @@ function toggleCandidate(id: string): void {
             :adapter-mode="report.adapterMode ?? { a: 'mock', c: 'mock' }"
             :evidence="report.evidence ?? []"
             :expanded="expandedIds.has(c.id)"
+            :highlight-id="highlightId"
             @toggle="toggleCandidate(c.id)"
           />
 
           <ChatPanel :report="report" class="panel" />
         </template>
 
-        <el-empty
-          v-else-if="store.status !== 'running'"
-          description="填写养护场景并点击「生成推荐方案」开始推荐"
-          class="panel"
-        />
+        <!-- UI二轮：空态引导卡 -->
+        <el-card v-else data-testid="empty-guide" class="panel empty-guide">
+          <div class="empty-guide-body">
+            <div class="empty-guide-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" />
+                <path d="M19 15l.9 2.4L22 18l-2.1.6L19 21l-.9-2.4L16 18l2.1-.6z" />
+              </svg>
+            </div>
+            <h3 class="empty-guide-title">开始一次材料推荐</h3>
+            <p class="empty-guide-desc">
+              填写养护场景（或从典型案例一键填入），系统将输出 Top-5 沥青材料方案、
+              8 维雷达对比与可溯源证据链。
+            </p>
+            <div class="empty-guide-actions">
+              <el-button type="primary" data-testid="focus-case-select" @click="focusCaseSelect">
+                选择预置案例
+              </el-button>
+              <el-button data-testid="goto-cases" @click="gotoCases">
+                查看典型案例
+              </el-button>
+            </div>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -271,7 +370,101 @@ function toggleCandidate(id: string): void {
   margin-bottom: 12px;
 }
 
-.mode-badge {
-  margin-bottom: 12px;
+/* KPI hero（UI二轮） */
+.kpi-hero-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+}
+
+.kpi-hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 8px;
+}
+
+.kpi-hero-mix {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.kpi-hero-score {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+  line-height: 1.2;
+}
+
+.kpi-hero-score-label {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
+}
+
+.kpi-hero-metrics {
+  display: flex;
+  gap: 32px;
+  margin-left: auto;
+}
+
+.kpi-hero-metric-label {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 4px;
+}
+
+.kpi-hero-metric-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 空态引导卡（UI二轮） */
+.empty-guide-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.empty-guide-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  margin-bottom: 16px;
+}
+
+.empty-guide-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.empty-guide-title {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.empty-guide-desc {
+  margin: 0 0 24px;
+  max-width: 460px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.7;
+}
+
+.empty-guide-actions {
+  display: flex;
+  gap: 12px;
 }
 </style>

@@ -16,18 +16,26 @@ const STEP_LABELS: Record<string, string> = {
   report: '报告',
 }
 
-const items = computed(() =>
-  (props.steps ?? []).map((s) => ({
+// UI二轮：running 且尚无真实 steps 时显示六步占位（逐步点亮的过程感）。
+const PLACEHOLDER_TITLES = ['解析', '映射', '召回', '预测', '排序', '报告']
+
+const items = computed(() => {
+  const list = (props.steps ?? []).map((s) => ({
     title: STEP_LABELS[s.name] ?? s.name,
     description: s.ms != null ? `${formatNumber(s.ms)} ms` : '',
-  })),
-)
+  }))
+  if (list.length === 0 && props.running) {
+    return PLACEHOLDER_TITLES.map((title) => ({ title, description: '' }))
+  }
+  return list
+})
 
-// UI#9：running 时停在最后一步之前，渲染"进行中"过程感；完成后全部点亮。
+// UI#9：running 时停在最后一步之前（有真实步骤则停在末步，占位阶段从第 0 步开始）。
 const activeStep = computed(() => {
   const total = items.value.length
   if (total === 0) return 0
-  return props.running ? Math.max(total - 1, 0) : total
+  if (!props.running) return total
+  return (props.steps ?? []).length > 0 ? Math.max((props.steps ?? []).length - 1, 0) : 0
 })
 </script>
 

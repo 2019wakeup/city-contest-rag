@@ -26,3 +26,31 @@ body {
 .el-button--primary:active {
   transform: scale(0.96);
 }
+
+/* 骨架屏 shimmer（UI二轮：running 状态加载占位，纯 CSS） */
+.app-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: var(--app-radius-card);
+}
+
+.app-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: app-shimmer 1.4s infinite;
+}
+
+@keyframes app-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

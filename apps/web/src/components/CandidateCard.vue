@@ -13,6 +13,7 @@ const props = defineProps<{
   adapterMode: AdapterMode
   evidence: EvidenceRef[]
   expanded: boolean
+  highlightId?: string | null
 }>()
 const emit = defineEmits<{ toggle: [] }>()
 
@@ -37,10 +38,40 @@ const PERF_LABELS: Record<string, string> = {
 }
 
 const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
+
+// UI二轮：折叠摘要行显示雷达三强项（与雷达图维度口径一致）。
+const RADAR_STRENGTH_LABELS: Array<{ key: keyof NonNullable<Candidate['radar']>; label: string }> = [
+  { key: 'highTemp', label: '高温' },
+  { key: 'lowTemp', label: '低温' },
+  { key: 'fatigue', label: '疲劳' },
+  { key: 'waterStability', label: '水稳' },
+  { key: 'lcc', label: 'LCC' },
+  { key: 'carbon', label: '碳排' },
+  { key: 'expectedLife', label: '寿命' },
+  { key: 'constructability', label: '施工' },
+]
+
+const strengths = computed(() => {
+  const r = radar.value
+  if (!r) return ''
+  return [...RADAR_STRENGTH_LABELS]
+    .map((d) => ({ label: d.label, value: Number(r[d.key]) || 0 }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 3)
+    .map((d) => `${d.label} ${d.value}`)
+    .join(' · ')
+})
+
+const isTop1 = computed(() => props.index === 0)
 </script>
 
 <template>
-  <el-card shadow="hover" data-testid="candidate-card" class="candidate-card">
+  <el-card
+    shadow="hover"
+    data-testid="candidate-card"
+    class="candidate-card"
+    :class="{ 'is-top1': isTop1 }"
+  >
     <template #header>
       <div
         class="candidate-header"
@@ -49,12 +80,22 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
         :aria-expanded="expanded"
         @click="emit('toggle')"
       >
+        <el-tag
+          v-if="isTop1"
+          type="primary"
+          effect="dark"
+          size="small"
+          data-testid="top1-badge"
+        >
+          首选
+        </el-tag>
         <span class="candidate-title">
           方案 {{ index + 1 }}（{{ candidate?.id ?? '未知' }}）
           <span class="candidate-mix">
             {{ formula?.binder?.type ?? '—' }} + {{ formula?.gradation?.type ?? '—' }}
           </span>
         </span>
+        <span v-if="!expanded" class="candidate-strengths tabular">{{ strengths }}</span>
         <span class="candidate-score tabular">综合得分 {{ (candidate?.score ?? 0).toFixed(3) }}</span>
         <el-tag v-if="isMock" type="warning" data-testid="mock-badge">模拟数据</el-tag>
         <span class="candidate-toggle-hint">{{ expanded ? '收起' : '展开' }}</span>
@@ -102,6 +143,7 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
       <EvidencePanel
         :evidence="evidence ?? []"
         :ids="candidate?.evidenceIds ?? []"
+        :highlight-id="highlightId"
       />
     </template>
   </el-card>
@@ -131,11 +173,21 @@ const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
 }
 
 .candidate-score {
+  margin-left: auto;
   color: var(--el-color-primary);
 }
 
+.candidate-strengths {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+
+.is-top1 {
+  border-color: var(--el-color-primary) !important;
+}
+
 .candidate-toggle-hint {
-  margin-left: auto;
+  margin-left: 8px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
