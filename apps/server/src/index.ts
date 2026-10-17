@@ -8,6 +8,7 @@ import { initRelationDb } from './relation/db';
 import { seedFromCorpus } from './relation/seed';
 import { createApp } from './app';
 import { streamChat } from './llm/client';
+import { resolveEmbeddingModel } from './config';
 import type { EmbedderLike } from './orchestrator';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -41,11 +42,16 @@ async function main(): Promise<void> {
     }
   }
 
-  // embedding（bge-m3，首次需联网下载，走 HF_ENDPOINT 镜像）；失败降级纯 BM25 检索
+  // embedding（EMBEDDING_MODEL: bge-m3 默认 | multilingual-e5-small；首次需联网下载，走 HF_ENDPOINT 镜像）。
+  // 非法模型名启动即报错退出；下载失败降级纯 BM25 检索。缓存目录与 build-index CLI 口径一致。
+  const embeddingModel = resolveEmbeddingModel();
   let embedder: EmbedderLike | null = null;
   try {
     const { createEmbedder } = await import('@road-rec/embedding');
-    embedder = await createEmbedder({});
+    embedder = await createEmbedder({
+      model: embeddingModel,
+      cacheDir: join(indexDir, 'hf-cache'),
+    });
   } catch (err) {
     console.warn(
       'embedding 模型不可用（未下载/无网络），检索降级纯 BM25：',
