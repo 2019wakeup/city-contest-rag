@@ -12,6 +12,7 @@ import type {
   Formula,
   PerfTarget,
   RecommendationReport,
+  ReportSection,
   SceneInput,
   StepRecord,
   TargetProfile,
@@ -23,8 +24,8 @@ import { mapSceneToTargets } from './adapters/a';
 import { predictFormulas } from './adapters/c';
 import type { AdapterMode } from './adapters/a';
 import { generateStructured, readPrompt } from './llm/client';
-import type { LlmCall } from './llm/client';
-import { buildReportSections } from './report/fallback';
+import type { LlmCall, LlmStatus } from './llm/client';
+import { buildReportSections, generateReportSection, SECTION_SPECS } from './report/fallback';
 import type { ReportBase } from './report/fallback';
 
 export interface EmbedderLike {
@@ -40,6 +41,12 @@ export interface RecommendDeps {
   relationDb: RelationDb;
   /** 测试注入：fake LLM；缺省走 env 配置（DEEPSEEK_API_KEY/LLM_OFF） */
   llmCall?: LlmCall;
+}
+
+/** SSE 流式钩子：每步完成 / 每 section 生成完毕回调（JSON 路由不传即走批量路径） */
+export interface RecommendHooks {
+  onStep?: (step: StepRecord) => void;
+  onSection?: (index: number, section: ReportSection) => void;
 }
 
 // ===== 规则估算常量（演示假设，注释即依据）=====
@@ -112,10 +119,18 @@ const DIM_META: Array<{ dim: string; label: string; unit: string }> = [
  * 六步确定性 pipeline（spec §5）：解析 → 映射 → 召回 → 预测 → 排序 → 报告。
  * 量化红线：排序/雷达图/LCC/碳排等数值全部确定性计算，LLM 不产数值。
  */
-export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise<RecommendationReport> {
+export async function recommend(
+  scene: SceneInput,
+  deps: RecommendDeps,
+  hooks?: RecommendHooks,
+): Promise<RecommendationReport> {
   const steps: StepRecord[] = [];
   const startedAt = performance.now();
-  const mark = (name: string) => steps.push({ name, ms: Math.round(performance.now() - startedAt) });
+  const mark = (name: string) => {
+    const step: StepRecord = { name, ms: Math.round(performance.now() - startedAt) };
+    steps.push(step);
+    hooks?.onStep?.(step);
+  };
 
   // ① 场景解析（zod 校验；notes 非空且 LLM 可用 → 自由文本抽取成同构 JSON，LLM_OFF 时忽略 notes）
   let parsedScene = SceneInputSchema.parse(scene);
@@ -168,15 +183,34 @@ export async function recommend(scene: SceneInput, deps: RecommendDeps): Promise
     evidence,
     benchmark: buildBenchmark(ranked, targets),
   };
-  const sectionsWithStatus = await buildReportSections(base, deps.llmCall);
+
+  // 流式模式（hooks.onSection）：每 section 一次 LLM 调用并即时回调；JSON 模式：批量一次调用。
+  let sections: ReportSection[];
+  let llmStatus: LlmStatus;
+  if (hooks?.onSection) {
+    const built: ReportSection[] = [];
+    let allFromLlm = true;
+    for (let i = 0; i < SECTION_SPECS.length; i++) {
+      const { section, fromLlm } = await generateReportSection(base, i, deps.llmCall);
+      if (!fromLlm) allFromLlm = false;
+      built.push(section);
+      hooks.onSection(i, section);
+    }
+    sections = built;
+    llmStatus = allFromLlm ? 'ok' : 'degraded';
+  } else {
+    const sectionsWithStatus = await buildReportSections(base, deps.llmCall);
+    sections = [...sectionsWithStatus];
+    llmStatus = sectionsWithStatus.llmStatus;
+  }
   // 报告生成阶段耗时须计入 steps（spec §8 六步：解析→映射→召回→预测→排序→报告）
   mark('report');
   const report = RecommendationReportSchema.parse({
     schemaVersion: '1',
     ...base,
-    sections: [...sectionsWithStatus],
+    sections,
     charts: {},
-    llmStatus: sectionsWithStatus.llmStatus,
+    llmStatus,
     adapterMode: { a: adapterModeA, c: adapterModeC },
     warnings,
     steps,

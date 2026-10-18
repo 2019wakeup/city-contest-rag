@@ -25,6 +25,52 @@ const SectionsResponseSchema = z
   .object({ sections: z.array(ReportSectionSchema) })
   .passthrough();
 
+/** 流式报告章节规格（SSE 每 section 一次 LLM 结构化调用） */
+export const SECTION_SPECS = [
+  { title: '首选方案' },
+  { title: '方案对比' },
+] as const;
+
+const SectionResponseSchema = z.object({ section: ReportSectionSchema }).passthrough();
+
+/**
+ * 流式模式：单章节生成（每 section 一次 LLM 调用）。
+ * 成功 → {section: 过滤后的章节, fromLlm: true}；失败 → 对应模板章节 {fromLlm: false}。
+ */
+export async function generateReportSection(
+  base: ReportBase,
+  index: number,
+  llm?: LlmCall,
+): Promise<{ section: ReportSection; fromLlm: boolean }> {
+  const spec = SECTION_SPECS[index];
+  const allowed = new Set(base.evidence.map((e) => e.chunkId));
+  const prompt = `${buildReportPrompt(base)}
+
+本次只生成第 ${index + 1} 节「${spec.title}」，输出 JSON：
+{"section":{"title":"${spec.title}","paragraphs":["段落文案"],"evidenceIds":["chunkId"]}}
+（evidenceIds 只能来自上方"可用证据"列表，禁止编造。）`;
+  const { data } = await generateStructured({
+    prompt,
+    schema: SectionResponseSchema,
+    temperature: 0.3,
+    llm,
+  });
+  if (data) {
+    return {
+      section: {
+        ...data.section,
+        evidenceIds: data.section.evidenceIds.filter((id) => allowed.has(id)),
+      },
+      fromLlm: true,
+    };
+  }
+  const fallback = buildFallbackSections(base)[index];
+  return {
+    section: fallback ?? { title: spec.title, paragraphs: ['（模板降级）'], evidenceIds: [] },
+    fromLlm: false,
+  };
+}
+
 function buildReportPrompt(base: ReportBase): string {
   const template = readPrompt('report.md');
   const evidenceText = base.evidence
