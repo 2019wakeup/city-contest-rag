@@ -50,7 +50,12 @@ function onCite(id: string): void {
       description="暂无报告文案"
       :image-size="48"
     />
-    <section v-for="(s, i) in sections ?? []" :key="`${s.title}-${i}`" class="report-block">
+    <section
+      v-for="(s, i) in sections ?? []"
+      :key="`${s.title}-${i}`"
+      class="report-block report-stagger"
+      :style="{ '--i': i }"
+    >
       <h4 class="report-title">{{ s.title }}</h4>
       <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
         <template v-for="(seg, k) in parseSegments(p)" :key="k">
@@ -126,5 +131,29 @@ function onCite(id: string): void {
 
 .report-ref-tag {
   cursor: pointer;
+}
+
+/* 错峰淡入（stagger 100ms；遵守 reduced-motion） */
+.report-block.report-stagger {
+  animation: report-fade-in 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 100ms);
+}
+
+@keyframes report-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-block.report-stagger {
+    animation: none;
+  }
 }
 </style>

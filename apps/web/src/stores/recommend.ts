@@ -1,8 +1,14 @@
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 
-import { postRecommend } from '@/api/client'
-import type { ChatMessage, RecommendationReport, SceneInput } from '@road-rec/contracts'
+import { postRecommend, streamRecommend } from '@/api/client'
+import type {
+  ChatMessage,
+  RecommendationReport,
+  ReportSection,
+  SceneInput,
+  StepRecord,
+} from '@road-rec/contracts'
 
 /**
  * 推荐流程状态机：idle → running → done | degraded | error。
@@ -22,25 +28,63 @@ export const useRecommendStore = defineStore('recommend', () => {
   const chat = ref<ChatMessage[]>([])
   const errorMessage = shallowRef('')
 
-  /** 六步 pipeline 每步耗时（StepStepper 数据源）。 */
-  const steps = computed(() => report.value?.steps ?? [])
+  /** 流式消费的实时步进（running 期间逐 step 点亮，完成后清空走 report.steps）。 */
+  const liveSteps = shallowRef<StepRecord[]>([])
+  /** 流式消费的增量报告段落（每段淡入渲染，完成后清空走 report.sections）。 */
+  const streamSections = shallowRef<ReportSection[]>([])
 
-  async function run(sceneInput: SceneInput): Promise<void> {
-    status.value = 'running'
-    errorMessage.value = ''
-    scene.value = sceneInput
-    // 结果页发起的微调重跑失败时留在结果页；参数页初次提交失败回到参数页。
-    const fromResult = step.value === 'result'
-    step.value = 'result'
+  /** 六步 pipeline 每步耗时（StepStepper 数据源）。 */
+  const steps = computed(() =>
+    status.value === 'running' ? liveSteps.value : (report.value?.steps ?? []),
+  )
+
+  function applyReport(result: RecommendationReport): void {
+    report.value = result
+    liveSteps.value = []
+    streamSections.value = []
+    status.value = result.llmStatus === 'degraded' ? 'degraded' : 'done'
+  }
+
+  /** 流式失败/异常 → 回退普通 JSON 接口重试一次。 */
+  async function fallbackJsonRun(sceneInput: SceneInput, fromResult: boolean): Promise<void> {
     try {
-      const result = await postRecommend(sceneInput)
-      report.value = result
-      status.value = result.llmStatus === 'degraded' ? 'degraded' : 'done'
+      applyReport(await postRecommend(sceneInput))
     } catch (err) {
       status.value = 'error'
       errorMessage.value = err instanceof Error ? err.message : String(err)
       if (!fromResult) step.value = 'input'
     }
+  }
+
+  async function run(sceneInput: SceneInput): Promise<void> {
+    status.value = 'running'
+    errorMessage.value = ''
+    scene.value = sceneInput
+    liveSteps.value = []
+    streamSections.value = []
+    report.value = null
+    // 结果页发起的微调重跑失败时留在结果页；参数页初次提交失败回到参数页。
+    const fromResult = step.value === 'result'
+    step.value = 'result'
+
+    let streamFailed = false
+    try {
+      await streamRecommend(sceneInput, {
+        onStep: (s) => {
+          liveSteps.value = [...liveSteps.value, s]
+        },
+        onSection: (sec) => {
+          streamSections.value = [...streamSections.value, sec]
+        },
+        onDone: applyReport,
+        onError: () => {
+          streamFailed = true
+        },
+      })
+    } catch {
+      streamFailed = true
+    }
+    if (streamFailed) await fallbackJsonRun(sceneInput, fromResult)
   }
 
   /** 结果页「修改参数」：回到参数页，scene 保留供表单回填。 */
@@ -64,6 +108,8 @@ export const useRecommendStore = defineStore('recommend', () => {
     scene,
     report,
     steps,
+    liveSteps,
+    streamSections,
     activeCaseId,
     chat,
     errorMessage,

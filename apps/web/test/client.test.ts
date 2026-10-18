@@ -10,6 +10,7 @@ import {
   kbUploadFile,
   postChat,
   postRecommend,
+  streamRecommend,
 } from '@/api/client'
 import type { CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 
@@ -157,6 +158,59 @@ describe('api client - 推荐与案例', () => {
   it('HTTP 非 2xx 时 postRecommend 抛错', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ message: 'oops' }, 500))
     await expect(postRecommend(validScene)).rejects.toThrow(/500/)
+  })
+})
+
+describe('api client - 推荐流式（SSE）', () => {
+  it('streamRecommend 解析 step/section/done 事件顺序与载荷', async () => {
+    fetchMock.mockResolvedValueOnce(
+      sseResponse([
+        'event: step\ndata: {"name":"parse","ms":1}\n\n',
+        'event: step\ndata: {"name":"mapping","ms":2}\n\n',
+        // 后端实际契约：section 带 index 包装（R：取 data.section）
+        'event: section\ndata: {"index":0,"section":{"title":"推荐理由","paragraphs":["文案"],"evidenceIds":[]}}\n\n',
+        `event: done\ndata: ${JSON.stringify(reportFixture('ok'))}\n\n`,
+      ]),
+    )
+    const onStep = vi.fn()
+    const onSection = vi.fn()
+    const onDone = vi.fn()
+    const onError = vi.fn()
+
+    await streamRecommend(validScene, { onStep, onSection, onDone, onError })
+
+    expect(onStep.mock.calls.map((c) => c[0].name)).toEqual(['parse', 'mapping'])
+    expect(onSection).toHaveBeenCalledTimes(1)
+    expect(onSection.mock.calls[0]?.[0]).toEqual({
+      title: '推荐理由',
+      paragraphs: ['文案'],
+      evidenceIds: [],
+    })
+    expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ llmStatus: 'ok' }))
+    expect(onError).not.toHaveBeenCalled()
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    expect(url).toBe('/api/v1/recommend/stream')
+    expect(init.method).toBe('POST')
+    expect(JSON.parse(init.body as string)).toEqual(validScene)
+  })
+
+  it('streamRecommend 收到 error 事件 → onError 回调（含 message）', async () => {
+    fetchMock.mockResolvedValueOnce(sseResponse(['event: error\ndata: {"message":"内部错误"}\n\n']))
+    const onError = vi.fn()
+
+    await streamRecommend(validScene, { onError })
+
+    expect(onError).toHaveBeenCalledWith('内部错误')
+  })
+
+  it('streamRecommend 非 event-stream 且为报告 JSON → onDone 兜底', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(reportFixture('degraded')))
+    const onDone = vi.fn()
+
+    await streamRecommend(validScene, { onDone })
+
+    expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ llmStatus: 'degraded' }))
   })
 })
 

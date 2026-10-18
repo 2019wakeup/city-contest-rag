@@ -1,10 +1,13 @@
+import { parseSseStream } from '@/utils/sse'
 import type {
   CaseSeed,
   ChatRequest,
   DocType,
   RecommendationReport,
+  ReportSection,
   SceneInput,
   SearchHit,
+  StepRecord,
 } from '@road-rec/contracts'
 
 /**
@@ -61,59 +64,89 @@ export function postRecommend(scene: SceneInput): Promise<RecommendationReport> 
   })
 }
 
-/** 典型案例列表。 */
-export function getCases(): Promise<CaseSeed[]> {
-  return request<CaseSeed[]>('/cases')
+/** 推荐流式回调（后端 /api/v1/recommend/stream 契约）。 */
+export interface StreamRecommendHandlers {
+  /** event: step → {"name","ms"}，六步各一次（report 步在报告完成时发出）。 */
+  onStep?: (step: StepRecord) => void
+  /** event: section → {"index","section":{...}}，解析取 data.section。 */
+  onSection?: (section: ReportSection) => void
+  /** event: done → 完整 RecommendationReport（以它为准存 store）。 */
+  onDone?: (report: RecommendationReport) => void
+  /** event: error → {"message"}；收到后调用方回退普通 JSON 接口。 */
+  onError?: (message: string) => void
 }
 
 /**
- * 逐事件解析 SSE 文本：data 行支持 {delta}/{reply}/{content} 字段与纯文本；
- * 事件以空行分隔，[DONE] 结束标记忽略。
+ * 流式推荐：POST /api/v1/recommend/stream，fetch ReadableStream 解析 SSE。
+ * 宽容解析：未知 event 忽略、坏 data 行跳过；非 event-stream 且为报告 JSON 时按 onDone 兜底。
  */
-async function readSseText(
-  stream: ReadableStream<Uint8Array> | null,
-  onDelta?: (delta: string) => void,
-): Promise<string> {
-  if (!stream) return ''
-  const reader = stream.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-  let dataLines: string[] = []
-  let result = ''
-
-  const finalizeEvent = () => {
-    const raw = dataLines.join('\n').trim()
-    dataLines = []
-    if (!raw || raw === '[DONE]') return
-    let text = raw
-    try {
-      const parsed = JSON.parse(raw) as Record<string, unknown>
-      if (typeof parsed.delta === 'string') text = parsed.delta
-      else if (typeof parsed.reply === 'string') text = parsed.reply
-      else if (typeof parsed.content === 'string') text = parsed.content
-    } catch {
-      // 非 JSON 的 data 行按纯文本处理
+export async function streamRecommend(
+  scene: SceneInput,
+  handlers: StreamRecommendHandlers = {},
+): Promise<void> {
+  const res = await fetch(`${API_BASE}/recommend/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(scene),
+  })
+  if (!res.ok) {
+    handlers.onError?.(`请求失败（${res.status}）`)
+    return
+  }
+  const contentType = res.headers.get('content-type') ?? ''
+  if (!contentType.includes('text/event-stream')) {
+    const data = (await res.json().catch(() => null)) as RecommendationReport | null
+    if (data && typeof data === 'object' && 'candidates' in data) {
+      handlers.onDone?.(data)
+    } else {
+      handlers.onError?.('流式响应格式异常')
     }
-    result += text
-    onDelta?.(text)
+    return
   }
 
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done) break
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split(/\r?\n/)
-    buffer = lines.pop() ?? ''
-    for (const line of lines) {
-      if (line === '') {
-        finalizeEvent()
-      } else if (line.startsWith('data:')) {
-        dataLines.push(line.slice(5).trimStart())
+  await parseSseStream(res.body, (event, data) => {
+    if (event === 'done') {
+      try {
+        handlers.onDone?.(JSON.parse(data) as RecommendationReport)
+      } catch {
+        handlers.onError?.('done 载荷解析失败')
+      }
+      return
+    }
+    if (event === 'error') {
+      let message = '流式推荐失败'
+      try {
+        const parsed = JSON.parse(data) as { message?: string }
+        if (typeof parsed.message === 'string' && parsed.message) message = parsed.message
+      } catch {
+        // 保留默认 message
+      }
+      handlers.onError?.(message)
+      return
+    }
+    if (event === 'step') {
+      try {
+        handlers.onStep?.(JSON.parse(data) as StepRecord)
+      } catch {
+        // 宽容：忽略坏行
+      }
+      return
+    }
+    if (event === 'section') {
+      try {
+        const parsed = JSON.parse(data) as { section?: ReportSection }
+        if (parsed.section) handlers.onSection?.(parsed.section)
+      } catch {
+        // 宽容：忽略坏行
       }
     }
-  }
-  finalizeEvent()
-  return result
+    // 未知 event 忽略
+  })
+}
+
+/** 典型案例列表。 */
+export function getCases(): Promise<CaseSeed[]> {
+  return request<CaseSeed[]>('/cases')
 }
 
 /**
@@ -133,11 +166,26 @@ export async function postChat(
     throw new Error(`请求失败（${res.status}）: /chat`)
   }
   const contentType = res.headers.get('content-type') ?? ''
-  if (contentType.includes('text/event-stream')) {
-    return readSseText(res.body, onDelta)
+  if (!contentType.includes('text/event-stream')) {
+    const data = (await res.json()) as { reply?: string }
+    return data.reply ?? ''
   }
-  const data = (await res.json()) as { reply?: string }
-  return data.reply ?? ''
+  let result = ''
+  await parseSseStream(res.body, (_event, data) => {
+    if (data === '[DONE]') return
+    let text = data
+    try {
+      const parsed = JSON.parse(data) as Record<string, unknown>
+      if (typeof parsed.delta === 'string') text = parsed.delta
+      else if (typeof parsed.reply === 'string') text = parsed.reply
+      else if (typeof parsed.content === 'string') text = parsed.content
+    } catch {
+      // 非 JSON 的 data 行按纯文本处理
+    }
+    result += text
+    onDelta?.(text)
+  })
+  return result
 }
 
 /** 知识库统计。 */

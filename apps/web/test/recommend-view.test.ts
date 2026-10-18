@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getCases, postChat, postRecommend } from '@/api/client'
+import { getCases, postChat, postRecommend, streamRecommend } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
@@ -20,6 +20,7 @@ vi.mock('@/api/client', () => ({
   getCases: vi.fn(),
   postRecommend: vi.fn(),
   postChat: vi.fn(),
+  streamRecommend: vi.fn(),
 }))
 
 // ECharts 在 happy-dom 无真实 canvas：mock 掉 echarts/core 及其子模块，视图测试只关心渲染结构。
@@ -43,6 +44,7 @@ vi.mock('echarts/renderers', () => ({ CanvasRenderer: {} }))
 const getCasesMock = vi.mocked(getCases)
 const postRecommendMock = vi.mocked(postRecommend)
 const postChatMock = vi.mocked(postChat)
+const streamRecommendMock = vi.mocked(streamRecommend)
 
 const validScene: SceneInput = {
   schemaVersion: '1',
@@ -182,8 +184,12 @@ beforeEach(() => {
   getCasesMock.mockReset()
   postRecommendMock.mockReset()
   postChatMock.mockReset()
+  streamRecommendMock.mockReset()
   getCasesMock.mockResolvedValue([])
   postRecommendMock.mockResolvedValue(makeReport())
+  streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+    handlers?.onDone?.(makeReport())
+  })
 })
 
 /** 打开对话侧板（从 closed 状态点击悬浮胶囊）。 */
@@ -269,8 +275,8 @@ describe('RecommendView 推荐工作台', () => {
     await wrapper.find('[data-testid="adjust-apply"]').trigger('click')
     await flushPromises()
 
-    expect(postRecommendMock).toHaveBeenCalledTimes(1)
-    const sceneArg = postRecommendMock.mock.calls[0]?.[0] as SceneInput
+    expect(streamRecommendMock).toHaveBeenCalledTimes(1)
+    const sceneArg = streamRecommendMock.mock.calls[0]?.[0] as SceneInput
     expect(sceneArg.constraints.budget).toBe(600)
   })
 
@@ -791,9 +797,76 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.text()).toContain('八维画像 · 绝对评分（0-100）')
   })
 
+  it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
+    vi.useFakeTimers()
+    try {
+      const pinia = createPinia()
+      setActivePinia(pinia)
+      const store = useRecommendStore()
+      store.status = 'running'
+      store.step = 'result'
+      store.report = null
+
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [{ path: '/recommend', component: RecommendView }],
+      })
+      await router.push('/recommend')
+      await router.isReady()
+      const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+      await flushPromises()
+
+      const phase = () => wrapper.find('[data-testid="loading-phase"]').text()
+      expect(phase()).toBe('正在解析养护场景…')
+
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(phase()).toBe('正在检索知识库…')
+
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(phase()).toBe('正在生成推荐理由…')
+
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(phase()).toBe('正在解析养护场景…')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('报告 sections 错峰淡入：stagger class 与延迟变量', () => {
+    const sections = [
+      { title: '推荐理由', paragraphs: ['a'], evidenceIds: [] },
+      { title: '候选对比', paragraphs: ['b'], evidenceIds: [] },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const blocks = wrapper.findAll('.report-block')
+    expect(blocks).toHaveLength(2)
+    for (const [i, b] of blocks.entries()) {
+      expect(b.classes()).toContain('report-stagger')
+      expect((b.element as HTMLElement).style.getPropertyValue('--i')).toBe(String(i))
+    }
+  })
+
+  it('running 时步进条末步显示 spinner，完成后无 spinner', () => {
+    const running = mount(StepStepper, { props: { steps: [], running: true } })
+    expect(running.find('[data-testid="step-spinner"]').exists()).toBe(true)
+
+    const done = mount(StepStepper, {
+      props: {
+        steps: [
+          { name: 'parse', ms: 1 },
+          { name: 'report', ms: 2 },
+        ],
+        running: false,
+      },
+    })
+    expect(done.find('[data-testid="step-spinner"]').exists()).toBe(false)
+  })
+
   it('案例一键填入：?case= 查询参数自动填充表单并可提交', async () => {
     getCasesMock.mockResolvedValue([caseFixture('case-01'), caseFixture('case-02')])
-    postRecommendMock.mockResolvedValue(makeReport())
 
     const pinia = createPinia()
     setActivePinia(pinia)
@@ -816,7 +889,7 @@ describe('RecommendView 推荐工作台', () => {
     await wrapper.find('[data-testid="scene-form-submit"]').trigger('click')
     await flushPromises()
 
-    const sceneArg = postRecommendMock.mock.calls[0]?.[0] as SceneInput
+    const sceneArg = streamRecommendMock.mock.calls[0]?.[0] as SceneInput
     expect(sceneArg.climate.zone).toBe(validScene.climate.zone)
     expect(sceneArg.traffic.level).toBe('heavy')
     expect(sceneArg.distresses).toEqual(validScene.distresses)

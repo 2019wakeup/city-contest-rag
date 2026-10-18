@@ -48,7 +48,18 @@ const activeStep = computed(() => {
         :key="`${item.title}-${i}`"
         :title="item.title"
       >
-        <template v-if="!running" #description>
+        <template #title>
+          <span class="step-title-row">
+            {{ item.title }}
+            <span
+              v-if="running && i === items.length - 1"
+              class="step-spinner"
+              data-testid="step-spinner"
+              aria-label="进行中"
+            ></span>
+          </span>
+        </template>
+        <template v-if="!running && item.description" #description>
           <span class="tabular">{{ item.description }}</span>
         </template>
       </el-step>
@@ -56,3 +67,26 @@ const activeStep = computed(() => {
     <el-empty v-if="items.length === 0" description="暂无步骤信息" :image-size="40" />
   </el-card>
 </template>
+
+<style scoped>
+.step-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--el-color-primary-light-7);
+  border-top-color: var(--el-color-primary);
+  border-radius: 50%;
+  animation: step-spin 0.8s linear infinite;
+}
+
+@keyframes step-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

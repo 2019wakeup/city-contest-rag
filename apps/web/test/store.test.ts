@@ -1,15 +1,17 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { postRecommend } from '@/api/client'
+import { postRecommend, streamRecommend } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import type { RecommendationReport, SceneInput } from '@road-rec/contracts'
 
 vi.mock('@/api/client', () => ({
   postRecommend: vi.fn(),
+  streamRecommend: vi.fn(),
 }))
 
 const postRecommendMock = vi.mocked(postRecommend)
+const streamRecommendMock = vi.mocked(streamRecommend)
 
 const validScene: SceneInput = {
   schemaVersion: '1',
@@ -90,10 +92,19 @@ const reportFixture = (llmStatus: 'ok' | 'degraded' = 'ok'): RecommendationRepor
   ],
 })
 
+/** 默认流式成功：直接 onDone 一份报告。 */
+function mockStreamDone(report: RecommendationReport) {
+  streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+    handlers?.onDone?.(report)
+  })
+}
+
 describe('recommend store 状态机', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     postRecommendMock.mockReset()
+    streamRecommendMock.mockReset()
+    mockStreamDone(reportFixture('ok'))
   })
 
   it('初始状态为 idle，无报告无步骤', () => {
@@ -106,7 +117,6 @@ describe('recommend store 状态机', () => {
   })
 
   it('run 成功 → step 切到 result；backToInput 返回 input（两页式）', async () => {
-    postRecommendMock.mockResolvedValue(reportFixture('ok'))
     const store = useRecommendStore()
 
     await store.run(validScene)
@@ -118,6 +128,9 @@ describe('recommend store 状态机', () => {
   })
 
   it('初次提交失败 → 回到 input 页并记录错误', async () => {
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onError?.('流式失败')
+    })
     postRecommendMock.mockRejectedValue(new Error('网络错误'))
     const store = useRecommendStore()
 
@@ -128,11 +141,13 @@ describe('recommend store 状态机', () => {
   })
 
   it('结果页微调失败 → 留在 result 页', async () => {
-    postRecommendMock.mockResolvedValue(reportFixture('ok'))
     const store = useRecommendStore()
     await store.run(validScene)
     expect(store.step).toBe('result')
 
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onError?.('流式失败')
+    })
     postRecommendMock.mockRejectedValue(new Error('网络错误'))
     await store.adjustAndRerun({ notes: 'x' })
 
@@ -141,19 +156,21 @@ describe('recommend store 状态机', () => {
   })
 
   it('run 成功（llmStatus ok）→ done，报告与步骤就绪', async () => {
-    postRecommendMock.mockResolvedValue(reportFixture('ok'))
     const store = useRecommendStore()
 
     await store.run(validScene)
 
-    expect(postRecommendMock).toHaveBeenCalledWith(validScene)
+    expect(streamRecommendMock).toHaveBeenCalledWith(
+      validScene,
+      expect.objectContaining({ onDone: expect.any(Function) }),
+    )
     expect(store.status).toBe('done')
     expect(store.report?.llmStatus).toBe('ok')
     expect(store.steps.map((s) => s.name)).toEqual(['解析', '映射'])
   })
 
   it('run 成功但 llmStatus degraded → degraded', async () => {
-    postRecommendMock.mockResolvedValue(reportFixture('degraded'))
+    mockStreamDone(reportFixture('degraded'))
     const store = useRecommendStore()
 
     await store.run(validScene)
@@ -162,7 +179,46 @@ describe('recommend store 状态机', () => {
     expect(store.report?.llmStatus).toBe('degraded')
   })
 
-  it('run 失败（API 抛错）→ error 且记录错误信息', async () => {
+  it('流式消费：onStep/onSection 增量更新，onDone 收尾清理', async () => {
+    const store = useRecommendStore()
+    let midSteps = 0
+    let midSections = 0
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onStep?.({ name: 'parse', ms: 1 })
+      midSteps = store.liveSteps.length
+      handlers?.onSection?.({ title: '推荐理由', paragraphs: ['段'], evidenceIds: [] })
+      midSections = store.streamSections.length
+      handlers?.onDone?.(reportFixture('ok'))
+    })
+
+    await store.run(validScene)
+
+    expect(midSteps).toBe(1)
+    expect(midSections).toBe(1)
+    expect(store.status).toBe('done')
+    expect(store.liveSteps).toEqual([])
+    expect(store.streamSections).toEqual([])
+    expect(store.report?.llmStatus).toBe('ok')
+  })
+
+  it('流式失败（onError）→ 回退 JSON 接口重试一次成功', async () => {
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onError?.('流式挂了')
+    })
+    postRecommendMock.mockResolvedValue(reportFixture('ok'))
+    const store = useRecommendStore()
+
+    await store.run(validScene)
+
+    expect(postRecommendMock).toHaveBeenCalledTimes(1)
+    expect(store.status).toBe('done')
+    expect(store.step).toBe('result')
+  })
+
+  it('流式失败且 JSON 重试也失败 → error 且记录错误信息', async () => {
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onError?.('流式挂了')
+    })
     postRecommendMock.mockRejectedValue(new Error('网络错误'))
     const store = useRecommendStore()
 
@@ -173,16 +229,18 @@ describe('recommend store 状态机', () => {
   })
 
   it('adjustAndRerun 将补丁合并进当前场景并重跑', async () => {
-    postRecommendMock.mockResolvedValue(reportFixture('ok'))
     const store = useRecommendStore()
     await store.run(validScene)
 
     await store.adjustAndRerun({ notes: '调整为重载场景' })
 
-    expect(postRecommendMock).toHaveBeenLastCalledWith({
-      ...validScene,
-      notes: '调整为重载场景',
-    })
+    expect(streamRecommendMock).toHaveBeenLastCalledWith(
+      {
+        ...validScene,
+        notes: '调整为重载场景',
+      },
+      expect.objectContaining({ onDone: expect.any(Function) }),
+    )
     expect(store.scene?.notes).toBe('调整为重载场景')
   })
 
@@ -192,6 +250,6 @@ describe('recommend store 状态机', () => {
     await store.adjustAndRerun({ notes: 'x' })
 
     expect(store.status).toBe('error')
-    expect(postRecommendMock).not.toHaveBeenCalled()
+    expect(streamRecommendMock).not.toHaveBeenCalled()
   })
 })

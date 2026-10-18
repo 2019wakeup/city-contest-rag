@@ -220,8 +220,31 @@ function onKeydown(event: KeyboardEvent): void {
   expandedIds.value = firstId ? new Set([firstId]) : new Set()
 }
 
+// ---- 流式加载动效：分阶段文案 1.5s 轮换（running 状态驱动）----
+const LOADING_PHASES = ['正在解析养护场景…', '正在检索知识库…', '正在生成推荐理由…']
+const loadingPhase = shallowRef(0)
+let phaseTimer: ReturnType<typeof setInterval> | undefined
+
+watch(
+  () => store.status,
+  (s) => {
+    if (phaseTimer) {
+      clearInterval(phaseTimer)
+      phaseTimer = undefined
+    }
+    if (s === 'running') {
+      loadingPhase.value = 0
+      phaseTimer = setInterval(() => {
+        loadingPhase.value = (loadingPhase.value + 1) % LOADING_PHASES.length
+      }, 1500)
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
+  if (phaseTimer) clearInterval(phaseTimer)
   window.removeEventListener('keydown', onKeydown)
   window.removeEventListener('mousemove', onDragMove)
   window.removeEventListener('mouseup', onDragEnd)
@@ -327,10 +350,25 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <!-- UI二轮：running 骨架屏（替代计算中提示） -->
+      <!-- running：分阶段文案 + 实时步进 + 增量报告 + 骨架屏 -->
       <template v-if="store.status === 'running'">
-        <StepStepper :steps="[]" :running="true" class="panel" />
-        <div data-testid="skeleton-report" class="panel app-skeleton" style="height: 180px"></div>
+        <StepStepper :steps="store.liveSteps" :running="true" class="panel" />
+        <div class="panel loading-report" data-testid="loading-report">
+          <div class="loading-phase" data-testid="loading-phase">
+            {{ LOADING_PHASES[loadingPhase] }}
+          </div>
+          <ReportSection
+            v-if="store.streamSections.length > 0"
+            :sections="store.streamSections"
+            :llm-status="'ok'"
+          />
+          <div
+            v-else
+            data-testid="skeleton-report"
+            class="app-skeleton"
+            style="height: 180px"
+          ></div>
+        </div>
         <div data-testid="skeleton-cards" class="panel">
           <div v-for="n in 3" :key="n" class="app-skeleton" style="height: 96px; margin-bottom: 16px"></div>
         </div>
@@ -522,6 +560,16 @@ onBeforeUnmount(() => {
 
 .status-alert {
   margin-bottom: 12px;
+}
+
+.loading-report {
+  position: relative;
+}
+
+.loading-phase {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--el-color-primary);
 }
 
 /* 参数页：单卡居中 */
