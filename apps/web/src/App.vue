@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { onMounted, shallowRef } from 'vue'
+import { useRouter } from 'vue-router'
 
 // 应用壳：品牌区 + 可折叠导航 + 主题切换 + 路由出口。保持薄壳（组合面）。
+const router = useRouter()
 const navItems = [
+  { path: '/', label: '首页' },
   { path: '/recommend', label: '推荐工作台' },
   { path: '/cases', label: '典型案例' },
   { path: '/knowledge', label: '知识库管理' },
@@ -25,6 +28,10 @@ function toggleCollapse(): void {
   collapsed.value = !collapsed.value
 }
 
+function goHome(): void {
+  void router.push('/')
+}
+
 onMounted(() => {
   // 默认 dark；用户上次选择 light 则切亮色（index.html 已预置 class="dark" 防闪烁）。
   const saved = localStorage.getItem('theme')
@@ -36,7 +43,13 @@ onMounted(() => {
   <el-container class="app-shell">
     <el-aside :width="collapsed ? '64px' : '200px'" data-testid="app-aside" class="app-aside">
       <div class="app-brand" :class="{ 'app-brand-collapsed': collapsed }">
-        <span data-testid="app-logo-mark" class="app-logo-mark">材</span>
+        <span
+          data-testid="app-logo-mark"
+          class="app-logo-mark"
+          role="button"
+          aria-label="回到首页"
+          @click="goHome"
+        >材</span>
         <div v-if="!collapsed" class="app-brand-text">
           <div class="app-logo">数智选材</div>
           <div class="app-subtitle">沥青材料智能推荐</div>
@@ -46,7 +59,20 @@ onMounted(() => {
       <el-menu :default-active="$route.path" router :collapse="collapsed" class="app-menu">
         <el-menu-item v-for="item in navItems" :key="item.path" :index="item.path">
           <svg
-            v-if="item.path === '/recommend'"
+            v-if="item.path === '/'"
+            class="app-menu-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 11l9-8 9 8" />
+            <path d="M5 9.5V21h14V9.5" />
+          </svg>
+          <svg
+            v-else-if="item.path === '/recommend'"
             class="app-menu-icon"
             viewBox="0 0 24 24"
             fill="none"
@@ -216,6 +242,12 @@ onMounted(() => {
   color: #fff;
   font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.app-logo-mark:active {
+  transform: scale(0.94);
 }
 
 .app-logo {

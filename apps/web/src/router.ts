@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// 三视图路由；视图组件按需加载。占位视图将在 T12/T13 填充真实内容。
+// 视图路由；视图组件按需加载。
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', redirect: '/recommend' },
+    {
+      path: '/',
+      name: 'home',
+      component: () => import('./views/WelcomeView.vue'),
+    },
     {
       path: '/recommend',
       name: 'recommend',

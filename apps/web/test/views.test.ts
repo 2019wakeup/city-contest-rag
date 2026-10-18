@@ -9,6 +9,7 @@ import App from '@/App.vue'
 import CaseCard from '@/components/CaseCard.vue'
 import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
+import WelcomeView from '@/views/WelcomeView.vue'
 
 vi.mock('@/api/client', () => ({
   getCases: vi.fn(),
@@ -94,6 +95,105 @@ beforeEach(() => {
   kbUploadFileMock.mockResolvedValue({ added: 1, chunks: 2 })
   kbRebuildMock.mockResolvedValue({ count: 42 })
   getCasesMock.mockResolvedValue([])
+})
+
+describe('WelcomeView 欢迎页', () => {
+  const makeWelcomeRouter = () =>
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', name: 'home', component: WelcomeView },
+        { path: '/recommend', component: { template: '<div />' } },
+        { path: '/cases', component: { template: '<div />' } },
+      ],
+    })
+
+  it('渲染标题/定位/三亮点卡/双 CTA（欢迎页）', async () => {
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('数智选材')
+    expect(wrapper.text()).toContain('AI 驱动的道路养护决策与沥青材料方案智能推荐')
+    expect(wrapper.text()).toContain('场景→性能量化映射')
+    expect(wrapper.text()).toContain('配方反向设计推荐')
+    expect(wrapper.text()).toContain('可解释证据溯源')
+    expect(wrapper.find('[data-testid="cta-recommend"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="cta-cases"]').exists()).toBe(true)
+  })
+
+  it('CTA 跳转：开始推荐→/recommend、查看案例→/cases（欢迎页）', async () => {
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="cta-recommend"]').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/recommend')
+
+    await router.push('/')
+    await wrapper.find('[data-testid="cta-cases"]').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/cases')
+  })
+
+  it('stats 徽章：实时取 kb/stats 展示规模（欢迎页）', async () => {
+    kbStatsMock.mockResolvedValue({
+      count: 241,
+      docTypes: { knowledge: 42, standard: 57, literature: 142 },
+      backend: 'lancedb',
+    })
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    const badges = wrapper.find('[data-testid="stats-badges"]')
+    expect(badges.exists()).toBe(true)
+    expect(badges.text()).toContain('241')
+    expect(badges.text()).toContain('知识条目 42')
+    expect(badges.text()).toContain('规范条文 57')
+    expect(badges.text()).toContain('文献 142')
+  })
+
+  it('stats 获取失败时静默隐藏徽章区（欢迎页）', async () => {
+    kbStatsMock.mockRejectedValue(new Error('不可用'))
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="stats-badges"]').exists()).toBe(false)
+  })
+
+  it('App 导航含「首页」，点击 logo 回首页', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', component: { template: '<div />' } },
+        { path: '/cases', component: { template: '<div />' } },
+      ],
+    })
+    await router.push('/cases')
+    await router.isReady()
+
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    expect(wrapper.text()).toContain('首页')
+
+    await wrapper.find('[data-testid="app-logo-mark"]').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/')
+  })
 })
 
 describe('CasesView 典型案例页', () => {
