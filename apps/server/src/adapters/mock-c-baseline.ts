@@ -34,7 +34,7 @@ export interface CBaseline {
 const UNITS: Record<CDim, string> = {
   highTemp: '℃',
   lowTemp: '℃',
-  fatigue: '次',
+  fatigue: '万次', // B1：疲劳量纲全局统一为万次（与 mock A 目标、雷达锚点一致）
   waterStability: '%',
   lcc: '万元',
   carbon: 'tCO2e',
@@ -126,13 +126,14 @@ export function mockPredictFormulas(formulas: Formula[]): FormulaPrediction[] {
   return formulas.map((f) => {
     const base = composeBaseline(f);
     const predictions = C_DIMS.map((dim) => {
-      // 固定 seed 扰动 ±3%，置信区间 ±5%（全部确定性）
+      // 固定 seed 扰动 ±3%；置信区间 ±5%|value|（B2：负值维度如低温 -28 → -29.4 ~ -26.6，保证 low ≤ high）
       const value = Number((base[dim] * (1 + (rand() - 0.5) * 0.06)).toFixed(2));
+      const margin = Math.abs(value) * 0.05;
       return {
         perf: dim,
         value,
-        ciLow: Number((value * 0.95).toFixed(2)),
-        ciHigh: Number((value * 1.05).toFixed(2)),
+        ciLow: Number((value - margin).toFixed(2)),
+        ciHigh: Number((value + margin).toFixed(2)),
         unit: UNITS[dim],
       };
     });

@@ -14,7 +14,7 @@ import type { SceneInput, TargetProfile } from '@road-rec/contracts';
 const BASE_VALUES: Record<string, { value: number; unit: string }> = {
   高温PG: { value: 64, unit: '℃' },
   低温PG: { value: -22, unit: '℃' },
-  疲劳: { value: 1_000_000, unit: '次' },
+  疲劳: { value: 100, unit: '万次' }, // B1：疲劳量纲全局统一为万次（100 万次 = 1,000,000 次）
   水稳TSR: { value: 80, unit: '%' },
   成本: { value: 400, unit: '万元' },
   碳排: { value: 50, unit: 'tCO2e' },
@@ -78,7 +78,8 @@ export function mockMapSceneToTargets(scene: SceneInput): TargetProfile & { adap
   if (scene.constraints.budget > 0 && scene.constraints.budget < 200) add('成本', 0.15);
 
   // 降噪/工期要求 → 施工和易性
-  if (hasAny(scene.constraints.noise, ['strict', '低噪', 'low'])) add('施工和易性', 0.05);
+  // 降噪/工期要求 → 施工和易性（B5 注册表值域：none/low/high，兼容 cases.json 的 strict）
+  if (hasAny(scene.constraints.noise, ['strict', '低噪', 'low', 'high'])) add('施工和易性', 0.05);
 
   // 目标 = 子集；高温PG/低温PG 数值取场景 pg 需求，其余取基线
   const targets = [...perfSet].map((perf) => {

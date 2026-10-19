@@ -69,6 +69,34 @@ describe('模块 A/C 适配器（T7）', () => {
       expect(perfs).toContain('高温PG');
       expect(perfs).not.toContain('水稳TSR');
     });
+
+    it('B1 疲劳量纲统一：mock A 目标疲劳 = 100 万次', async () => {
+      vi.stubEnv('MODULE_A_ENDPOINT', '');
+      const result = await mapSceneToTargets(scene);
+      const fatigue = result.targets.find((t) => t.perf === '疲劳');
+      expect(fatigue).toBeDefined();
+      expect(fatigue!.value).toBe(100);
+      expect(fatigue!.unit).toBe('万次');
+    });
+
+    it('B1/B2：mock C 疲劳 unit=万次，且所有预测 ciLow ≤ ciHigh（负值维度方向正确）', async () => {
+      vi.stubEnv('MODULE_C_ENDPOINT', '');
+      const predictions = await predictFormulas([formula]);
+      const fatigue = predictions[0].predictions.find((p) => p.perf === 'fatigue');
+      expect(fatigue?.unit).toBe('万次');
+      for (const fp of predictions) {
+        for (const p of fp.predictions) {
+          expect(p.ciLow, `${p.perf} ciLow`).toBeDefined();
+          expect(p.ciHigh, `${p.perf} ciHigh`).toBeDefined();
+          expect(p.ciLow!).toBeLessThanOrEqual(p.ciHigh!);
+        }
+      }
+      // 低温维度为负值：low = value - 5%|value|，high = value + 5%|value|
+      const lowTemp = predictions[0].predictions.find((p) => p.perf === 'lowTemp');
+      expect(lowTemp!.value).toBeLessThan(0);
+      expect(lowTemp!.ciLow!).toBeLessThan(lowTemp!.value);
+      expect(lowTemp!.ciHigh!).toBeGreaterThan(lowTemp!.value);
+    });
   });
 
   describe('真实端点（fake HTTP server）', () => {
