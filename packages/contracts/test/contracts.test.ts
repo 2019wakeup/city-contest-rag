@@ -112,6 +112,32 @@ describe('contracts 契约包', () => {
     }
   });
 
+  it('B5 值域统一：病害 value 为英文 slug、zone 含案例取值、env/noise 为 select', () => {
+    const distress = FIELD_REGISTRY.distresses;
+    expect(distress.control).toBe('checkbox');
+    const distressValues = (distress.options ?? []).map((o) => o.value);
+    for (const v of ['rutting', 'shoving', 'transverse-crack', 'water-damage', 'raveling', 'skid']) {
+      expect(distressValues, `病害选项 ${v}`).toContain(v);
+    }
+    // value 全英文 slug（与 cases.json / 场景标签对齐）
+    for (const v of distressValues) {
+      expect(/[\u4e00-\u9fa5]/.test(v), `病害 value 含中文：${v}`).toBe(false);
+    }
+
+    const zones = (FIELD_REGISTRY['climate.zone'].options ?? []).map((o) => o.value);
+    for (const z of ['1-4 华南湿热区', '2-2 东北寒冷区', '1-3 江淮湿润区', '2-1 华北温区']) {
+      expect(zones, `气候分区选项 ${z}`).toContain(z);
+    }
+
+    const env = FIELD_REGISTRY['constraints.env'];
+    expect(env.control).toBe('select');
+    expect((env.options ?? []).map((o) => o.value)).toEqual(['normal', 'strict']);
+
+    const noise = FIELD_REGISTRY['constraints.noise'];
+    expect(noise.control).toBe('select');
+    expect((noise.options ?? []).map((o) => o.value)).toEqual(['none', 'low', 'high']);
+  });
+
   it('RecommendationReport 解析成功且保留未知字段（Review Focus #1）', () => {
     const report = {
       scene: validScene,

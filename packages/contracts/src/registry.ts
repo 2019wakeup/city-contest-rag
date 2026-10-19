@@ -22,7 +22,12 @@ export const FIELD_REGISTRY: Record<string, FieldDef> = {
   'climate.zone': {
     label: '气候分区',
     control: 'select',
+    // 含 5 案例实际取值（B5：1-4 华南湿热区 / 2-2 东北寒冷区 / 1-3 江淮湿润区 / 2-1 华北温区…）
     options: [
+      { label: '1-4 华南湿热区', value: '1-4 华南湿热区' },
+      { label: '2-2 东北寒冷区', value: '2-2 东北寒冷区' },
+      { label: '1-3 江淮湿润区', value: '1-3 江淮湿润区' },
+      { label: '2-1 华北温区', value: '2-1 华北温区' },
       { label: '华南高温区', value: '华南高温区' },
       { label: '寒冷地区', value: '寒冷地区' },
       { label: '多雨冻融区', value: '多雨冻融区' },
@@ -81,14 +86,18 @@ export const FIELD_REGISTRY: Record<string, FieldDef> = {
   distresses: {
     label: '病害类型',
     control: 'checkbox',
+    // B5：value 用英文 slug，与 cases.json 场景取值 / scene-tags 词典对齐；中文 label 供展示
     options: [
-      { label: '车辙', value: '车辙' },
-      { label: '横向裂缝', value: '横向裂缝' },
-      { label: '纵向裂缝', value: '纵向裂缝' },
-      { label: '水损害', value: '水损害' },
-      { label: '冻融剥落', value: '冻融剥落' },
-      { label: '坑槽', value: '坑槽' },
-      { label: '松散', value: '松散' },
+      { label: '车辙', value: 'rutting' },
+      { label: '推移拥包', value: 'shoving' },
+      { label: '横向裂缝', value: 'transverse-crack' },
+      { label: '纵向裂缝', value: 'longitudinal-crack' },
+      { label: '疲劳裂缝', value: 'fatigue-crack' },
+      { label: '水损害', value: 'water-damage' },
+      { label: '松散剥落', value: 'raveling' },
+      { label: '坑槽', value: 'pothole' },
+      { label: '抗滑不足', value: 'skid' },
+      { label: '交通噪声', value: 'noise' },
     ],
     placeholder: '勾选主要病害（默认严重程度：中）',
   },
@@ -106,13 +115,24 @@ export const FIELD_REGISTRY: Record<string, FieldDef> = {
   },
   'constraints.env': {
     label: '环保要求',
-    control: 'text',
-    placeholder: '如 环保要求高',
+    control: 'select',
+    // B5：值域与 cases.json / mock-a 判断对齐（normal/strict）
+    options: [
+      { label: '标准', value: 'normal' },
+      { label: '严格（低碳再生等）', value: 'strict' },
+    ],
+    placeholder: '选择环保要求',
   },
   'constraints.noise': {
     label: '降噪要求',
-    control: 'text',
-    placeholder: '如 城市道路需低噪',
+    control: 'select',
+    // B5：值域 none/low/high（mock-a 兼容判断）
+    options: [
+      { label: '无要求', value: 'none' },
+      { label: '低噪要求', value: 'low' },
+      { label: '高降噪要求', value: 'high' },
+    ],
+    placeholder: '选择降噪要求',
   },
   notes: {
     label: '备注',
