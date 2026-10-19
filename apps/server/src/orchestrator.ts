@@ -55,7 +55,6 @@ const AIR_VOIDS_EST = 4.0; // 空隙率规则估算 4.0%（假设）
 const MODIFIER_DOSAGE_EST = 4.0; // 改性剂掺量缺省 4.0%（假设）
 const ADDITIVE_DOSAGE_EST = 0.3; // 助剂掺量缺省 0.3%（假设）
 const TOP_K_CANDIDATES = 5;
-const EVIDENCE_PER_CANDIDATE = 3;
 // 排序用 min-max 相对归一化的"越低越好"维度（lowTemp 方向修复：低温 PG 越低越抗冻）
 const LOWER_BETTER_DIMS = new Set(['lcc', 'carbon', 'lowTemp']);
 
@@ -174,7 +173,7 @@ export async function recommend(
   mark('rank');
 
   // ⑥ 证据检索（每候选按类型标签 search top3）+ 报告文案（LLM ok/模板降级）+ 组装
-  const { evidence, byCandidate, retrievalWarnings } = await retrieveEvidence(ranked, deps);
+  const { evidence, byCandidate, retrievalWarnings } = await retrieveEvidence(ranked, parsedScene, deps);
   for (const cand of ranked) {
     cand.evidenceIds = byCandidate.get(cand.id) ?? [];
   }
@@ -562,26 +561,115 @@ function hasAny(value: string, keywords: string[]): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// ⑥ 证据检索
+// ⑥ 证据检索（R1 差异化查询 + R2 多样性配额）
 // ---------------------------------------------------------------------------
+
+const EVIDENCE_FETCH_K = 8; // 每候选先取 8 再挑选（配额挑选需要余量）
+const EVIDENCE_SLOTS = 3;
+const GLOBAL_CHUNK_LIMIT = 2; // 同 chunk 全局最多出现在 2 个候选
+
+/** 病害类型 → 中文检索词（cases.json/注册表 slug 对齐） */
+const DISTRESS_CN: Record<string, string> = {
+  rutting: '车辙',
+  shoving: '推移拥包',
+  'transverse-crack': '横向裂缝',
+  'longitudinal-crack': '纵向裂缝',
+  'fatigue-crack': '疲劳裂缝',
+  'water-damage': '水损害',
+  raveling: '松散剥落',
+  pothole: '坑槽',
+  skid: '抗滑不足',
+  noise: '交通噪声',
+};
+
+/** 雷达维度 → 中文检索词 */
+const RADAR_DIM_CN: Record<string, string> = {
+  highTemp: '高温',
+  lowTemp: '低温',
+  fatigue: '疲劳',
+  waterStability: '水稳',
+  lcc: 'LCC',
+  carbon: '碳排',
+  expectedLife: '寿命',
+  constructability: '施工',
+};
+
+/** R1：按候选差异化查询——场景词 + 配方全字段 + 该候选雷达优势 Top2 维度中文名 */
+function buildCandidateQuery(scene: SceneInput, cand: Candidate): string {
+  const sceneWords = [
+    scene.climate.zone,
+    scene.traffic.level,
+    ...scene.distresses.map((d) => DISTRESS_CN[d.type] ?? d.type),
+    scene.constraints.env,
+    scene.constraints.noise,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const f = cand.formula;
+  const formulaWords = [
+    f.binder.type,
+    f.binder.grade,
+    f.binder.pg,
+    f.modifier.type,
+    f.gradation.type,
+    ...f.additives.map((a) => a.type),
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const topDims = (Object.entries(cand.radar) as Array<[string, number]>)
+    .filter(([dim]) => RADAR_DIM_CN[dim] !== undefined)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([dim]) => RADAR_DIM_CN[dim]);
+  return `${sceneWords} ${formulaWords} ${topDims.join(' ')}`;
+}
+
+/**
+ * R2 多样性挑选：每候选 3 条——
+ * 同 chunk 全局 ≤2、同 docId 每候选 ≤1、知识 ≤2、标准 ≤1、文献 1–2（检索到即优先纳入）。
+ */
+export function selectDiverseEvidence(
+  hits: SearchHit[],
+  globalChunkCount: Map<string, number>,
+): SearchHit[] {
+  const chosen: SearchHit[] = [];
+  const seenDocIds = new Set<string>();
+  let knowledgeCount = 0;
+  let standardCount = 0;
+  let literatureCount = 0;
+
+  const tryPush = (h: SearchHit): boolean => {
+    if (chosen.length >= EVIDENCE_SLOTS) return false;
+    if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
+    if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+    if (h.docType === 'knowledge' && knowledgeCount >= 2) return false;
+    if (h.docType === 'standard' && standardCount >= 1) return false;
+    if (h.docType === 'literature' && literatureCount >= 2) return false;
+    chosen.push(h);
+    seenDocIds.add(h.provenance.sourceDocId);
+    globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
+    if (h.docType === 'knowledge') knowledgeCount += 1;
+    if (h.docType === 'standard') standardCount += 1;
+    if (h.docType === 'literature') literatureCount += 1;
+    return true;
+  };
+
+  // 第一遍：文献优先纳入（检索到即优先）；第二遍：其余按相关度补足
+  for (const h of hits) if (h.docType === 'literature') tryPush(h);
+  for (const h of hits) tryPush(h);
+  return chosen;
+}
 
 async function retrieveEvidence(
   candidates: Candidate[],
+  scene: SceneInput,
   deps: RecommendDeps,
 ): Promise<{ evidence: EvidenceRef[]; byCandidate: Map<string, string[]>; retrievalWarnings: string[] }> {
   const warnings: string[] = [];
   const evidenceMap = new Map<string, EvidenceRef>();
   const byCandidate = new Map<string, string[]>();
-  const texts = candidates.map((c) =>
-    [
-      c.formula.binder.type,
-      c.formula.gradation.type,
-      c.formula.modifier.type,
-      ...c.formula.additives.map((a) => a.type),
-    ]
-      .filter(Boolean)
-      .join(' '),
-  );
+  const globalChunkCount = new Map<string, number>();
+  const texts = candidates.map((c) => buildCandidateQuery(scene, c));
   let vectors: number[][] | null = null;
   if (deps.embedder) {
     try {
@@ -595,12 +683,13 @@ async function retrieveEvidence(
       const hits = await deps.store.search({
         text: texts[i],
         vector: vectors?.[i],
-        topK: EVIDENCE_PER_CANDIDATE,
-        // R3-C3：enterprise 企业资料同为语料，进证据链（保持 topK 截断）
+        topK: EVIDENCE_FETCH_K,
+        // R3-C3：enterprise 企业资料同为语料，进证据链
         filter: { docTypes: ['knowledge', 'standard', 'literature', 'enterprise'] },
       });
+      const chosen = selectDiverseEvidence(hits, globalChunkCount);
       const ids: string[] = [];
-      for (const h of hits) {
+      for (const h of chosen) {
         if (!evidenceMap.has(h.chunkId)) evidenceMap.set(h.chunkId, h);
         ids.push(h.chunkId);
       }
