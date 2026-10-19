@@ -1,6 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { ElInputNumber, ElSelect, ElSteps, ElTableColumn, ElTooltip } from 'element-plus'
 import { createPinia, setActivePinia } from 'pinia'
+import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,6 +10,7 @@ import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
+import ChatPanel from '@/components/ChatPanel.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
 import ReportSection from '@/components/ReportSection.vue'
@@ -284,6 +286,59 @@ describe('RecommendView 推荐工作台', () => {
     expect(streamRecommendMock).toHaveBeenCalledTimes(1)
     const sceneArg = streamRecommendMock.mock.calls[0]?.[0] as SceneInput
     expect(sceneArg.constraints.budget).toBe(600)
+  })
+
+  it('ChatPanel typing 三点脉冲：流式期间显示、结束移除（D）', async () => {
+    let resolveChat: (value: string) => void = () => {}
+    postChatMock.mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveChat = resolve
+        }),
+    )
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+    await wrapper.find('[data-testid="chat-input"]').setValue('问一下')
+    await wrapper.find('[data-testid="chat-send"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="typing-dots"]').exists()).toBe(true)
+
+    resolveChat('答复内容')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="typing-dots"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('答复内容')
+  })
+
+  it('ChatPanel 消息区自动滚底（D）', async () => {
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+    const messages = wrapper.find('[data-testid="chat-messages"]').element as HTMLElement
+    Object.defineProperty(messages, 'scrollHeight', { value: 500, configurable: true })
+
+    const store = useRecommendStore()
+    store.chat.push({ role: 'user', content: '你好' })
+    await nextTick()
+    await flushPromises()
+    expect(messages.scrollTop).toBe(500)
+  })
+
+  it('ChatPanel 打开自动聚焦输入框（D）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const holder = document.createElement('div')
+    document.body.appendChild(holder)
+    const wrapper = mount(ChatPanel, {
+      props: { report: null },
+      attachTo: holder,
+    })
+    await flushPromises()
+
+    const input = wrapper.find('[data-testid="chat-input"]').element as HTMLElement
+    expect(document.activeElement).toBe(input)
+
+    wrapper.unmount()
+    holder.remove()
   })
 
   it('ChatPanel 发送问题后展示流式回复', async () => {
@@ -774,11 +829,12 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(false)
 
     await openChatDock(wrapper)
-    // open：面板出现（默认 480px），胶囊隐藏
+    // open：面板出现（默认 560px），胶囊隐藏；统一入场动画 class
     expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="chat-dock"]').classes()).toContain('dock-enter')
     expect(wrapper.find('[data-testid="chat-fab"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="chat-input"]').exists()).toBe(true)
-    expect(dockWidthOf(wrapper)).toBe('480px')
+    expect(dockWidthOf(wrapper)).toBe('560px')
 
     // 收起 → docked：右缘竖条
     await wrapper.find('[data-testid="chat-dock-dock"]').trigger('click')
@@ -789,8 +845,10 @@ describe('RecommendView 推荐工作台', () => {
     // docked 点击竖条 → open 且恢复记忆宽度
     await wrapper.find('[data-testid="chat-rail"]').trigger('click')
     await flushPromises()
+    // 竖条 → open 与胶囊 → open 走同一动画（重新挂载即重新播放）
     expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
-    expect(dockWidthOf(wrapper)).toBe('480px')
+    expect(wrapper.find('[data-testid="chat-dock"]').classes()).toContain('dock-enter')
+    expect(dockWidthOf(wrapper)).toBe('560px')
 
     // 头部关闭 → closed，胶囊回归
     await wrapper.find('[data-testid="chat-dock-close"]').trigger('click')
@@ -811,22 +869,22 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.find('[data-testid="chat-rail"]').exists()).toBe(true)
   })
 
-  it('拖拽柄调整宽度并 clamp 到 360–720', async () => {
+  it('拖拽柄调整宽度并 clamp 到 420–860', async () => {
     const wrapper = await mountView()
     await openChatDock(wrapper)
 
     const handle = wrapper.find('[data-testid="chat-dock-handle"]')
     await handle.trigger('mousedown', { clientX: 600 })
 
-    // 向左拖 400px：480+400=880 → clamp 720
+    // 向左拖 400px：560+400=960 → clamp 860
     window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200 }))
     await flushPromises()
-    expect(dockWidthOf(wrapper)).toBe('720px')
+    expect(dockWidthOf(wrapper)).toBe('860px')
 
-    // 向右拖到极端：600-1200=-600 → 480-600=-120 → clamp 360
+    // 向右拖到极端：600-1200=-600 → 560-600=-40 → clamp 420
     window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1200 }))
     await flushPromises()
-    expect(dockWidthOf(wrapper)).toBe('360px')
+    expect(dockWidthOf(wrapper)).toBe('420px')
 
     window.dispatchEvent(new MouseEvent('mouseup'))
     await flushPromises()

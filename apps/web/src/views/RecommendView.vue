@@ -8,7 +8,7 @@ import { formatNumber } from '@/utils/format'
 import type { Candidate, CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
-import ChatPanel from '@/components/ChatPanel.vue'
+import ChatDock from '@/components/ChatDock.vue'
 import ReportSection from '@/components/ReportSection.vue'
 import SceneForm from '@/components/SceneForm.vue'
 import StepStepper from '@/components/StepStepper.vue'
@@ -148,74 +148,10 @@ function gotoCases(): void {
   void router.push('/cases')
 }
 
-// ---- 对话侧板（可停靠/可拖动/右缘收起）----
-type ChatDockState = 'closed' | 'open' | 'docked'
-const DOCK_MIN_WIDTH = 360
-const DOCK_MAX_WIDTH = 720
-const DOCK_DEFAULT_WIDTH = 480
-const DOCK_STORAGE_KEY = 'chat-dock-width'
-
-const chatDock = shallowRef<ChatDockState>('closed')
-const chatDockWidth = shallowRef(readDockWidth())
-
-function readDockWidth(): number {
-  const saved = Number(localStorage.getItem(DOCK_STORAGE_KEY))
-  return Number.isFinite(saved) && saved >= DOCK_MIN_WIDTH && saved <= DOCK_MAX_WIDTH
-    ? saved
-    : DOCK_DEFAULT_WIDTH
-}
-
-function persistDockWidth(width: number): void {
-  localStorage.setItem(DOCK_STORAGE_KEY, String(width))
-}
-
-function openChatDock(): void {
-  chatDock.value = 'open'
-}
-
-function dockChatDock(): void {
-  chatDock.value = 'docked'
-}
-
-function closeChatDock(): void {
-  chatDock.value = 'closed'
-}
-
-// 拖拽改宽度：左边缘 6px 柄（mousedown→mousemove clamp 360–720→mouseup 持久化）。
-const dockDragging = shallowRef(false)
-let dragStartX = 0
-let dragStartWidth = DOCK_DEFAULT_WIDTH
-
-function onDragStart(event: MouseEvent): void {
-  dockDragging.value = true
-  dragStartX = event.clientX
-  dragStartWidth = chatDockWidth.value
-  document.body.style.userSelect = 'none'
-  window.addEventListener('mousemove', onDragMove)
-  window.addEventListener('mouseup', onDragEnd)
-}
-
-function onDragMove(event: MouseEvent): void {
-  if (!dockDragging.value) return
-  const delta = dragStartX - event.clientX
-  chatDockWidth.value = Math.min(DOCK_MAX_WIDTH, Math.max(DOCK_MIN_WIDTH, dragStartWidth + delta))
-}
-
-function onDragEnd(): void {
-  dockDragging.value = false
-  document.body.style.userSelect = ''
-  persistDockWidth(chatDockWidth.value)
-  window.removeEventListener('mousemove', onDragMove)
-  window.removeEventListener('mouseup', onDragEnd)
-}
-
-// ---- 键盘（UI二轮+侧板）：Esc 优先收起侧板为 docked，否则收起已展开候选卡 ----
+// ---- 键盘：Esc 收起已展开候选卡（ChatDock 已 preventDefault 时跳过）----
 function onKeydown(event: KeyboardEvent): void {
   if (event.key !== 'Escape') return
-  if (chatDock.value === 'open') {
-    dockChatDock()
-    return
-  }
+  if (event.defaultPrevented) return
   const firstId = report.value?.candidates?.[0]?.id
   expandedIds.value = firstId ? new Set([firstId]) : new Set()
 }
@@ -246,9 +182,6 @@ onMounted(() => window.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   if (phaseTimer) clearInterval(phaseTimer)
   window.removeEventListener('keydown', onKeydown)
-  window.removeEventListener('mousemove', onDragMove)
-  window.removeEventListener('mouseup', onDragEnd)
-  document.body.style.userSelect = ''
 })
 </script>
 
@@ -475,83 +408,8 @@ onBeforeUnmount(() => {
       </template>
     </div>
 
-    <!-- ============ 对话侧板（可停靠/可拖动/右缘收起） ============ -->
-    <!-- open：固定右侧面板 + 左边缘拖拽柄 -->
-    <div
-      v-if="report && chatDock === 'open'"
-      class="chat-dock"
-      data-testid="chat-dock"
-      :style="{ width: `${chatDockWidth}px` }"
-    >
-      <div
-        class="chat-dock-handle"
-        data-testid="chat-dock-handle"
-        aria-label="拖拽调整宽度"
-        @mousedown.prevent="onDragStart"
-      ></div>
-      <div class="chat-dock-head">
-        <span class="chat-dock-title">对话面板</span>
-        <div class="chat-dock-actions">
-          <el-button text size="small" data-testid="chat-dock-dock" @click="dockChatDock">
-            收起
-          </el-button>
-          <el-button text size="small" data-testid="chat-dock-close" @click="closeChatDock">
-            关闭
-          </el-button>
-        </div>
-      </div>
-      <ChatPanel :report="report" />
-    </div>
-
-    <!-- docked：右缘竖条，点击恢复 open（记忆宽度） -->
-    <button
-      v-else-if="report && chatDock === 'docked'"
-      type="button"
-      class="chat-rail"
-      data-testid="chat-rail"
-      aria-label="展开追问面板"
-      @click="openChatDock"
-    >
-      <svg
-        class="chat-fab-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
-        />
-      </svg>
-      <span class="chat-rail-text">追问</span>
-    </button>
-
-    <!-- closed：右下角悬浮胶囊 -->
-    <button
-      v-else-if="report"
-      type="button"
-      class="chat-fab"
-      data-testid="chat-fab"
-      aria-label="追问"
-      @click="openChatDock"
-    >
-      <svg
-        class="chat-fab-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
-        />
-      </svg>
-      追问
-    </button>
+    <!-- ============ 追问侧板（ChatDock：三态/拖拽/右缘收起） ============ -->
+    <ChatDock :report="report" />
   </div>
 </template>
 
@@ -722,123 +580,4 @@ onBeforeUnmount(() => {
   gap: 12px;
 }
 
-/* 对话侧板：可停靠/可拖动/右缘收起 */
-.chat-dock {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  background: var(--app-panel-bg);
-  border-left: 1px solid var(--app-border);
-  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.25);
-}
-
-.chat-dock-handle {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: ew-resize;
-  transition: background 0.15s ease;
-}
-
-.chat-dock-handle:hover {
-  background: var(--el-color-primary);
-}
-
-.chat-dock-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--app-border);
-}
-
-.chat-dock-title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.chat-dock-actions {
-  display: flex;
-  gap: 4px;
-}
-
-.chat-rail {
-  position: fixed;
-  right: 0;
-  top: 40%;
-  transform: translateY(-50%);
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: 36px;
-  padding: 12px 0;
-  border: 1px solid var(--app-border-strong);
-  border-right: none;
-  border-radius: 10px 0 0 10px;
-  background: var(--el-bg-color-overlay, #161b24);
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.chat-rail:hover {
-  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.35);
-}
-
-.chat-rail:active {
-  transform: translateY(-50%) scale(0.96);
-}
-
-.chat-rail-text {
-  font-size: 12px;
-  writing-mode: vertical-rl;
-  letter-spacing: 2px;
-}
-
-.chat-fab {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  border: 1px solid var(--app-border-strong);
-  border-radius: 999px;
-  background: var(--el-bg-color-overlay, #161b24);
-  color: var(--el-text-color-primary);
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.chat-fab:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-}
-
-.chat-fab:active {
-  transform: scale(0.96);
-}
-
-.chat-fab-icon {
-  width: 16px;
-  height: 16px;
-}
 </style>

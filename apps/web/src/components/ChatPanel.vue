@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, shallowRef } from 'vue'
+import { computed, nextTick, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { postChat } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
@@ -11,11 +11,18 @@ const store = useRecommendStore()
 const question = shallowRef('')
 const sending = shallowRef(false)
 const streaming = shallowRef('')
+const typing = shallowRef(false)
+
+const inputRef = useTemplateRef<{ focus: () => void }>('chatInput')
+const messagesEl = useTemplateRef<HTMLDivElement>('messages')
 
 // LLM 配置状态（UI#12）：健康检查失败时未知，不显示提示。
 const llmConfigured = shallowRef<boolean | null>(null)
 
 onMounted(async () => {
+  // D：打开自动聚焦输入框（等内部 textarea 渲染完成）
+  await nextTick()
+  inputRef.value?.focus()
   try {
     const res = await fetch('/api/v1/health')
     const data = (await res.json()) as { llm?: { configured?: boolean } }
@@ -24,6 +31,16 @@ onMounted(async () => {
     llmConfigured.value = null
   }
 })
+
+// D：消息区自动滚底
+watch(
+  () => [store.chat.length, streaming.value],
+  async () => {
+    await nextTick()
+    const el = messagesEl.value
+    if (el) el.scrollTop = el.scrollHeight
+  },
+)
 
 const hint = computed(() => {
   if (sending.value) return '回复中…'
@@ -38,6 +55,7 @@ async function send(): Promise<void> {
   const q = question.value.trim()
   if (!q || sending.value) return
   sending.value = true
+  typing.value = true
   streaming.value = ''
   store.chat.push({ role: 'user', content: q })
   question.value = ''
@@ -62,6 +80,7 @@ async function send(): Promise<void> {
       content: `对话失败：${err instanceof Error ? err.message : String(err)}`,
     })
   } finally {
+    typing.value = false
     sending.value = false
   }
 }
@@ -75,11 +94,10 @@ function onEnterKey(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <el-card shadow="never" class="chat-panel">
-    <template #header>对话面板</template>
-    <div class="chat-messages">
+  <div class="chat-panel">
+    <div ref="messages" data-testid="chat-messages" class="chat-messages">
       <el-empty
-        v-if="store.chat.length === 0 && !streaming"
+        v-if="store.chat.length === 0 && !streaming && !typing"
         description="基于当前报告与证据提问，例如：为什么推荐这个方案？"
         :image-size="48"
       />
@@ -92,12 +110,18 @@ function onEnterKey(event: KeyboardEvent): void {
         <div class="chat-bubble">{{ msg.content }}</div>
       </div>
       <div v-if="streaming" class="chat-row chat-assistant">
-        <div class="chat-bubble">{{ streaming }}…</div>
+        <div class="chat-bubble">{{ streaming }}</div>
+      </div>
+      <div v-if="typing" class="chat-row chat-assistant">
+        <div class="chat-bubble chat-typing" data-testid="typing-dots" aria-label="正在回复">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     </div>
     <div v-if="hint" data-testid="chat-hint" class="chat-hint">{{ hint }}</div>
     <div class="chat-input-row">
       <el-input
+        ref="chatInput"
         v-model="question"
         type="textarea"
         :rows="2"
@@ -114,14 +138,21 @@ function onEnterKey(event: KeyboardEvent): void {
         {{ sending ? '回复中…' : '发送' }}
       </el-button>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <style scoped>
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .chat-messages {
-  max-height: 320px;
+  flex: 1;
   overflow: auto;
   margin-bottom: 12px;
+  padding-right: 4px;
 }
 
 .chat-row {
@@ -140,29 +171,70 @@ function onEnterKey(event: KeyboardEvent): void {
 .chat-bubble {
   max-width: 80%;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
+/* D：消息气泡——user 右侧主色调、assistant 左侧面板色 */
 .chat-user .chat-bubble {
-  background: var(--el-color-primary-light-9);
-  color: var(--el-text-color-primary);
+  background: var(--el-color-primary);
+  color: #fff;
+  border-bottom-right-radius: 2px;
 }
 
 .chat-assistant .chat-bubble {
   background: var(--el-fill-color);
   color: var(--el-text-color-primary);
+  border-bottom-left-radius: 2px;
 }
 
-.chat-input-row {
+/* 三点脉冲 typing 指示 */
+.chat-typing {
   display: flex;
-  gap: 8px;
-  align-items: flex-end;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.chat-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--el-text-color-secondary);
+  animation: chat-pulse 1s ease-in-out infinite;
+}
+
+.chat-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes chat-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
 }
 
 .chat-hint {
   margin-bottom: 8px;
   font-size: 13px;
   color: var(--el-text-color-secondary);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
 }
 </style>
