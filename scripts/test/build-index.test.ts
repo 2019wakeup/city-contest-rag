@@ -136,14 +136,119 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
       pipelineRev: 'testrev1',
     };
     await buildIndex(opts);
-    // 修改 entries.json 中第一条的 text
+    // 修改 entries.json 中第一条的 name（维度块 text 由 name+relations 组成）
     const entriesFile = path.join(dir, 'knowledge/entries.json');
     const entries = JSON.parse(fs.readFileSync(entriesFile, 'utf-8')) as Array<Record<string, unknown>>;
-    entries[0].text = '基质沥青是通用基准胶结料，成本最低，适用于轻交通。';
+    entries[0].name = '基质沥青（更新版）';
     fs.writeFileSync(entriesFile, JSON.stringify(entries));
     const r = await buildIndex(opts);
     expect(r).toEqual({ added: 1, skipped: 5, total: 6 });
     expect((await store.stats()).count).toBe(6);
+    store.close();
+  });
+
+  it('知识条目按 relations 逐条拆维度块（sourceDocId/tags/text 组合）', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-dim-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'idx-dim-'));
+    fs.mkdirSync(path.join(dir, 'knowledge'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, 'scene-tags.json'),
+      JSON.stringify({
+        tags: [
+          { id: 'c-hot', label: '高温', kind: 'climate' },
+          { id: 'd-rutting', label: '车辙', kind: 'distress' },
+        ],
+      }),
+    );
+    fs.writeFileSync(
+      path.join(dir, 'knowledge/entries.json'),
+      JSON.stringify([
+        {
+          schemaVersion: '1',
+          id: 'k-binder-010',
+          category: 'binder',
+          title: '测试改性沥青',
+          name: '测试改性沥青',
+          text: '原文文本（关系拆分后不再入块）。',
+          specs: { 标号: '70#', 掺量: '3%~5%' },
+          tags: ['c-hot'],
+          sourceRef: 'JTG F40-2004',
+          relations: [
+            {
+              property: '高温PG',
+              effect: '提升高温等级',
+              direction: '+',
+              magnitude: 'PG64→PG76',
+              applicableScene: ['c-hot'],
+              sourceRef: '10.1000/a',
+            },
+            {
+              property: '弹性恢复',
+              effect: '改善弹性',
+              direction: '+',
+              magnitude: '恢复率≥75%',
+              applicableScene: ['d-rutting'],
+              sourceRef: '10.1000/b',
+            },
+          ],
+        },
+        {
+          schemaVersion: '1',
+          id: 'k-binder-011',
+          category: 'binder',
+          title: '无关系条目',
+          name: '无关系条目',
+          text: '无关系原文。',
+          tags: [],
+          sourceRef: 'JTG F40-2004',
+          relations: [],
+        },
+      ]),
+    );
+
+    const store = new SqliteVectorStore(path.join(tmp, 'test.db'));
+    const r = await buildIndex({
+      corpusDir: dir,
+      store: store as unknown as VectorStore,
+      embedder: makeFakeEmbedder(),
+      manifestPath: path.join(tmp, 'manifest.json'),
+      pipelineRev: 'testrev1',
+    });
+    // 2 关系 → 2 块；无关系 → 1 块
+    expect(r.total).toBe(3);
+    expect((await store.stats()).count).toBe(3);
+
+    const hits = await store.search({ text: '测试改性沥青', topK: 10 });
+    const chunks = hits.filter((h) => h.provenance.sourceDocId === 'k-binder-010');
+    expect(chunks.map((c) => c.chunkId).sort()).toEqual(['k-binder-010:0', 'k-binder-010:1']);
+    for (const c of chunks) {
+      expect(c.provenance.sourceDocId).toBe('k-binder-010'); // sourceDocId 保持 entry.id
+      expect(c.docType).toBe('knowledge');
+    }
+    const c0 = chunks.find((c) => c.chunkId === 'k-binder-010:0')!;
+    expect(c0.text).toContain('测试改性沥青');
+    expect(c0.text).toContain('70#'); // specs 并入维度块文本（条目级上下文锚点）
+    expect(c0.text).toContain('高温PG');
+    expect(c0.text).toContain('提升高温等级'); // effect 片段
+    expect(c0.text).toContain('PG64→PG76'); // magnitude 片段
+    expect(c0.text).toContain('高温'); // 场景中文标签（scene-tags 映射）
+    expect(c0.text).toContain('10.1000/a'); // relation.sourceRef 优先
+    expect(c0.tags).toContain('c-hot'); // relation.applicableScene
+    expect(c0.tags).toContain('dim-高温PG'); // 维度标签
+    const c1 = chunks.find((c) => c.chunkId === 'k-binder-010:1')!;
+    expect(c1.text).toContain('弹性恢复');
+    expect(c1.text).toContain('车辙'); // d-rutting → 车辙
+    expect(c1.text).toContain('10.1000/b');
+    expect(c1.tags).toContain('d-rutting');
+    expect(c1.tags).toContain('dim-弹性恢复');
+    expect(c1.tags).toContain('c-hot'); // entry.tags 并集
+
+    // 无 relations 的 entry → 单块保留原文
+    const hits2 = await store.search({ text: '无关系原文', topK: 5 });
+    const single = hits2.find((h) => h.chunkId === 'k-binder-011:0');
+    expect(single).toBeDefined();
+    expect(single!.text).toBe('无关系原文。');
+    expect(single!.tags).toEqual([]);
     store.close();
   });
 

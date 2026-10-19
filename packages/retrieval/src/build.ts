@@ -83,14 +83,44 @@ const CLAUSE_HEADING_RE = /^##\s+(\S+)\s+(.+)$/gm;
 function collectPlanned(corpusDir: string): PlannedChunk[] {
   const planned: PlannedChunk[] = [];
 
-  // 1. 知识条目（一条一 chunk，docId = k-<category>-<nnn>）
+  // 场景标签 → 中文标签映射（知识条目维度块 text 用）
+  const sceneLabels = new Map<string, string>();
+  const tagsFile = path.join(corpusDir, 'scene-tags.json');
+  if (fs.existsSync(tagsFile)) {
+    try {
+      const t = JSON.parse(fs.readFileSync(tagsFile, 'utf-8')) as { tags?: Array<{ id: string; label: string }> };
+      for (const tag of t.tags ?? []) sceneLabels.set(tag.id, tag.label);
+    } catch {
+      // 标签文件缺失/损坏时不阻塞入库（text 退化为标签 id）
+    }
+  }
+
+  // 1. 知识条目（按 relations[] 逐条拆维度块；docId = k-<category>-<nnn>，sourceDocId 恒为 entry.id）
   const entriesFile = path.join(corpusDir, 'knowledge/entries.json');
   if (fs.existsSync(entriesFile)) {
     const entries = JSON.parse(fs.readFileSync(entriesFile, 'utf-8')) as unknown[];
-    entries.forEach((raw, i) => {
-      const e = KnowledgeEntrySchema.parse(raw) as KnowledgeEntry;
-      if (!e.text || e.text.trim() === '') throw new Error(`知识条目 ${e.id} 缺 text`);
-      planned.push(makeChunk(`${e.id}:0`, e.id, e.text, 'knowledge', e.tags ?? [], i));
+    entries.forEach((raw) => {
+      const e = KnowledgeEntrySchema.parse(raw) as KnowledgeEntry & { name?: string };
+      const entryName = e.name ?? e.title;
+      if (e.relations.length === 0) {
+        if (!e.text || e.text.trim() === '') throw new Error(`知识条目 ${e.id} 缺 text`);
+        planned.push(makeChunk(`${e.id}:0`, e.id, e.text, 'knowledge', e.tags ?? []));
+        return;
+      }
+      e.relations.forEach((rel, ri) => {
+        const sceneNames = rel.applicableScene.map((t) => sceneLabels.get(t) ?? t);
+        // specs 并入维度块文本：条目级上下文锚点（标号/掺量/类型等术语跨维度可见，提升 BM25 召回）
+        const specs = (e as KnowledgeEntry & { specs?: Record<string, unknown> }).specs ?? {};
+        const specsStr = Object.entries(specs)
+          .map(([k, v]) => `${k} ${Array.isArray(v) ? v.join('/') : String(v)}`)
+          .join('，');
+        const head = specsStr ? `${entryName}（${specsStr}）` : entryName;
+        const text =
+          `${head}｜${rel.property}：${rel.effect}；${rel.magnitude}。` +
+          `适用场景：${sceneNames.join('、')}。依据：${rel.sourceRef || e.sourceRef}`;
+        const tags = [...new Set([...(e.tags ?? []), ...rel.applicableScene, `dim-${rel.property}`])];
+        planned.push(makeChunk(`${e.id}:${ri}`, e.id, text, 'knowledge', tags));
+      });
     });
   }
 
@@ -111,7 +141,7 @@ function collectPlanned(corpusDir: string): PlannedChunk[] {
         const bodyEnd = matches[idx + 1]?.index ?? content.length;
         const body = content.slice(bodyStart, bodyEnd).trim();
         const text = `## ${head} ${title}\n${body}`;
-        planned.push(makeChunk(`${docId}:${idx}`, docId, text, 'standard', [], idx));
+        planned.push(makeChunk(`${docId}:${idx}`, docId, text, 'standard', []));
       });
     }
   }
@@ -137,7 +167,7 @@ function collectPlanned(corpusDir: string): PlannedChunk[] {
       if (l.taskZh) parts.push(`内容：${l.taskZh}`);
       if (l.doi) parts.push(`DOI：${l.doi}`);
       const text = parts.join('。');
-      planned.push(makeChunk(`${l.id}:0`, l.id, text, 'literature', [], i));
+      planned.push(makeChunk(`${l.id}:0`, l.id, text, 'literature', []));
     });
   }
 
@@ -186,7 +216,7 @@ function chunkLiteratureFull(docId: string, content: string): PlannedChunk[] {
     for (const part of packParagraphs(s.body, LITFULL_CHUNK_TARGET, LITFULL_CHUNK_MAX)) {
       const text = (prefix + part).trim();
       if (text.length < 10) continue;
-      chunks.push(makeChunk(`${docId}:${idx++}`, docId, text, 'literature', [], idx));
+      chunks.push(makeChunk(`${docId}:${idx++}`, docId, text, 'literature', []));
     }
   }
   return chunks;
@@ -229,7 +259,6 @@ function makeChunk(
   text: string,
   docType: CorpusChunk['docType'],
   tags: string[],
-  _idx: number,
 ): PlannedChunk {
   // provenance 在 buildIndex 内统一填充（需要 embedder/pipelineRev 上下文）
   return { docId, contentHash: contentHashOf(text), chunk: { chunkId, text, docType, tags } as CorpusChunk };

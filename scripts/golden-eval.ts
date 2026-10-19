@@ -52,12 +52,22 @@ export async function runGoldenEval(
   const results: CaseResult[] = [];
   for (const c of cases) {
     // vector 省略 = 纯 BM25 检索（接口契约，金标准评估不依赖模型）
+    // 金标准是 doc 级期望：取 topK 的 3 倍 chunk 后按 sourceDocId 去重、截前 k 个文档，
+    // 避免同一 doc 的多个 chunk（维度拆分后）挤占 top-k 名额造成假性失分
     const hits = await store.search({
       text: c.query,
-      topK: k,
+      topK: Math.max(k * 3, k),
       filter: c.docTypes ? { docTypes: c.docTypes } : undefined,
     });
-    const hitDocIds = hits.map((h) => h.provenance.sourceDocId);
+    const seen = new Set<string>();
+    const hitDocIds: string[] = [];
+    for (const h of hits) {
+      if (!seen.has(h.provenance.sourceDocId)) {
+        seen.add(h.provenance.sourceDocId);
+        hitDocIds.push(h.provenance.sourceDocId);
+        if (hitDocIds.length >= k) break;
+      }
+    }
     const matched = c.expectedDocIds.filter((e) => hitDocIds.includes(e)).length;
     const recallAt5 = c.expectedDocIds.length === 0 ? 1 : matched / c.expectedDocIds.length;
     results.push({

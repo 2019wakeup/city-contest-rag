@@ -64,6 +64,18 @@ describe('golden-eval 评估器判定逻辑（fake store）', () => {
     expect(r.results[0].passed).toBe(false); // min 1.0
   });
 
+  it('同一 doc 多 chunk 命中时按 unique sourceDocId 计 recall（维度拆分后口径）', async () => {
+    // 维度拆分后同一 entry 可有多块命中并挤占 top-5 名额；
+    // 金标准是 doc 级期望 → recall@5 取「去重后的前 5 个文档」计算
+    const store = fakeStore(['doc-1', 'doc-1', 'doc-2', 'doc-3', 'doc-4', 'doc-5', 'doc-6']);
+    const r = await runGoldenEval(store, [
+      { id: 'c-dup', query: '查询', expectedDocIds: ['doc-1', 'doc-2', 'doc-3', 'doc-4', 'doc-5'], minRecallAt5: 0.8 },
+    ]);
+    expect(r.results[0].hitDocIds).toEqual(['doc-1', 'doc-2', 'doc-3', 'doc-4', 'doc-5']);
+    expect(r.results[0].recallAt5).toBe(1);
+    expect(r.results[0].passed).toBe(true);
+  });
+
   it('--json 输出包含 recall 字段', async () => {
     const store = fakeStore(['doc-1', 'doc-2']);
     const r = await runGoldenEval(store, [CASES[0]]);
