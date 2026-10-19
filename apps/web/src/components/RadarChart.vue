@@ -17,15 +17,39 @@ echarts.use([EChartsRadarChart, RadarComponent, TooltipComponent, CanvasRenderer
 
 const props = defineProps<{
   radar: Radar
-  /** 重构：tooltip 附绝对值+单位（从候选预测映射 perf→value/unit）。 */
+  /** tooltip 附绝对值+单位（从候选预测映射 perf→value/unit）。 */
   predictions?: Prediction[]
 }>()
 
 const chartEl = useTemplateRef<HTMLDivElement>('chart')
 const chart = shallowRef<EChartsType | null>(null)
 
+interface ThemeTokens {
+  dark: boolean
+  axisLabel: string
+  split: string
+  splitArea: string
+  primary: string
+}
+
+/** 从 CSS 变量读主题（暗色/亮色各给兜底），主题切换时 MutationObserver 重绘。 */
+function readThemeTokens(): ThemeTokens {
+  const root = document.documentElement
+  const styles = getComputedStyle(root)
+  const dark = root.classList.contains('dark')
+  return {
+    dark,
+    axisLabel:
+      styles.getPropertyValue('--el-text-color-secondary').trim() || (dark ? '#8B93A7' : '#64748B'),
+    split: dark ? 'rgba(148,163,184,0.16)' : 'rgba(100,116,139,0.18)',
+    splitArea: dark ? 'rgba(148,163,184,0.05)' : 'rgba(100,116,139,0.06)',
+    primary: styles.getPropertyValue('--el-color-primary').trim() || '#6E7BF2',
+  }
+}
+
 function render(): void {
   const radar = props.radar ?? ({} as Radar)
+  const tokens = readThemeTokens()
   const values = RADAR_INDICATORS.map((i) => Number(radar[i.key]) || 0)
   chart.value?.setOption({
     tooltip: {
@@ -42,10 +66,37 @@ function render(): void {
     },
     radar: {
       indicator: RADAR_INDICATORS.map((i) => ({ name: i.name, max: 100 })),
-      radius: '62%',
-      center: ['50%', '55%'],
+      radius: '68%',
+      center: ['50%', '52%'],
+      axisName: { color: tokens.axisLabel, fontSize: 12 },
+      splitLine: { lineStyle: { color: tokens.split } },
+      splitArea: { areaStyle: { color: [tokens.splitArea, 'transparent'] } },
     },
-    series: [{ type: 'radar', data: [{ value: values, name: '综合评分' }] }],
+    series: [
+      {
+        type: 'radar',
+        data: [{ value: values, name: '综合评分' }],
+        symbol: 'circle',
+        symbolSize: 4,
+        lineStyle: { width: 2, color: tokens.primary },
+        itemStyle: { color: tokens.primary },
+        areaStyle: {
+          opacity: 0.35,
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: `${tokens.primary}59` },
+              { offset: 1, color: `${tokens.primary}0d` },
+            ],
+          },
+        },
+        emphasis: { itemStyle: { color: tokens.primary } },
+      },
+    ],
   })
 }
 
@@ -53,15 +104,25 @@ function onResize(): void {
   chart.value?.resize()
 }
 
+let themeObserver: MutationObserver | null = null
+
 onMounted(() => {
   if (!chartEl.value) return
   chart.value = echarts.init(chartEl.value)
   render()
   window.addEventListener('resize', onResize)
+  // 主题切换（html.class 变化）→ 重绘（A：暗色/亮色即时生效）
+  themeObserver = new MutationObserver(() => render())
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
+  themeObserver?.disconnect()
+  themeObserver = null
   chart.value?.dispose()
 })
 
@@ -78,7 +139,7 @@ watch(() => [props.radar, props.predictions], render)
 <style scoped>
 .radar-chart {
   width: 100%;
-  height: 260px;
+  height: 320px;
 }
 
 .radar-caption {

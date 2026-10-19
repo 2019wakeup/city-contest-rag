@@ -23,11 +23,17 @@ vi.mock('@/api/client', () => ({
   streamRecommend: vi.fn(),
 }))
 
-// ECharts 在 happy-dom 无真实 canvas：mock 掉 echarts/core 及其子模块，视图测试只关心渲染结构。
+// ECharts 在 happy-dom 无真实 canvas：mock 掉 echarts/core 及其子模块；捕获 setOption 供断言。
+const { chartOptions } = vi.hoisted(() => ({
+  chartOptions: [] as Array<Record<string, unknown>>,
+}))
+
 vi.mock('echarts/core', () => ({
   use: () => {},
   init: () => ({
-    setOption: () => {},
+    setOption: (opt: Record<string, unknown>) => {
+      chartOptions.push(opt)
+    },
     resize: () => {},
     dispose: () => {},
   }),
@@ -795,6 +801,71 @@ describe('RecommendView 推荐工作台', () => {
       props: { radar: cand.radar, predictions: cand.predictions },
     })
     expect(wrapper.text()).toContain('八维画像 · 绝对评分（0-100）')
+  })
+
+  it('RadarChart 视觉规格：半径/中心/渐变面积/描边/圆点标记（A）', () => {
+    chartOptions.length = 0
+    document.documentElement.classList.add('dark')
+    const cand = makeCandidate('cand-1')
+    mount(RadarChart, {
+      props: { radar: cand.radar, predictions: cand.predictions },
+    })
+
+    const option = chartOptions.at(-1) as
+      | {
+          radar?: {
+            radius?: string
+            center?: [string, string]
+            splitLine?: { lineStyle?: { color?: string } }
+            splitArea?: { areaStyle?: { color?: string[] } }
+            axisName?: { color?: string; fontSize?: number }
+          }
+          series?: Array<{
+            type?: string
+            data?: Array<{ value?: number[] }>
+            symbol?: string
+            symbolSize?: number
+            lineStyle?: { width?: number }
+            areaStyle?: { opacity?: number; color?: unknown }
+            emphasis?: { itemStyle?: { color?: string } }
+          }>
+        }
+      | undefined
+
+    const radar = option?.radar
+    expect(radar?.radius).toBe('68%')
+    expect(radar?.center).toEqual(['50%', '52%'])
+    expect(radar?.splitLine?.lineStyle?.color).toBe('rgba(148,163,184,0.16)')
+    expect(radar?.axisName?.fontSize).toBe(12)
+
+    const series = option?.series?.[0]
+    expect(series?.type).toBe('radar')
+    expect(series?.symbol).toBe('circle')
+    expect(series?.symbolSize).toBe(4)
+    expect(series?.lineStyle?.width).toBe(2)
+    expect(series?.emphasis?.itemStyle?.color).toBe('#6E7BF2')
+    // 渐变面积（垂直渐变 linearGradient）
+    const areaColor = series?.areaStyle?.color as { type?: string; x?: number; y?: number; colorStops?: unknown } | undefined
+    expect(areaColor?.type).toBe('linear')
+    expect(areaColor?.x).toBe(0)
+    expect(areaColor?.y).toBe(0)
+    document.documentElement.classList.remove('dark')
+  })
+
+  it('RadarChart 主题切换（html.class 变化）触发重绘（A）', async () => {
+    chartOptions.length = 0
+    const cand = makeCandidate('cand-1')
+    mount(RadarChart, {
+      props: { radar: cand.radar, predictions: cand.predictions },
+    })
+    const before = chartOptions.length
+    expect(before).toBeGreaterThanOrEqual(1)
+
+    document.documentElement.classList.add('dark')
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    // 本次主题切换触发重绘（此前测试遗留实例的 observer 也可能触发，故用严格增长断言）
+    expect(chartOptions.length).toBeGreaterThan(before)
+    document.documentElement.classList.remove('dark')
   })
 
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
