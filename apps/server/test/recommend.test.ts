@@ -245,7 +245,7 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     expect(toRadarAbsolute(-10, RADAR_ANCHORS.lowTemp)).toBe(0);
   });
 
-  it('空向量库：evidence=[] + warnings 含 build:index，主流程仍完成（Review Focus #4）', async () => {
+  it('空向量库：evidence=[] + warnings 面向用户文案（不暴露 build:index 命令），主流程仍完成（Review Focus #4）', async () => {
     const report = await recommend(loadCaseScene('case-02'), {
       store,
       embedder: fakeEmbedder,
@@ -253,7 +253,8 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     });
     expect(report.candidates).toHaveLength(5);
     expect(report.evidence).toEqual([]);
-    expect(report.warnings.some((w) => w.includes('build:index'))).toBe(true);
+    expect(report.warnings.some((w) => w.includes('知识库管理页'))).toBe(true);
+    expect(report.warnings.some((w) => w.includes('build:index'))).toBe(false);
   });
 
   it('R3-C3：enterprise 语料进入证据链', async () => {

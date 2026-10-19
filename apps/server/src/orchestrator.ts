@@ -179,7 +179,9 @@ export async function recommend(
     cand.evidenceIds = byCandidate.get(cand.id) ?? [];
   }
   const warnings = [...retrievalWarnings];
-  if (evidence.length === 0) warnings.push('知识库为空，请执行 pnpm build:index');
+  if (evidence.length === 0) {
+    warnings.push('知识库暂无内容，请先在知识库管理页导入资料（或联系维护者重建索引）');
+  }
   const base: ReportBase = {
     scene: parsedScene,
     targets,
