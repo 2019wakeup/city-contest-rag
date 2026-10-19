@@ -112,11 +112,27 @@ const isTop1 = computed(() => props.index === 0)
         <el-descriptions-item label="沥青">
           {{ formula?.binder?.type ?? '—' }}（{{ formula?.binder?.grade ?? '—' }}）
         </el-descriptions-item>
+        <el-descriptions-item label="PG 等级">
+          {{ formula?.binder?.pg ?? '—' }}
+        </el-descriptions-item>
         <el-descriptions-item label="改性剂">
           {{ formula?.modifier?.type || '无' }}
           <template v-if="formula?.modifier?.type">
             · 掺量 {{ formula?.modifier?.dosage ?? '—' }}%
           </template>
+        </el-descriptions-item>
+        <el-descriptions-item label="助剂">
+          <template v-if="(formula?.additives ?? []).length > 0">
+            <el-tag
+              v-for="a in formula?.additives ?? []"
+              :key="a.type"
+              size="small"
+              class="additive-tag"
+            >
+              {{ a.type }} {{ a.dosage != null ? `${a.dosage}%` : '' }}
+            </el-tag>
+          </template>
+          <span v-else>无</span>
         </el-descriptions-item>
         <el-descriptions-item label="级配">
           {{ formula?.gradation?.type ?? '—' }}
@@ -129,7 +145,8 @@ const isTop1 = computed(() => props.index === 0)
       <ul class="candidate-predictions">
         <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`" class="tabular">
           {{ perfLabel(p.perf) }}：{{ formatNumber(p.value) }}<template v-if="p.ciLow != null && p.ciHigh != null">
-            （{{ formatNumber(p.ciLow) }} ~ {{ formatNumber(p.ciHigh) }}）</template> {{ p.unit ?? '' }}
+            （{{ formatNumber(p.ciLow) }} ~ {{ formatNumber(p.ciHigh) }}）</template><template v-else>
+            （置信区间不可用（模块 C 未提供））</template> {{ p.unit ?? '' }}
         </li>
         <li class="candidate-kpis tabular">
           LCC {{ formatNumber(candidate?.lcc) }} 万元 · 碳排 {{ formatNumber(candidate?.carbon) }} tCO2e
@@ -203,6 +220,10 @@ const isTop1 = computed(() => props.index === 0)
 
 .candidate-formula {
   margin-bottom: 8px;
+}
+
+.additive-tag {
+  margin-right: 4px;
 }
 
 .candidate-predictions {

@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { ElInputNumber, ElSelect, ElSteps, ElTableColumn, ElTooltip } from 'element-plus'
+import { readFileSync } from 'node:fs'
 import { createPinia, setActivePinia } from 'pinia'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -511,6 +512,68 @@ describe('RecommendView 推荐工作台', () => {
     const text = wrapper.text()
     expect(text).toContain('高温性能')
     expect(text).not.toContain('highTemp')
+  })
+
+  it('P5 候选卡：助剂 chips 与 PG 等级（P5）', () => {
+    const cand = makeCandidate('cand-1')
+    cand.formula.additives = [
+      { type: '抗剥落剂', dosage: 0.3 },
+      { type: '纤维稳定剂', dosage: 0.4 },
+    ]
+    const wrapper = mount(CandidateCard, {
+      props: {
+        candidate: cand,
+        index: 0,
+        adapterMode: { a: 'mock', c: 'mock' },
+        evidence: [],
+        expanded: true,
+      },
+    })
+
+    const text = wrapper.text()
+    expect(text).toContain('PG 等级')
+    expect(text).toContain('76-22')
+    expect(text).toContain('助剂')
+    expect(text).toContain('抗剥落剂 0.3%')
+    expect(text).toContain('纤维稳定剂 0.4%')
+  })
+
+  it('P5 缺置信区间显示「置信区间不可用（模块 C 未提供）」（P5）', () => {
+    const cand = makeCandidate('cand-1')
+    cand.predictions = [{ perf: 'highTemp', value: 80, ciLow: null, ciHigh: null, unit: '℃' }]
+    const wrapper = mount(CandidateCard, {
+      props: {
+        candidate: cand,
+        index: 0,
+        adapterMode: { a: 'mock', c: 'mock' },
+        evidence: [],
+        expanded: true,
+      },
+    })
+
+    expect(wrapper.text()).toContain('置信区间不可用（模块 C 未提供）')
+  })
+
+  it('P5 报告正文排版规格 + 数字单位 &nbsp;（P5）', () => {
+    const source = readFileSync('src/components/ReportSection.vue', 'utf8')
+    expect(source).toContain('max-width: 40em')
+    expect(source).toContain('font-size: 16px')
+
+    const sections = [
+      {
+        title: '推荐理由',
+        paragraphs: ['SBS掺量4.5%时寿命达12年，成本较基线降低8万元。'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const paragraph = wrapper.find('.report-paragraph').text()
+    expect(paragraph).toContain('4.5\u00A0%')
+    expect(paragraph).toContain('12\u00A0年')
+    expect(paragraph).toContain('8\u00A0万元')
   })
 
   it('报告位于候选卡列表之前（UI#1）', async () => {

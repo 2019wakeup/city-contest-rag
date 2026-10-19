@@ -40,6 +40,11 @@ function humanizeCandidateRefs(text: string): string {
   return text.replace(/\bcand-(\d+)\b/gi, (_match, n: string) => `方案 ${n}`)
 }
 
+/** P5：数字与单位之间用 &nbsp;（避免断行拆散 4.5%/12年/8万元）。 */
+function withUnitNbsp(text: string): string {
+  return text.replace(/(\d+)(\s*)(%|℃|年|天|万元|mm|MPa|次|tCO2e|ESAL)/g, '$1\u00A0$3')
+}
+
 // ===== E：打字机逐字揭示 =====
 const TYPE_CHARS_PER_TICK = 60
 const TYPE_TICK_MS = 120
@@ -225,8 +230,10 @@ function onCite(id: string): void {
       <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
         <template
           v-for="(seg, k) in parseSegments(
-            humanizeCandidateRefs(
-              visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
+            withUnitNbsp(
+              humanizeCandidateRefs(
+                visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
+              ),
             ),
           )"
           :key="k"
@@ -267,8 +274,15 @@ function onCite(id: string): void {
   margin-bottom: 12px;
 }
 
+/* P5：节标题 16px/600 + 上间距 24px；节间 32px */
+.report-block + .report-block {
+  margin-top: 32px;
+}
+
 .report-title {
   margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .reveal-badge {
@@ -295,7 +309,8 @@ function onCite(id: string): void {
 }
 
 .report-paragraph {
-  margin: 0 0 8px;
+  max-width: 40em;
+  margin: 0 0 16px;
   line-height: 1.7;
   color: var(--el-text-color-regular);
 }
