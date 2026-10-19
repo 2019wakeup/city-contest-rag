@@ -70,6 +70,52 @@ export async function generateStructured<T>(
   return { data: null, status: 'degraded' };
 }
 
+/** 带超时的 Promise（B3 重排用：超时回退原序） */
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`LLM 调用超时（${ms}ms）`)), ms);
+    p.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
+
+/**
+ * 单次 LLM 文本调用（B3 重排用）：注入 fake 或 openai SDK；未配置/失败/超时 → null（调用方回退）。
+ */
+export async function callLlmText(
+  prompt: string,
+  opts: { temperature?: number; llm?: LlmCall; timeoutMs?: number },
+): Promise<string | null> {
+  const timeoutMs = opts.timeoutMs ?? 30000;
+  try {
+    if (opts.llm) {
+      return await withTimeout(opts.llm(prompt, opts.temperature ?? 0), timeoutMs);
+    }
+    const c = getClient();
+    if (!c) return null;
+    const completion = await withTimeout(
+      c.chat.completions.create({
+        model: 'deepseek-chat',
+        temperature: opts.temperature ?? 0,
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+      }),
+      timeoutMs,
+    );
+    return completion.choices[0]?.message?.content ?? '';
+  } catch {
+    return null;
+  }
+}
+
 export interface ChatOpts {
   question: string;
   history?: ChatMessage[];

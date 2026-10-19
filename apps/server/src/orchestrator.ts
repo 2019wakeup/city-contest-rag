@@ -25,6 +25,7 @@ import { mapSceneToTargets } from './adapters/a';
 import { predictFormulas } from './adapters/c';
 import type { AdapterMode } from './adapters/a';
 import { generateStructured, readPrompt } from './llm/client';
+import { rerankHits } from './rag/rerank';
 import type { LlmCall, LlmStatus } from './llm/client';
 import { buildReportSections, generateReportSection, SECTION_SPECS } from './report/fallback';
 import type { ReportBase } from './report/fallback';
@@ -174,7 +175,7 @@ export async function recommend(
   mark('rank');
 
   // ⑥ 证据检索（R1/R2/R6：差异化查询 + 足量 + 集合互异 + 文献参与）+ 报告文案 + 组装
-  const { evidence, byCandidate, retrievalWarnings, queries, slotSources } = await retrieveEvidence(
+  const { evidence, byCandidate, retrievalWarnings, queries, slotSources, rerankMs } = await retrieveEvidence(
     ranked,
     parsedScene,
     targets,
@@ -226,9 +227,10 @@ export async function recommend(
     adapterMode: { a: adapterModeA, c: adapterModeC },
     warnings,
     steps,
-    // R6 调试/验收透出（passthrough 字段，契约不变）：候选查询文本与各槽来源查询序号
+    // R6 调试/验收透出（passthrough 字段，契约不变）：候选查询文本与各槽来源查询序号、重排耗时
     evidenceQueries: queries,
     evidenceSlotSources: slotSources,
+    evidenceRerankMs: rerankMs,
   });
   return report;
 }
@@ -574,7 +576,8 @@ function hasAny(value: string, keywords: string[]): boolean {
 // ⑥ 证据检索（R1/R2/R6：差异化查询 + 足量 + 集合互异 + 文献参与）
 // ---------------------------------------------------------------------------
 
-const EVIDENCE_FETCH_K = 12; // R6-1：每候选先取 12 再挑选
+const EVIDENCE_FETCH_K = 20; // P0-B3：每候选先召回 20 再重排/挑选
+const RERANK_TOP_K = 8; // P0-B3：一次 LLM 调用重排每查询 top-8
 const EVIDENCE_SLOTS = 3;
 const GLOBAL_CHUNK_LIMIT = 3; // R6-1：同 chunk 全局最多出现在 3 个候选
 const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // 知识 ≤2
@@ -753,6 +756,7 @@ interface EvidenceRetrievalResult {
   retrievalWarnings: string[];
   queries: string[];
   slotSources: number[][];
+  rerankMs: number;
 }
 
 async function retrieveEvidence(
@@ -796,7 +800,22 @@ async function retrieveEvidence(
     });
   };
 
+  let rerankMs = 0;
   try {
+    // P0-B3：先各候选召回 topK=20，再一次 LLM 批量重排（top-8）；失败/未配置回退 RRF 原序
+    const primaryHitsAll: SearchHit[][] = [];
+    for (let i = 0; i < candidates.length; i++) {
+      const hits = await searchOne(primaryTexts[i], EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
+      primaryHitsAll.push(hits);
+      pool.push(...hits);
+    }
+    const rerankStartedAt = performance.now();
+    const rerankMap = await rerankHits(
+      candidates.map((c, i) => ({ query: primaryTexts[i], hits: primaryHitsAll[i].slice(0, RERANK_TOP_K) })),
+      { llm: deps.llmCall },
+    );
+    rerankMs = Math.round(performance.now() - rerankStartedAt);
+
     for (let i = 0; i < candidates.length; i++) {
       const cand = candidates[i];
       queries.push(primaryTexts[i]);
@@ -840,10 +859,12 @@ async function retrieveEvidence(
         if (LIT_FAMILY_TYPES.has(old.hit.docType)) litFamilyCount -= 1;
       };
 
-      // 主查询（queryIndex 0）：未被他人使用的命中优先 + B2 优先序
-      const primaryHits = await searchOne(primaryTexts[i], EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
-      pool.push(...primaryHits);
-      const orderedPrimary = [...primaryHits].sort(
+      // 主查询（queryIndex 0）：重排序（top-8 重排 + 其余原序）→ 未被他人使用的命中优先 + B2 优先序
+      const rerankedHits = rerankMap.get(i);
+      const primaryOrdered = rerankedHits
+        ? [...rerankedHits.map((r) => r.hit), ...primaryHitsAll[i].slice(RERANK_TOP_K)]
+        : primaryHitsAll[i];
+      const orderedPrimary = [...primaryOrdered].sort(
         (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
       );
       for (const h of orderedPrimary) if (h.docType === 'literature' && !isLegacyLitfull(h)) take(h, 0);
@@ -954,7 +975,7 @@ async function retrieveEvidence(
   } catch (err) {
     warnings.push(`证据检索失败：${err instanceof Error ? err.message : String(err)}`);
   }
-  return { evidence: [...evidenceMap.values()], byCandidate, retrievalWarnings: warnings, queries, slotSources };
+  return { evidence: [...evidenceMap.values()], byCandidate, retrievalWarnings: warnings, queries, slotSources, rerankMs };
 }
 
 // ---------------------------------------------------------------------------

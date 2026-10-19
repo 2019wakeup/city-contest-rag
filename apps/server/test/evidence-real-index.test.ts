@@ -101,13 +101,19 @@ describe('R6 验收（真实语料索引 + SqliteVectorStore，真实 BM25 检�
         }
       }
 
-      // R6-4：文献/规范参与 + S1：证据链不含 litfull- 全文块
+      // R6-4：文献/规范参与 + S1：旧 litfull 噪声（docType=literature + litfull- 前缀）不得进证据链；
+      // P0-B2：新 docType literature-full 章节块允许（data 侧沿用了 litfull- 前缀，仅按 docType 区分）
       const typeByChunk = new Map(report.evidence.map((e) => [e.chunkId, e.docType]));
-      expect(report.evidence.some((e) => e.chunkId.startsWith('litfull-')), `${id} 含 litfull`).toBe(false);
+      expect(
+        report.evidence.some((e) => e.docType === 'literature' && e.chunkId.startsWith('litfull-')),
+        `${id} 含旧 litfull 噪声`,
+      ).toBe(false);
       for (const cand of report.candidates) {
         totalCandidates += 1;
         const types = cand.evidenceIds.map((cid) => typeByChunk.get(cid)!);
-        if (types.includes('literature') || types.includes('standard')) totalLitOrStd += 1;
+        if (types.includes('literature') || types.includes('standard') || types.includes('literature-full')) {
+          totalLitOrStd += 1;
+        }
       }
 
       // R6-5：结论节 ≥2、对比节 ≥3、互不重叠

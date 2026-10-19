@@ -136,6 +136,7 @@ describe('POST /api/v1/recommend/stream（SSE 流式）', () => {
   }
 
   it('① 事件顺序：step（前5步）→ section×N → step(report) → done，step 名为六步序列', async () => {
+    vi.stubEnv('RERANK', 'off'); // B3：关闭重排，避免打乱 fake LLM 调用序列
     const app = makeApp(makeFakeLlm());
     const res = await postStream(app, loadCaseScene('case-01'));
     expect(res.status).toBe(200);
@@ -156,7 +157,8 @@ describe('POST /api/v1/recommend/stream（SSE 流式）', () => {
   });
 
   it('② done 的 report 与 JSON 接口产物一致（除 steps 耗时）', async () => {
-    // JSON 接口产物（独立 fake）
+    // JSON 接口产物（独立 fake）；两路都关闭重排（避免 fake 调用序列与 rerankMs 差异）
+    vi.stubEnv('RERANK', 'off');
     const jsonReport = await recommend(loadCaseScene('case-01'), {
       store,
       embedder: fakeEmbedder,
@@ -190,6 +192,7 @@ describe('POST /api/v1/recommend/stream（SSE 流式）', () => {
   });
 
   it('④ 非法场景输入 → error 事件（含 message）后关闭', async () => {
+    vi.stubEnv('RERANK', 'off'); // B3：关闭重排，避免打乱 fake LLM 调用序列
     const app = makeApp(makeFakeLlm());
     const res = await postStream(app, { climate: {} });
     expect(res.status).toBe(200);
