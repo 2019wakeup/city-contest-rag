@@ -10,6 +10,8 @@ const props = defineProps<{
   ids: string[]
   /** 报告角标点击后高亮定位的 chunkId（滚动目标不变）。 */
   highlightId?: string | null
+  /** 灵动层：定位后的 600ms 背景 flash（一次性）。 */
+  flashId?: string | null
 }>()
 
 
@@ -95,6 +97,7 @@ function toggle(id: string): void {
           :class="{
             'is-expanded': expandedIds.has(hit.chunkId),
             'is-highlighted': highlightId === hit.chunkId,
+            'is-flash': flashId === hit.chunkId,
           }"
           :data-evidence-id="hit.chunkId"
           data-testid="evidence-item"
@@ -174,6 +177,21 @@ function toggle(id: string): void {
 .evidence-item.is-highlighted {
   border-color: var(--el-color-primary);
   box-shadow: 0 0 0 1px var(--el-color-primary);
+}
+
+/* 灵动层：定位 flash（一次性 600ms 背景高亮） */
+.evidence-item.is-flash {
+  animation: evidence-flash 0.6s var(--ease-out);
+}
+
+@keyframes evidence-flash {
+  0% {
+    background: var(--el-color-primary-light-8);
+  }
+
+  100% {
+    background: var(--el-fill-color-blank);
+  }
 }
 
 .evidence-type-bar {

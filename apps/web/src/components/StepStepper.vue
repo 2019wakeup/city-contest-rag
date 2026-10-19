@@ -33,7 +33,12 @@ const activeStep = computed(() => {
 <template>
   <el-card shadow="never" class="step-stepper">
     <template #header>执行步骤</template>
-    <el-steps :active="activeStep" align-center finish-status="success">
+    <el-steps
+      :active="activeStep"
+      align-center
+      finish-status="success"
+      :class="{ 'is-running': running }"
+    >
       <el-step
         v-for="(item, i) in items"
         :key="`${item.title}-${i}`"
@@ -78,6 +83,37 @@ const activeStep = computed(() => {
 @keyframes step-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* 灵动层：running 期间当前步圆点呼吸脉冲 */
+.is-running :deep(.el-step__head.is-process .el-step__icon) {
+  animation: step-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes step-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--el-color-primary-light-7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+/* 完成步打勾 scale 0.6→1 spring 一次性 */
+:deep(.el-step__head.is-success .el-step__icon) {
+  animation: step-check-pop var(--motion-base) var(--ease-spring);
+}
+
+@keyframes step-check-pop {
+  from {
+    transform: scale(0.6);
+  }
+
+  to {
+    transform: scale(1);
   }
 }
 </style>

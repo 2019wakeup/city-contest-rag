@@ -2,6 +2,8 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import { ripple } from '@/composables/ripple'
+import { useCountUp } from '@/composables/useCountUp'
 import { getCases } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
 import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf, STEP_LABELS } from '@/utils/labels'
@@ -25,6 +27,12 @@ const initialScene = shallowRef<SceneInput | null>(null)
 
 const report = computed(() => store.report)
 const topCandidate = computed<Candidate | null>(() => report.value?.candidates?.[0] ?? null)
+
+// 灵动层：hero 得分与三指标数字滚动（420ms rAF；reduced-motion 直显）
+const scoreCount = useCountUp(() => topCandidate.value?.score ?? 0)
+const lccCount = useCountUp(() => topCandidate.value?.lcc ?? 0)
+const carbonCount = useCountUp(() => topCandidate.value?.carbon ?? 0)
+const lifeCount = useCountUp(() => topCandidate.value?.expectedLife ?? 0)
 const isMock = computed(() => {
   const mode = report.value?.adapterMode
   return mode?.a === 'mock' || mode?.c === 'mock'
@@ -95,6 +103,11 @@ watch(
     adjustNotice.value = ''
   },
 )
+
+function onClickAdjust(event: MouseEvent): void {
+  ripple(event, event.currentTarget as HTMLElement)
+  void applyAdjust()
+}
 
 async function applyAdjust(): Promise<void> {
   const scene = store.scene
@@ -211,7 +224,26 @@ async function onCite(evidenceId: string): Promise<void> {
   await nextTick()
   const el = document.querySelector(`[data-evidence-id="${CSS.escape(evidenceId)}"]`)
   ;(el as HTMLElement | null)?.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+
+  // 灵动层：定位微确认——目标证据卡 600ms flash + 右上角 toast（1.6s 自动消失）
+  flashEvidenceId.value = evidenceId
+  if (flashTimer) clearTimeout(flashTimer)
+  flashTimer = setTimeout(() => {
+    flashEvidenceId.value = null
+  }, 700)
+  const index = (report.value?.evidence ?? []).findIndex((e) => e.chunkId === evidenceId)
+  evidenceToast.value = `已定位证据 ${index >= 0 ? index + 1 : '—'}`
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => {
+    evidenceToast.value = ''
+  }, 1600)
 }
+
+// 灵动层：定位微确认状态
+const flashEvidenceId = shallowRef<string | null>(null)
+const evidenceToast = shallowRef('')
+let flashTimer: ReturnType<typeof setTimeout> | undefined
+let toastTimer: ReturnType<typeof setTimeout> | undefined
 
 // ---- 空态引导卡（UI二轮）----
 function focusCaseSelect(): void {
@@ -255,6 +287,8 @@ watch(
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   if (phaseTimer) clearInterval(phaseTimer)
+  if (flashTimer) clearTimeout(flashTimer)
+  if (toastTimer) clearTimeout(toastTimer)
   window.removeEventListener('keydown', onKeydown)
 })
 
@@ -376,9 +410,10 @@ watch(
           <el-button
             type="primary"
             size="small"
+            class="pressable ripple-host"
             data-testid="adjust-apply"
             :disabled="store.status === 'running'"
-            @click="applyAdjust"
+            @click="onClickAdjust"
           >
             应用并重新推荐
           </el-button>
@@ -498,7 +533,7 @@ watch(
                 {{ topCandidate?.formula?.gradation?.type ?? '—' }}
               </div>
               <div class="kpi-hero-score tabular">
-                {{ (topCandidate?.score ?? 0).toFixed(3) }}
+                {{ scoreCount.display.value.toFixed(3) }}
                 <span class="kpi-hero-score-label">综合得分</span>
               </div>
             </div>
@@ -506,19 +541,19 @@ watch(
               <div class="kpi-hero-metric">
                 <div class="kpi-hero-metric-label">预期寿命</div>
                 <div class="kpi-hero-metric-value tabular">
-                  {{ formatNumber(topCandidate?.expectedLife) }} 年
+                  {{ formatNumber(lifeCount.display.value) }} 年
                 </div>
               </div>
               <div class="kpi-hero-metric">
                 <div class="kpi-hero-metric-label">LCC</div>
                 <div class="kpi-hero-metric-value tabular">
-                  {{ formatNumber(topCandidate?.lcc) }} 万元
+                  {{ formatNumber(lccCount.display.value) }} 万元
                 </div>
               </div>
               <div class="kpi-hero-metric">
                 <div class="kpi-hero-metric-label">碳排</div>
                 <div class="kpi-hero-metric-value tabular">
-                  {{ formatNumber(topCandidate?.carbon) }} tCO2e
+                  {{ formatNumber(carbonCount.display.value) }} tCO2e
                 </div>
               </div>
             </div>
@@ -582,11 +617,25 @@ watch(
           :evidence="report.evidence ?? []"
           :expanded="expandedIds.has(c.id)"
           :highlight-id="highlightId"
+          :flash-id="flashEvidenceId"
           @toggle="toggleCandidate(c.id)"
         />
         </div>
       </template>
     </div>
+
+    <!-- 灵动层：证据定位 toast（aria-live） -->
+    <transition name="toast-fade">
+      <div
+        v-if="evidenceToast"
+        class="evidence-toast"
+        data-testid="evidence-toast"
+        role="status"
+        aria-live="polite"
+      >
+        {{ evidenceToast }}
+      </div>
+    </transition>
 
     <!-- ============ 追问侧板（ChatDock：三态/拖拽/右缘收起） ============ -->
     <ChatDock :report="report" />
@@ -671,6 +720,32 @@ watch(
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-card);
   background: var(--app-panel-bg);
+}
+
+.evidence-toast {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 2100;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--el-color-primary);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.toast-fade-enter-active,
+.toast-fade-leave-active {
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+}
+
+.toast-fade-enter-from,
+.toast-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .result-toolbar.is-sticky {

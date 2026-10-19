@@ -16,6 +16,8 @@ const props = defineProps<{
   evidence: EvidenceRef[]
   expanded: boolean
   highlightId?: string | null
+  /** 灵动层：定位后的 600ms flash（一次性）。 */
+  flashId?: string | null
 }>()
 const emit = defineEmits<{ toggle: [] }>()
 
@@ -174,6 +176,7 @@ const spotlight = useSpotlight()
         :evidence="evidence ?? []"
         :ids="candidate?.evidenceIds ?? []"
         :highlight-id="highlightId"
+        :flash-id="flashId"
       />
     </template>
       </div>

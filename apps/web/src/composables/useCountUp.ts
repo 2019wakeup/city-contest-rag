@@ -1,12 +1,11 @@
-import { onBeforeUnmount, ref, watch } from 'vue'
-import { toValue } from 'vue'
-import type { MaybeRefOrGetter } from 'vue'
+import { onBeforeUnmount, ref, toValue, watch } from 'vue'
+import type { MaybeRefOrGetter, Ref } from 'vue'
 
 /**
  * 数字滚动（count-up）：目标值变化时入队一次 0→目标（420ms、rAF、ease-out），
  * reduced-motion 直接显示目标值。返回 display 供 tabular-nums 渲染。
  */
-export function useCountUp(target: MaybeRefOrGetter<number>): { display: Readonly<ReturnType<typeof ref<number>>> } {
+export function useCountUp(target: MaybeRefOrGetter<number>): { display: Ref<number> } {
   const display = ref(0)
   let rafId: number | null = null
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 
+import { ripple } from '@/composables/ripple'
+import { useMagnetic } from '@/composables/useMagnetic'
 import { FIELD_REGISTRY, SCHEMA_VERSION } from '@road-rec/contracts'
 import type { FieldDef, SceneInput } from '@road-rec/contracts'
 
@@ -130,6 +132,14 @@ function onSubmit(): void {
   emit('submit', buildScene())
 }
 
+// 灵动层：主 CTA 磁性 + 涟漪
+const magnetic = useMagnetic({ max: 4 })
+
+function onClickSubmit(event: MouseEvent): void {
+  ripple(event, event.currentTarget as HTMLElement)
+  onSubmit()
+}
+
 /** UI二轮键盘：Ctrl/⌘+Enter 提交表单；普通 Enter 不触发（避免输入框误提交）。 */
 function onFormKeydown(event: KeyboardEvent): void {
   if (event.key !== 'Enter') return
@@ -209,7 +219,14 @@ function onFormKeydown(event: KeyboardEvent): void {
       </div>
     </el-form-item>
 
-    <el-button type="primary" data-testid="scene-form-submit" @click="onSubmit">
+    <el-button
+      type="primary"
+      data-testid="scene-form-submit"
+      class="pressable ripple-host magnetic"
+      @click="onClickSubmit"
+      @pointermove="magnetic.onPointerMove"
+      @pointerleave="magnetic.onPointerLeave"
+    >
       生成推荐方案
     </el-button>
   </el-form>

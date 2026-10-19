@@ -664,6 +664,8 @@ describe('RecommendView 推荐工作台', () => {
 
   it('结果区顶部渲染 KPI hero：首选方案+得分+三指标+徽章（UI二轮）', async () => {
     const wrapper = await mountView()
+    // 灵动层：得分数字滚动 420ms 完成后再断言终值
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
     const hero = wrapper.find('[data-testid="kpi-hero"]')
     expect(hero.exists()).toBe(true)
@@ -1479,6 +1481,61 @@ describe('RecommendView 推荐工作台', () => {
     const wrapper = await mountView()
     await openChatDock(wrapper)
     expect(wrapper.find('[data-testid="chat-send"]').classes()).toContain('pressable')
+  })
+
+  it('灵动层：count-up reduced-motion 直接显示终值（微动效）', async () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia
+    try {
+      const wrapper = await mountView()
+      const hero = wrapper.find('[data-testid="kpi-hero"]')
+      expect(hero.text()).toContain('0.850')
+      expect(hero.text()).toContain('100')
+      expect(hero.text()).toContain('12')
+    } finally {
+      window.matchMedia = original
+    }
+  })
+
+  it('灵动层：步骤条 running 脉冲 class 仅 running（微动效）', () => {
+    const running = mount(StepStepper, { props: { steps: [], running: true } })
+    expect(running.find('.el-steps').classes()).toContain('is-running')
+
+    const done = mount(StepStepper, {
+      props: { steps: [{ name: 'parse', ms: 1 }], running: false },
+    })
+    expect(done.find('.el-steps').classes()).not.toContain('is-running')
+  })
+
+  it('灵动层：证据定位 is-flash 高亮 + 已定位 toast 自动消失（微动效）', async () => {
+    vi.useFakeTimers()
+    try {
+      const wrapper = await mountView()
+      await wrapper.findAll('[data-testid="evidence-cite"]')[0].trigger('click')
+      await flushPromises()
+
+      const toast = wrapper.find('[data-testid="evidence-toast"]')
+      expect(toast.exists()).toBe(true)
+      expect(toast.text()).toContain('已定位证据 1')
+      expect(wrapper.find('[data-evidence-id="chunk-1"]').classes()).toContain('is-flash')
+
+      await vi.advanceTimersByTimeAsync(1600)
+      expect(wrapper.find('[data-testid="evidence-toast"]').exists()).toBe(false)
+
+      await vi.advanceTimersByTimeAsync(700)
+      expect(wrapper.find('[data-evidence-id="chunk-1"]').classes()).not.toContain('is-flash')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {

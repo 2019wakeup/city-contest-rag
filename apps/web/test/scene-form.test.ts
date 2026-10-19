@@ -193,4 +193,18 @@ describe('SceneForm（schema 驱动）', () => {
     await wrapper3.find('form').trigger('keydown', { key: 'Enter', metaKey: true })
     expect(wrapper3.emitted('submit')).toBeTruthy()
   })
+
+  it('灵动层：提交按钮 pressable/ripple-host + 点击涟漪插入与移除（微动效）', async () => {
+    const wrapper = mount(SceneForm)
+    const btn = wrapper.find('[data-testid="scene-form-submit"]')
+    expect(btn.classes()).toContain('pressable')
+    expect(btn.classes()).toContain('ripple-host')
+
+    await btn.trigger('click')
+    const span = btn.element.querySelector('.ripple') as HTMLElement | null
+    expect(span).toBeTruthy()
+
+    span?.dispatchEvent(new Event('animationend'))
+    expect(btn.element.querySelector('.ripple')).toBeNull()
+  })
 })
