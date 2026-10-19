@@ -53,6 +53,16 @@ const validFormula = {
 };
 
 describe('contracts 契约包', () => {
+  it('B1 docType 扩展：table / literature-full 可解析，旧值向后兼容（P0）', () => {
+    for (const docType of ['knowledge', 'standard', 'literature', 'enterprise', 'table', 'literature-full']) {
+      expect(
+        CorpusChunkSchema.safeParse({ ...validChunk, docType }).success,
+        `docType=${docType}`,
+      ).toBe(true);
+    }
+    expect(CorpusChunkSchema.safeParse({ ...validChunk, docType: 'bogus' }).success).toBe(false);
+  });
+
   it('SceneInput 解析成功且保留未知字段（passthrough 前向兼容）', () => {
     const parsed = SceneInputSchema.parse({ ...validScene, extraField: 1, nested: { x: 2 } });
     expect(parsed.climate.zone).toBe('华南高温区');

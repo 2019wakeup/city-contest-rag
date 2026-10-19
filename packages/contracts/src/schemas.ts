@@ -8,7 +8,15 @@ export const SCHEMA_VERSION = '1' as const;
 
 const schemaVersionField = () => z.literal(SCHEMA_VERSION).default(SCHEMA_VERSION);
 
-export const DocTypeSchema = z.enum(['knowledge', 'standard', 'literature', 'enterprise']);
+// P0 扩展（向后兼容）：table=文献/规范定量表格块；literature-full=文献全文章节块
+export const DocTypeSchema = z.enum([
+  'knowledge',
+  'standard',
+  'literature',
+  'enterprise',
+  'table',
+  'literature-full',
+]);
 export type DocType = z.infer<typeof DocTypeSchema>;
 
 // ---------------------------------------------------------------------------
