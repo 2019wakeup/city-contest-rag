@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { ElInputNumber, ElSelect, ElSteps, ElTableColumn } from 'element-plus'
+import { ElInputNumber, ElSelect, ElSteps, ElTableColumn, ElTooltip } from 'element-plus'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -453,24 +453,60 @@ describe('RecommendView 推荐工作台', () => {
     expect(hero.find('[data-testid="mock-badge"]').exists()).toBe(true)
   })
 
-  it('报告段落中证据 id 渲染为可点击角标并 emit cite（UI二轮）', async () => {
+  it('报告段落中证据 id 渲染为编号角标并 emit cite（B）', async () => {
     const sections = [
       {
         title: '推荐理由',
         paragraphs: ['依据 k-modifier-002:0 的研究结论，SBS 改性效果显著。'],
-        evidenceIds: [],
+        evidenceIds: ['k-modifier-002:0'],
       },
     ]
     const wrapper = mount(ReportSection, {
-      props: { sections, llmStatus: 'ok' },
+      props: { sections, llmStatus: 'ok', evidence: [] },
     })
 
-    const cite = wrapper.find('[data-testid="evidence-cite"]')
-    expect(cite.exists()).toBe(true)
-    expect(cite.text()).toBe('k-modifier-002:0')
-    await cite.trigger('click')
-
+    const cites = wrapper.findAll('[data-testid="evidence-cite"]')
+    expect(cites.length).toBe(2) // 段落内联 1 + 底部引用 1
+    // 展示编号而非裸 id
+    expect(wrapper.text()).not.toContain('k-modifier-002:0')
+    for (const c of cites) {
+      expect(c.text()).toBe('证据 1')
+    }
+    await cites[0].trigger('click')
     expect(wrapper.emitted('cite')?.[0]?.[0]).toBe('k-modifier-002:0')
+  })
+
+  it('报告引用 chip：数量=evidenceIds、编号按 evidence 数组解析、无匹配提示来源不可用（B）', async () => {
+    const sections = [
+      {
+        title: '推荐理由',
+        paragraphs: ['推荐依据如下。'],
+        evidenceIds: ['k-binder-001:0', 'std-9:1', 'k-missing-9:0'],
+      },
+    ]
+    const evidence = [
+      { ...makeReport().evidence[0], chunkId: 'k-binder-001:0', docType: 'knowledge' as const, text: 'SBS改性剂掺量4.5%时高温性能最优。' },
+      { ...makeReport().evidence[0], chunkId: 'std-9:1', docType: 'standard' as const, text: '规范条文规定重交通路段采用改性沥青。' },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok', evidence },
+    })
+
+    const chips = wrapper.findAll('[data-testid="evidence-cite"]')
+    expect(chips.length).toBe(3)
+    expect(chips.map((c) => c.text())).toEqual(['证据 1', '证据 2', '证据 3'])
+    expect(wrapper.text()).not.toContain('k-binder')
+    expect(wrapper.text()).not.toContain('std-9')
+
+    const tooltips = wrapper.findAllComponents(ElTooltip)
+    const contents = tooltips.map((t) => t.props('content') as string)
+    expect(contents[0]).toContain('[知识条目]')
+    expect(contents[0]).toContain('SBS改性剂掺量')
+    expect(contents[1]).toContain('[规范]')
+    expect(contents[2]).toContain('来源不可用')
+
+    await chips[1].trigger('click')
+    expect(wrapper.emitted('cite')?.[0]?.[0]).toBe('std-9:1')
   })
 
   it('点击报告角标 → 含该证据的折叠候选卡自动展开（UI二轮）', async () => {

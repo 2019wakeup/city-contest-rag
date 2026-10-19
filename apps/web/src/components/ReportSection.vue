@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import type { ReportSection as ReportSectionItem } from '@road-rec/contracts'
+import { computed } from 'vue'
 
-defineProps<{
+import type { EvidenceRef, ReportSection as ReportSectionItem } from '@road-rec/contracts'
+
+const props = defineProps<{
   sections: ReportSectionItem[]
   llmStatus: 'ok' | 'degraded'
+  /** B：证据编号化——按报告 evidence 数组解析裸 chunkId 为「证据 N」。 */
+  evidence?: EvidenceRef[]
 }>()
 const emit = defineEmits<{ cite: [evidenceId: string] }>()
 
@@ -15,7 +19,7 @@ interface Segment {
   id?: string
 }
 
-/** UI二轮：段落中裸证据 id → 可点击角标（点击滚动定位到证据链对应 chunk）。 */
+/** 段落中裸证据 id → 可点击角标（点击滚动定位到证据链对应 chunk）。 */
 function parseSegments(paragraph: string): Segment[] {
   const segments: Segment[] = []
   let last = 0
@@ -27,6 +31,49 @@ function parseSegments(paragraph: string): Segment[] {
   }
   if (last < paragraph.length) segments.push({ text: paragraph.slice(last) })
   return segments
+}
+
+const DOC_TYPE_LABELS: Record<string, string> = {
+  knowledge: '知识条目',
+  standard: '规范',
+  literature: '文献',
+  enterprise: '企业资料',
+}
+
+const evidenceById = computed(
+  () => new Map((props.evidence ?? []).map((e) => [e.chunkId, e])),
+)
+
+/** 编号映射：按出现顺序（引用块→段落内联）给每个 chunkId 分配「证据 N」。 */
+const citeNumber = computed(() => {
+  const map = new Map<string, number>()
+  let next = 1
+  const assign = (id: string): number => {
+    if (!map.has(id)) {
+      map.set(id, next)
+      next += 1
+    }
+    return map.get(id) as number
+  }
+  for (const s of props.sections ?? []) {
+    for (const id of s.evidenceIds ?? []) assign(id)
+  }
+  for (const s of props.sections ?? []) {
+    for (const p of s.paragraphs ?? []) {
+      for (const seg of parseSegments(p)) {
+        if (seg.id) assign(seg.id)
+      }
+    }
+  }
+  return map
+})
+
+const citeLabel = (id: string): string => `证据 ${citeNumber.value.get(id) ?? '?'}`
+
+const citeTooltip = (id: string): string => {
+  const hit = evidenceById.value.get(id)
+  if (!hit) return '证据来源不可用'
+  return `[${DOC_TYPE_LABELS[hit.docType ?? ''] ?? hit.docType ?? '未知'}] ${(hit.text ?? '').slice(0, 40)}`
 }
 
 function onCite(id: string): void {
@@ -59,31 +106,32 @@ function onCite(id: string): void {
       <h4 class="report-title">{{ s.title }}</h4>
       <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
         <template v-for="(seg, k) in parseSegments(p)" :key="k">
-          <button
-            v-if="seg.id"
-            type="button"
-            class="report-cite"
-            data-testid="evidence-cite"
-            :title="`定位证据 ${seg.id}`"
-            @click="onCite(seg.id)"
-          >
-            {{ seg.text }}
-          </button>
+          <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
+            <button
+              type="button"
+              class="report-cite"
+              data-testid="evidence-cite"
+              @click="onCite(seg.id)"
+            >
+              {{ citeLabel(seg.id) }}
+            </button>
+          </el-tooltip>
           <template v-else>{{ seg.text }}</template>
         </template>
       </p>
       <div v-if="(s.evidenceIds ?? []).length > 0" class="report-refs">
-        <el-tag
+        <el-tooltip
           v-for="eid in s.evidenceIds ?? []"
           :key="eid"
-          size="small"
-          type="info"
-          class="report-ref-tag"
-          data-testid="evidence-cite"
-          @click="onCite(eid)"
+          :content="citeTooltip(eid)"
+          placement="top"
         >
-          {{ eid }}
-        </el-tag>
+          <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(eid)">
+            <el-tag size="small" type="info" class="report-ref-tag">
+              {{ citeLabel(eid) }}
+            </el-tag>
+          </span>
+        </el-tooltip>
       </div>
     </section>
   </el-card>
@@ -127,6 +175,10 @@ function onCite(id: string): void {
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
+}
+
+.report-ref-wrap {
+  cursor: pointer;
 }
 
 .report-ref-tag {

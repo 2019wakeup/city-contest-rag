@@ -361,6 +361,7 @@ onBeforeUnmount(() => {
             v-if="store.streamSections.length > 0"
             :sections="store.streamSections"
             :llm-status="'ok'"
+            :evidence="store.report?.evidence ?? []"
           />
           <div
             v-else
@@ -433,6 +434,7 @@ onBeforeUnmount(() => {
         <ReportSection
           :sections="report.sections ?? []"
           :llm-status="report.llmStatus ?? 'degraded'"
+          :evidence="report.evidence ?? []"
           class="panel"
           @cite="onCite"
         />
