@@ -283,6 +283,30 @@ function toggleRefs(secIndex: number): void {
   else next.add(secIndex)
   openRefs.value = next
 }
+
+// 跨节去重：chunkId → 首次出现的节序号（防御性；后端已按节去重，前端兜底）
+const firstSeenIn = computed(() => {
+  const map = new Map<string, number>()
+  ;(props.sections ?? []).forEach((s, si) => {
+    for (const id of s.evidenceIds ?? []) {
+      if (!map.has(id)) map.set(id, si)
+    }
+  })
+  return map
+})
+
+/** 每节展示的引用：节内去重；跨节重复的标 duplicate（渲染「见上文」小标）。 */
+const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => {
+  const seen = new Set<string>()
+  const list: Array<{ id: string; duplicate: boolean }> = []
+  for (const id of props.sections?.[secIndex]?.evidenceIds ?? []) {
+    if (seen.has(id)) continue
+    seen.add(id)
+    const first = firstSeenIn.value.get(id)
+    list.push({ id, duplicate: first !== undefined && first < secIndex })
+  }
+  return list
+}
 </script>
 
 <template>
@@ -357,7 +381,7 @@ function toggleRefs(secIndex: number): void {
         </p>
       </template>
 
-      <div v-if="(s.evidenceIds ?? []).length > 0" class="report-refs">
+      <div v-if="refsOf(i).length > 0" class="report-refs">
         <button
           type="button"
           class="report-refs-toggle"
@@ -365,21 +389,25 @@ function toggleRefs(secIndex: number): void {
           :aria-expanded="refsOpen(i)"
           @click="toggleRefs(i)"
         >
-          {{ refsOpen(i) ? '收起' : `关联证据 · ${(s.evidenceIds ?? []).length} 条` }}
+          {{ refsOpen(i) ? '收起' : `关联证据 · ${refsOf(i).length} 条` }}
         </button>
         <div v-if="refsOpen(i)" class="report-refs-row">
-          <el-tooltip
-            v-for="eid in s.evidenceIds ?? []"
-            :key="eid"
-            :content="citeTooltip(eid)"
-            placement="top"
-          >
-            <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(eid)">
-              <el-tag size="small" type="info" class="report-ref-tag">
-                {{ citeLabel(eid) }}
-              </el-tag>
+          <template v-for="ref in refsOf(i)" :key="ref.id">
+            <el-tooltip
+              v-if="!ref.duplicate"
+              :content="citeTooltip(ref.id)"
+              placement="top"
+            >
+              <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(ref.id)">
+                <el-tag size="small" type="info" class="report-ref-tag">
+                  {{ citeLabel(ref.id) }}
+                </el-tag>
+              </span>
+            </el-tooltip>
+            <span v-else class="report-ref-seen" data-testid="ref-seen">
+              见上文 · {{ citeLabel(ref.id) }}
             </span>
-          </el-tooltip>
+          </template>
         </div>
       </div>
     </section>
@@ -545,6 +573,17 @@ function toggleRefs(secIndex: number): void {
 
 .report-ref-tag {
   cursor: pointer;
+}
+
+.report-ref-seen {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  line-height: 24px;
 }
 
 /* 错峰淡入（stagger 100ms；遵守 reduced-motion） */

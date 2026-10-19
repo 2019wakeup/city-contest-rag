@@ -653,6 +653,43 @@ describe('RecommendView 推荐工作台', () => {
     expect(chip.text()).toBe('方案 2')
   })
 
+  it('跨节证据去重：第二节重复项不重复渲染、显示见上文（去重）', async () => {
+    const sections = [
+      {
+        title: '推荐理由',
+        paragraphs: ['段一。'],
+        evidenceIds: ['chunk-1', 'chunk-2'],
+      },
+      {
+        title: '对比分析',
+        paragraphs: ['段二。'],
+        evidenceIds: ['chunk-2', 'chunk-1', 'chunk-3'],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok', evidence: [] },
+    })
+
+    const toggles = wrapper.findAll('[data-testid="refs-toggle"]')
+    expect(toggles.length).toBe(2)
+    // 展开两节的证据行
+    await toggles[0].trigger('click')
+    await toggles[1].trigger('click')
+
+    const blocks = wrapper.findAll('.report-block')
+    // 第一节：2 个 chip、无「见上文」
+    expect(blocks[0].findAll('[data-testid="evidence-cite"]').length).toBe(2)
+    expect(blocks[0].findAll('[data-testid="ref-seen"]').length).toBe(0)
+
+    // 第二节：chunk-2/chunk-1 已见于上文 → 不重复渲染 chip，出现「见上文」小标
+    expect(blocks[1].findAll('[data-testid="evidence-cite"]').length).toBe(1)
+    expect(blocks[1].find('[data-testid="evidence-cite"]').text()).toBe('证据 3')
+    const seen = blocks[1].findAll('[data-testid="ref-seen"]')
+    expect(seen.length).toBe(2)
+    expect(seen[0].text()).toContain('见上文')
+    expect(seen[1].text()).toContain('见上文')
+  })
+
   it('排版重构：关联证据默认收起、点击展开显示收起（排版）', async () => {
     const sections = [
       {
