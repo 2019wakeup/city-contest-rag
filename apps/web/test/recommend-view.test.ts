@@ -322,7 +322,7 @@ describe('RecommendView 推荐工作台', () => {
     expect(postChatMock).toHaveBeenCalledTimes(1)
   })
 
-  it('EvidencePanel 分数按首位归一化展示（F2 残留）', () => {
+  it('EvidencePanel 分数按首位归一化展示（F2 残留）', async () => {
     const evidence = [
       { ...makeReport().evidence[0], chunkId: 'top', score: 0.9 },
       { ...makeReport().evidence[0], chunkId: 'low', score: 0.02 },
@@ -331,11 +331,40 @@ describe('RecommendView 推荐工作台', () => {
       props: { evidence, ids: ['top', 'low'] },
     })
 
+    // 卡片化后默认只展开首条 → 展开第二条再断言其归一化分数
+    const items = wrapper.findAll('[data-testid="evidence-item"]')
+    await items[1].trigger('click')
+
     const text = wrapper.text()
     expect(text).toContain('相关度（归一化）：100')
     expect(text).toContain('相关度（归一化）：2')
     expect(text).not.toContain('0.020')
     expect(text).not.toContain('0.900')
+  })
+
+  it('证据链卡片化：条目数/首条默认展开/点击切换/data-evidence-id（C）', async () => {
+    const evidence = [
+      { ...makeReport().evidence[0], chunkId: 'ev-a', score: 0.9 },
+      { ...makeReport().evidence[0], chunkId: 'ev-b', score: 0.02 },
+    ]
+    const wrapper = mount(EvidencePanel, {
+      props: { evidence, ids: ['ev-a', 'ev-b'] },
+    })
+
+    const items = wrapper.findAll('[data-testid="evidence-item"]')
+    expect(items).toHaveLength(2)
+    expect(wrapper.text()).toContain('共 2 条证据 · 按相关度排序')
+
+    // 首条默认展开
+    expect(items[0].classes()).toContain('is-expanded')
+    expect(items[1].classes()).not.toContain('is-expanded')
+    expect(items[0].attributes('data-evidence-id')).toBe('ev-a')
+
+    // 点击第二条 → 展开；点击第一条 → 收起
+    await items[1].trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-item"]')[1].classes()).toContain('is-expanded')
+    await wrapper.findAll('[data-testid="evidence-item"]')[0].trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-item"]')[0].classes()).not.toContain('is-expanded')
   })
 
   it('CandidateCard 预测项显示中文键名（UI#5）', () => {
