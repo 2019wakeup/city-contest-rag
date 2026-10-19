@@ -1408,6 +1408,42 @@ describe('RecommendView 推荐工作台', () => {
     }
   })
 
+  it('P4 done 态渲染紧凑步进条：全链路总耗时与六步名（P4）', async () => {
+    const wrapper = await mountView()
+    const summary = wrapper.find('[data-testid="step-summary"]')
+    expect(summary.exists()).toBe(true)
+
+    const text = summary.text()
+    expect(text).toContain('全链路')
+    expect(text).toContain('21ms') // 1+2+3+4+5+6
+    for (const name of ['解析', '映射', '召回', '预测', '排序', '报告']) {
+      expect(text).toContain(name)
+    }
+    expect(text).toContain('解析 1ms')
+    expect(text).toContain('报告 6ms')
+  })
+
+  it('P4 首次 running 时隐藏紧凑步进条（维持逐步点亮）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.status = 'running'
+    store.step = 'result'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="step-summary"]').exists()).toBe(false)
+    expect(wrapper.findComponent(StepStepper).exists()).toBe(true)
+  })
+
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
     vi.useFakeTimers()
     try {

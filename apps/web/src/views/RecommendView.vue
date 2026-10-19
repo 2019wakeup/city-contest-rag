@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { getCases } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
-import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf } from '@/utils/labels'
+import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf, STEP_LABELS } from '@/utils/labels'
 import { formatNumber } from '@/utils/format'
 import type { Candidate, CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
@@ -149,6 +149,21 @@ const sceneChips = computed<string[]>(() => {
 const activeCaseTitle = computed<string | null>(() => {
   if (!store.activeCaseId) return null
   return cases.value.find((c) => c.id === store.activeCaseId)?.title ?? null
+})
+
+// P4：完成态紧凑步进条（report.steps 增量 ms + 总耗时）
+const stepSummaryText = computed<string | null>(() => {
+  const stepRecords = report.value?.steps ?? []
+  if (stepRecords.length === 0) return null
+  const total = stepRecords.reduce<number>(
+    (acc, s) => acc + (typeof s.ms === 'number' ? s.ms : 0),
+    0,
+  )
+  const totalText = total >= 1000 ? `${(total / 1000).toFixed(1)}s` : `${total}ms`
+  const parts = stepRecords.map(
+    (s) => `${labelOf(STEP_LABELS, s.name)} ${formatNumber(s.ms)}ms`,
+  )
+  return `全链路 ${totalText} · ${parts.join(' → ')}`
 })
 
 const weightOf = (perf: string): string => {
@@ -510,6 +525,11 @@ watch(
           </div>
         </el-card>
 
+        <!-- P4：完成态紧凑步进条（全链路总耗时 + 六步增量耗时） -->
+        <div v-if="stepSummaryText" class="panel step-summary" data-testid="step-summary">
+          {{ stepSummaryText }}
+        </div>
+
         <el-alert
           v-for="(w, i) in report.warnings ?? []"
           :key="i"
@@ -662,6 +682,13 @@ watch(
 }
 
 /* P3：重跑进度条 + 旧内容变淡 */
+/* P4：完成态紧凑步进条 */
+.step-summary {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+
 .rerun-progress {
   padding: 10px 16px;
   margin-bottom: 16px;

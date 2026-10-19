@@ -2,26 +2,17 @@
 import { computed } from 'vue'
 
 import { formatNumber } from '@/utils/format'
+import { labelOf, STEP_LABELS } from '@/utils/labels'
 import type { StepRecord } from '@road-rec/contracts'
 
 const props = defineProps<{ steps: StepRecord[]; running?: boolean }>()
-
-// 后端步骤名 → 中文显示；未知步骤名直接显示原名（前向兼容）。
-const STEP_LABELS: Record<string, string> = {
-  parse: '解析',
-  mapping: '映射',
-  recall: '召回',
-  predict: '预测',
-  rank: '排序',
-  report: '报告',
-}
 
 // UI二轮：running 且尚无真实 steps 时显示六步占位（逐步点亮的过程感）。
 const PLACEHOLDER_TITLES = ['解析', '映射', '召回', '预测', '排序', '报告']
 
 const items = computed(() => {
   const list = (props.steps ?? []).map((s) => ({
-    title: STEP_LABELS[s.name] ?? s.name,
+    title: labelOf(STEP_LABELS, s.name),
     description: s.ms != null ? `${formatNumber(s.ms)} ms` : '',
   }))
   if (list.length === 0 && props.running) {

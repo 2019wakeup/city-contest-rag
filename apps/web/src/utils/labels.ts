@@ -41,6 +41,16 @@ export const PERF_LABELS: Record<string, string> = {
   constructability: '施工可行性',
 }
 
+/** 六步 pipeline 中文名（StepStepper 与紧凑步进条共用）。 */
+export const STEP_LABELS: Record<string, string> = {
+  parse: '解析',
+  mapping: '映射',
+  recall: '召回',
+  predict: '预测',
+  rank: '排序',
+  report: '报告',
+}
+
 /** 未知键回退原文（前向兼容）。 */
 export function labelOf(map: Record<string, string>, key: string): string {
   return map[key] ?? key

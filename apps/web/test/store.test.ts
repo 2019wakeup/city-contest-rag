@@ -341,6 +341,17 @@ describe('recommend store 状态机', () => {
     )
   })
 
+  it('P4 新报告清空旧对话（避免旧 history 污染新 reportContext）（P4）', async () => {
+    mockStreamDone(reportFixture('ok'))
+    const store = useRecommendStore()
+    store.chat.push({ role: 'user', content: '旧问题' })
+    store.chat.push({ role: 'assistant', content: '旧回答' })
+
+    await store.run(validScene)
+
+    expect(store.chat).toEqual([])
+  })
+
   it('adjustAndRerun 将补丁合并进当前场景并重跑', async () => {
     const store = useRecommendStore()
     await store.run(validScene)

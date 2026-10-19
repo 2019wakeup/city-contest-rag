@@ -135,6 +135,8 @@ export const useRecommendStore = defineStore('recommend', () => {
     scene.value = sceneInput
     liveSteps.value = []
     streamSections.value = []
+    // P4：新报告清空旧对话（避免旧 history 污染新 reportContext）。
+    chat.value = []
     // P3：不先清空旧报告——新结果到达前保留旧报告（视图叠加进度条+变淡）。
     resetPump()
     // 结果页发起的微调重跑失败时留在结果页；参数页初次提交失败回到参数页。
