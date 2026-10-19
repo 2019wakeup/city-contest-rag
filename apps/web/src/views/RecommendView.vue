@@ -81,16 +81,93 @@ watch(
   { immediate: true },
 )
 
+// P3：微调差异提示 + 恢复原值（基线 = 最近一次报告场景的预算/工期）
+const adjustNotice = shallowRef('')
+const baselineBudget = shallowRef<number | null>(null)
+const baselineSchedule = shallowRef<number | null>(null)
+
+watch(
+  () => store.report,
+  (r) => {
+    baselineBudget.value = r?.scene?.constraints?.budget ?? null
+    baselineSchedule.value = r?.scene?.constraints?.schedule ?? null
+    adjustNotice.value = ''
+  },
+)
+
 async function applyAdjust(): Promise<void> {
   const scene = store.scene
   if (!scene) return
+  const oldBudget = scene.constraints?.budget
+  const oldSchedule = scene.constraints?.schedule
   const constraints = {
     ...(scene.constraints ?? {}),
     ...(adjustBudget.value != null ? { budget: adjustBudget.value } : {}),
     ...(adjustSchedule.value != null ? { schedule: adjustSchedule.value } : {}),
   }
   await store.adjustAndRerun({ constraints })
+  if (store.status !== 'error') {
+    const parts: string[] = []
+    if (oldBudget != null && adjustBudget.value != null && oldBudget !== adjustBudget.value) {
+      parts.push(`预算 ${oldBudget}→${adjustBudget.value}`)
+    }
+    if (
+      oldSchedule != null &&
+      adjustSchedule.value != null &&
+      oldSchedule !== adjustSchedule.value
+    ) {
+      parts.push(`工期 ${oldSchedule}→${adjustSchedule.value}`)
+    }
+    if (parts.length > 0) adjustNotice.value = `${parts.join(' · ')} · 已重新生成`
+  }
 }
+
+function restoreOriginal(): void {
+  adjustBudget.value = baselineBudget.value
+  adjustSchedule.value = baselineSchedule.value
+  void applyAdjust()
+}
+
+// P3：场景 chips（气候/交通/病害/预算/工期）——来自 report.scene
+const TRAFFIC_LEVEL_LABELS: Record<string, string> = {
+  light: '轻交通',
+  medium: '中等交通',
+  heavy: '重交通',
+  channelized: '渠化重载',
+}
+const DISTRESS_LABELS: Record<string, string> = {
+  rutting: '车辙',
+  shoving: '推移拥包',
+  'transverse-crack': '横向裂缝',
+  'longitudinal-crack': '纵向裂缝',
+  'fatigue-crack': '疲劳裂缝',
+  'water-damage': '水损害',
+  raveling: '松散剥落',
+  pothole: '坑槽',
+  skid: '抗滑不足',
+  noise: '交通噪声',
+}
+
+const sceneChips = computed<string[]>(() => {
+  const scene = report.value?.scene
+  if (!scene) return []
+  const chips: string[] = []
+  if (scene.climate?.zone) chips.push(scene.climate.zone)
+  if (scene.traffic?.level) {
+    chips.push(TRAFFIC_LEVEL_LABELS[scene.traffic.level] ?? scene.traffic.level)
+  }
+  for (const d of scene.distresses ?? []) {
+    chips.push(DISTRESS_LABELS[d.type] ?? d.type)
+  }
+  if (scene.constraints?.budget != null) chips.push(`${scene.constraints.budget} 万元`)
+  if (scene.constraints?.schedule != null) chips.push(`${scene.constraints.schedule} 天`)
+  return chips
+})
+
+const activeCaseTitle = computed<string | null>(() => {
+  if (!store.activeCaseId) return null
+  return cases.value.find((c) => c.id === store.activeCaseId)?.title ?? null
+})
 
 const weightOf = (perf: string): string => {
   const p = report.value?.targets?.priorities?.find((x) => x.perf === perf)
@@ -271,9 +348,13 @@ watch(
 
     <!-- ============ 第 2 页：结果 ============ -->
     <div v-else class="result-page">
-      <!-- 工具栏：返回修改参数 + 微调 -->
-      <div class="panel result-toolbar">
-        <el-button data-testid="back-to-input" @click="onBackToInput">
+      <!-- 工具栏（P3：sticky+模糊背景）：返回修改参数 + 微调 + 取消生成 -->
+      <div class="panel result-toolbar is-sticky">
+        <el-button
+          data-testid="back-to-input"
+          :disabled="store.status === 'running'"
+          @click="onBackToInput"
+        >
           修改参数
         </el-button>
         <div class="toolbar-adjust">
@@ -283,6 +364,7 @@ watch(
             data-testid="adjust-budget"
             :min="0"
             size="small"
+            :disabled="store.status === 'running'"
             class="toolbar-input"
           />
           <span class="toolbar-label">工期（天）</span>
@@ -291,16 +373,52 @@ watch(
             data-testid="adjust-schedule"
             :min="0"
             size="small"
+            :disabled="store.status === 'running'"
             class="toolbar-input"
           />
-          <el-button type="primary" size="small" data-testid="adjust-apply" @click="applyAdjust">
+          <el-button
+            type="primary"
+            size="small"
+            data-testid="adjust-apply"
+            :disabled="store.status === 'running'"
+            @click="applyAdjust"
+          >
             应用并重新推荐
+          </el-button>
+          <el-button
+            v-if="store.status === 'running'"
+            size="small"
+            data-testid="cancel-run"
+            @click="store.cancel()"
+          >
+            取消生成
           </el-button>
         </div>
       </div>
 
-      <!-- running：分阶段文案 + 实时步进 + 增量报告 + 骨架屏 -->
-      <template v-if="store.status === 'running'">
+      <!-- P3：错误横幅 + 重试（旧报告保留，供回滚） -->
+      <div v-if="store.status === 'error'" class="status-alert">
+        <el-alert
+          type="error"
+          :closable="false"
+          show-icon
+          title="服务暂时不可用，请稍后重试"
+        />
+        <el-button size="small" data-testid="error-retry" @click="store.retry()">
+          重试
+        </el-button>
+      </div>
+
+      <!-- P3：微调差异提示 + 恢复原值 -->
+      <div v-if="adjustNotice" class="adjust-notice" data-testid="adjust-notice">
+        <span>{{ adjustNotice }}</span>
+        <el-button size="small" text data-testid="restore-original" @click="restoreOriginal">
+          恢复原值
+        </el-button>
+      </div>
+
+      <!-- running：分阶段文案 + 实时步进 + 增量报告 + 骨架屏（首次无旧报告） -->
+      <template v-if="store.status === 'running' && !report">
         <StepStepper :steps="store.liveSteps" :running="true" class="panel" />
         <div class="panel loading-report" data-testid="loading-report">
           <div class="loading-phase" data-testid="loading-phase">
@@ -338,6 +456,32 @@ watch(
       </template>
 
       <template v-else-if="report">
+        <div
+          class="result-content"
+          data-testid="result-content"
+          :class="{ 'is-stale': store.status === 'running' }"
+        >
+          <!-- P3：重跑进度条（旧报告变淡时置顶） -->
+          <div v-if="store.status === 'running'" class="panel rerun-progress" data-testid="rerun-progress">
+            <el-progress :indeterminate="true" :show-text="false" />
+          </div>
+
+          <!-- P3：场景 chips（气候/交通/病害/预算/工期 + 案例名） -->
+          <div v-if="sceneChips.length > 0" class="panel scene-chips" data-testid="scene-chips">
+            <el-tag
+              v-for="chip in sceneChips"
+              :key="chip"
+              size="small"
+              effect="plain"
+              class="scene-chip"
+            >
+              {{ chip }}
+            </el-tag>
+            <span v-if="activeCaseTitle" class="scene-case-name">
+              {{ activeCaseTitle }} 案例
+            </span>
+          </div>
+
         <!-- KPI hero（UI二轮）：首选方案 + 得分 + 核心三指标 + 徽章收纳于此 -->
         <el-card shadow="hover" data-testid="kpi-hero" class="panel kpi-hero">
           <div class="kpi-hero-row">
@@ -438,6 +582,7 @@ watch(
           :highlight-id="highlightId"
           @toggle="toggleCandidate(c.id)"
         />
+        </div>
       </template>
     </div>
 
@@ -513,7 +658,7 @@ watch(
   width: 100%;
 }
 
-/* 结果页工具栏 */
+/* 结果页工具栏（P3：sticky + 半透明模糊） */
 .result-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -524,6 +669,51 @@ watch(
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-card);
   background: var(--app-panel-bg);
+}
+
+.result-toolbar.is-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--app-panel-bg) 82%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* P3：重跑进度条 + 旧内容变淡 */
+.rerun-progress {
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.result-content {
+  transition: opacity 0.2s ease;
+}
+
+.result-content.is-stale {
+  opacity: 0.5;
+}
+
+/* P3：场景 chips + 案例名 */
+.scene-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.scene-case-name {
+  font-size: 13px;
+  color: var(--el-color-primary);
+}
+
+/* P3：微调差异提示 */
+.adjust-notice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
 }
 
 .toolbar-adjust {

@@ -163,6 +163,7 @@ describe('recommend store 状态机', () => {
     expect(streamRecommendMock).toHaveBeenCalledWith(
       validScene,
       expect.objectContaining({ onDone: expect.any(Function) }),
+      expect.anything(),
     )
     expect(store.status).toBe('done')
     expect(store.report?.llmStatus).toBe('ok')
@@ -288,6 +289,58 @@ describe('recommend store 状态机', () => {
     expect(store.errorMessage).toContain('网络错误')
   })
 
+  it('P3 重跑不清空旧报告：流式期间保留、失败回滚（P3）', async () => {
+    mockStreamDone(reportFixture('ok'))
+    const store = useRecommendStore()
+    await store.run(validScene)
+    const oldReport = store.report
+
+    // 重跑期间：旧报告仍在
+    streamRecommendMock.mockImplementation(
+      () => new Promise<void>(() => {}), // 永不结束
+    )
+    const rerun = store.adjustAndRerun({ notes: 'z' })
+    expect(store.status).toBe('running')
+    expect(store.report).toBe(oldReport)
+
+    // 失败（onError + JSON 重试失败）→ 旧报告保留 + error
+    streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+      handlers?.onError?.('流式挂了')
+    })
+    postRecommendMock.mockRejectedValue(new Error('网络错误'))
+    await store.adjustAndRerun({ notes: 'y' })
+
+    expect(store.status).toBe('error')
+    expect(store.report).toBe(oldReport)
+    void rerun
+  })
+
+  it('P3 取消生成：AbortSignal 传递、取消后回滚到旧状态（P3）', async () => {
+    mockStreamDone(reportFixture('ok'))
+    const store = useRecommendStore()
+    await store.run(validScene)
+
+    streamRecommendMock.mockImplementation(async (_scene, _handlers, options) => {
+      await new Promise<void>((_resolve, reject) => {
+        options?.signal?.addEventListener('abort', () =>
+          reject(new DOMException('Aborted', 'AbortError')),
+        )
+      })
+    })
+
+    const rerun = store.adjustAndRerun({ notes: 'x' })
+    store.cancel()
+    await rerun
+
+    expect(store.status).toBe('done') // 回滚到旧报告状态
+    expect(store.report?.llmStatus).toBe('ok')
+    expect(streamRecommendMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+  })
+
   it('adjustAndRerun 将补丁合并进当前场景并重跑', async () => {
     const store = useRecommendStore()
     await store.run(validScene)
@@ -300,6 +353,7 @@ describe('recommend store 状态机', () => {
         notes: '调整为重载场景',
       },
       expect.objectContaining({ onDone: expect.any(Function) }),
+      expect.anything(),
     )
     expect(store.scene?.notes).toBe('调整为重载场景')
   })

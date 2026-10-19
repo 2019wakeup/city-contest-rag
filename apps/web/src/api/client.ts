@@ -76,6 +76,12 @@ export interface StreamRecommendHandlers {
   onError?: (message: string) => void
 }
 
+/** P3：流式请求选项（AbortController + 30s 超时）。 */
+export interface StreamRecommendOptions {
+  signal?: AbortSignal
+  timeoutMs?: number
+}
+
 /**
  * 流式推荐：POST /api/v1/recommend/stream，fetch ReadableStream 解析 SSE。
  * 宽容解析：未知 event 忽略、坏 data 行跳过；非 event-stream 且为报告 JSON 时按 onDone 兜底。
@@ -83,12 +89,23 @@ export interface StreamRecommendHandlers {
 export async function streamRecommend(
   scene: SceneInput,
   handlers: StreamRecommendHandlers = {},
+  options: StreamRecommendOptions = {},
 ): Promise<void> {
-  const res = await fetch(`${API_BASE}/recommend/stream`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(scene),
-  })
+  const { signal, timeoutMs = 30000 } = options
+  const controller = new AbortController()
+  const onExternalAbort = () => controller.abort()
+  if (signal) {
+    if (signal.aborted) controller.abort()
+    else signal.addEventListener('abort', onExternalAbort)
+  }
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(`${API_BASE}/recommend/stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(scene),
+      signal: controller.signal,
+    })
   if (!res.ok) {
     handlers.onError?.(`请求失败（${res.status}）`)
     return
@@ -142,6 +159,10 @@ export async function streamRecommend(
     }
     // 未知 event 忽略
   })
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', onExternalAbort)
+  }
 }
 
 /** 典型案例列表。 */

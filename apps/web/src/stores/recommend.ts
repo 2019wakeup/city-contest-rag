@@ -104,16 +104,29 @@ export const useRecommendStore = defineStore('recommend', () => {
     }
   }
 
-  /** 流式失败/异常 → 回退普通 JSON 接口重试一次。 */
+  /** 流式失败/异常 → 回退普通 JSON 接口重试一次（失败保留旧报告，不先清空）。 */
   async function fallbackJsonRun(sceneInput: SceneInput, fromResult: boolean): Promise<void> {
     resetPump()
     try {
       applyReport(await postRecommend(sceneInput))
     } catch (err) {
+      // P3：重跑失败回滚——旧报告原样保留，仅置 error 供重试。
       status.value = 'error'
       errorMessage.value = err instanceof Error ? err.message : String(err)
-      if (!fromResult) step.value = 'input'
+      if (!fromResult && !report.value) step.value = 'input'
     }
+  }
+
+  /** P3：取消生成（AbortController），回滚到运行前状态。 */
+  const abortController = shallowRef<AbortController | null>(null)
+
+  function cancel(): void {
+    abortController.value?.abort()
+  }
+
+  /** P3：失败后「重试」——用当前场景重跑。 */
+  function retry(): void {
+    if (scene.value) void run(scene.value)
   }
 
   async function run(sceneInput: SceneInput): Promise<void> {
@@ -122,26 +135,44 @@ export const useRecommendStore = defineStore('recommend', () => {
     scene.value = sceneInput
     liveSteps.value = []
     streamSections.value = []
-    report.value = null
+    // P3：不先清空旧报告——新结果到达前保留旧报告（视图叠加进度条+变淡）。
     resetPump()
     // 结果页发起的微调重跑失败时留在结果页；参数页初次提交失败回到参数页。
     const fromResult = step.value === 'result'
     step.value = 'result'
 
+    abortController.value = new AbortController()
     let streamFailed = false
+    let cancelled = false
     try {
-      await streamRecommend(sceneInput, {
-        onStep: enqueueStep,
-        onSection: (sec) => {
-          streamSections.value = [...streamSections.value, sec]
+      await streamRecommend(
+        sceneInput,
+        {
+          onStep: enqueueStep,
+          onSection: (sec) => {
+            streamSections.value = [...streamSections.value, sec]
+          },
+          onDone: finalizeStream,
+          onError: () => {
+            streamFailed = true
+          },
         },
-        onDone: finalizeStream,
-        onError: () => {
-          streamFailed = true
-        },
-      })
-    } catch {
-      streamFailed = true
+        { signal: abortController.value.signal },
+      )
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') cancelled = true
+      else streamFailed = true
+    }
+    if (cancelled) {
+      // P3：取消 → 回滚到旧状态（有旧报告则恢复 done/degraded，否则回参数页）。
+      resetPump()
+      if (report.value) {
+        status.value = report.value.llmStatus === 'degraded' ? 'degraded' : 'done'
+      } else {
+        status.value = 'idle'
+        step.value = 'input'
+      }
+      return
     }
     if (streamFailed) await fallbackJsonRun(sceneInput, fromResult)
   }
@@ -175,5 +206,7 @@ export const useRecommendStore = defineStore('recommend', () => {
     run,
     backToInput,
     adjustAndRerun,
+    cancel,
+    retry,
   }
 })

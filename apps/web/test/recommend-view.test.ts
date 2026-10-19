@@ -275,6 +275,80 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.findAllComponents(WaterfallChart)).toHaveLength(1)
   })
 
+  it('P3 场景 chips：气候/交通/病害/预算/工期与案例名（P3）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.report = makeReport()
+    store.status = 'done'
+    store.step = 'result'
+    store.scene = validScene
+    store.activeCaseId = 'case-01'
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    getCasesMock.mockResolvedValue([caseFixture('case-01')])
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    const chips = wrapper.find('[data-testid="scene-chips"]')
+    expect(chips.exists()).toBe(true)
+    expect(chips.text()).toContain('1-4 华南湿热区')
+    expect(chips.text()).toContain('重交通')
+    expect(chips.text()).toContain('车辙')
+    expect(chips.text()).toContain('500 万元')
+    expect(chips.text()).toContain('30 天')
+    expect(chips.text()).toContain('case-01 案例')
+  })
+
+  it('P3 微调差异提示与恢复原值（P3）', async () => {
+    const wrapper = await mountView()
+
+    const budgetInput = wrapper.find('[data-testid="adjust-budget"] input')
+    await budgetInput.setValue('350')
+    await wrapper.find('[data-testid="adjust-apply"]').trigger('click')
+    await flushPromises()
+
+    const notice = wrapper.find('[data-testid="adjust-notice"]')
+    expect(notice.exists()).toBe(true)
+    expect(notice.text()).toContain('预算 500→350 · 已重新生成')
+
+    await wrapper.find('[data-testid="restore-original"]').trigger('click')
+    await flushPromises()
+    const lastScene = streamRecommendMock.mock.calls.at(-1)?.[0] as SceneInput
+    expect(lastScene.constraints.budget).toBe(500)
+  })
+
+  it('P3 running 时工具栏：取消按钮/禁用按钮/进度条/sticky（P3）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.report = makeReport()
+    store.status = 'running'
+    store.step = 'result'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="cancel-run"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="back-to-input"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="adjust-apply"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="rerun-progress"]').exists()).toBe(true)
+    expect(wrapper.find('.result-toolbar').classes()).toContain('is-sticky')
+    expect(wrapper.find('[data-testid="result-content"]').classes()).toContain('is-stale')
+  })
+
   it('微调面板修改预算后调用 adjustAndRerun 重跑', async () => {
     const wrapper = await mountView()
 
