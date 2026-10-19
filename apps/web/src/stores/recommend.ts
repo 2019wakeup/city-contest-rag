@@ -45,8 +45,68 @@ export const useRecommendStore = defineStore('recommend', () => {
     status.value = result.llmStatus === 'degraded' ? 'degraded' : 'done'
   }
 
+  /** E：步骤排队渐进点亮——首个立即，后续每 220ms 一个；流太快结束时 100ms 快速补放。 */
+  let stepQueue: StepRecord[] = []
+  let stepPumpTimer: ReturnType<typeof setInterval> | undefined
+  let pendingReport: RecommendationReport | null = null
+  let pumpStarted = false
+
+  function stopPumpTimer(): void {
+    if (stepPumpTimer) {
+      clearInterval(stepPumpTimer)
+      stepPumpTimer = undefined
+    }
+  }
+
+  function resetPump(): void {
+    stopPumpTimer()
+    stepQueue = []
+    pendingReport = null
+    pumpStarted = false
+  }
+
+  function pumpStep(): void {
+    if (stepQueue.length > 0) {
+      liveSteps.value = [...liveSteps.value, stepQueue.shift() as StepRecord]
+    }
+    if (stepQueue.length === 0) {
+      stopPumpTimer()
+      if (pendingReport) {
+        const reportToApply = pendingReport
+        pendingReport = null
+        applyReport(reportToApply)
+      }
+    }
+  }
+
+  function enqueueStep(stepRecord: StepRecord): void {
+    stepQueue.push(stepRecord)
+    if (stepPumpTimer) return
+    if (!pumpStarted) {
+      pumpStarted = true
+      pumpStep() // 首个立即放出
+      if (stepQueue.length > 0) {
+        stepPumpTimer = setInterval(pumpStep, 220)
+      }
+    } else if (stepQueue.length > 0) {
+      // 消费快于到达时，后续到达仍按 220ms 节奏放出
+      stepPumpTimer = setInterval(pumpStep, 220)
+    }
+  }
+
+  function finalizeStream(reportResult: RecommendationReport): void {
+    if (stepQueue.length > 0) {
+      pendingReport = reportResult
+      stopPumpTimer()
+      stepPumpTimer = setInterval(pumpStep, 100) // 剩余步骤快速补放
+    } else {
+      applyReport(reportResult)
+    }
+  }
+
   /** 流式失败/异常 → 回退普通 JSON 接口重试一次。 */
   async function fallbackJsonRun(sceneInput: SceneInput, fromResult: boolean): Promise<void> {
+    resetPump()
     try {
       applyReport(await postRecommend(sceneInput))
     } catch (err) {
@@ -63,6 +123,7 @@ export const useRecommendStore = defineStore('recommend', () => {
     liveSteps.value = []
     streamSections.value = []
     report.value = null
+    resetPump()
     // 结果页发起的微调重跑失败时留在结果页；参数页初次提交失败回到参数页。
     const fromResult = step.value === 'result'
     step.value = 'result'
@@ -70,13 +131,11 @@ export const useRecommendStore = defineStore('recommend', () => {
     let streamFailed = false
     try {
       await streamRecommend(sceneInput, {
-        onStep: (s) => {
-          liveSteps.value = [...liveSteps.value, s]
-        },
+        onStep: enqueueStep,
         onSection: (sec) => {
           streamSections.value = [...streamSections.value, sec]
         },
-        onDone: applyReport,
+        onDone: finalizeStream,
         onError: () => {
           streamFailed = true
         },

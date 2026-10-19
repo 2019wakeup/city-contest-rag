@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, watch } from 'vue'
 
 import type { EvidenceRef, ReportSection as ReportSectionItem } from '@road-rec/contracts'
 
@@ -8,6 +8,8 @@ const props = defineProps<{
   llmStatus: 'ok' | 'degraded'
   /** B：证据编号化——按报告 evidence 数组解析裸 chunkId 为「证据 N」。 */
   evidence?: EvidenceRef[]
+  /** E：打字机逐字揭示（~60 字/120ms）；reduced-motion 直接显示。 */
+  typewriter?: boolean
 }>()
 const emit = defineEmits<{ cite: [evidenceId: string] }>()
 
@@ -31,6 +33,113 @@ function parseSegments(paragraph: string): Segment[] {
   }
   if (last < paragraph.length) segments.push({ text: paragraph.slice(last) })
   return segments
+}
+
+// ===== E：打字机逐字揭示 =====
+const TYPE_CHARS_PER_TICK = 60
+const TYPE_TICK_MS = 120
+
+interface FlatParagraph {
+  text: string
+  secIndex: number
+  start: number // 全局起始字符偏移（累计）
+}
+
+const flatParagraphs = computed<FlatParagraph[]>(() => {
+  let offset = 0
+  const list: FlatParagraph[] = []
+  ;(props.sections ?? []).forEach((s, si) => {
+    ;(s.paragraphs ?? []).forEach((text) => {
+      list.push({ text, secIndex: si, start: offset })
+      offset += text.length
+    })
+  })
+  return list
+})
+
+const totalChars = computed(() => {
+  const list = flatParagraphs.value
+  return list.length > 0 ? list[list.length - 1].start + list[list.length - 1].text.length : 0
+})
+
+/** 每 section 结束偏移（用于判断该段是否揭示完成）。 */
+const sectionEnds = computed(() => {
+  const ends: number[] = []
+  let offset = 0
+  ;(props.sections ?? []).forEach((s) => {
+    ;(s.paragraphs ?? []).forEach((text) => {
+      offset += text.length
+    })
+    ends.push(offset)
+  })
+  return ends
+})
+
+const reveal = reactive({ shown: 0, done: false })
+let typeTimer: ReturnType<typeof setInterval> | undefined
+
+function prefersReducedMotion(): boolean {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function stopTypewriter(): void {
+  if (typeTimer) {
+    clearInterval(typeTimer)
+    typeTimer = undefined
+  }
+}
+
+function ensureTypewriter(): void {
+  if (!props.typewriter || typeTimer) return
+  if (reveal.shown >= totalChars.value) {
+    reveal.done = reveal.shown > 0 || totalChars.value === 0
+    return
+  }
+  typeTimer = setInterval(() => {
+    reveal.shown = Math.min(totalChars.value, reveal.shown + TYPE_CHARS_PER_TICK)
+    if (reveal.shown >= totalChars.value) {
+      stopTypewriter()
+      reveal.done = true
+    }
+  }, TYPE_TICK_MS)
+}
+
+function restartTypewriter(): void {
+  stopTypewriter()
+  if (!props.typewriter) return
+  if (prefersReducedMotion()) {
+    reveal.shown = totalChars.value
+    reveal.done = true
+    return
+  }
+  reveal.shown = Math.min(reveal.shown, totalChars.value)
+  reveal.done = reveal.shown >= totalChars.value && totalChars.value > 0
+  ensureTypewriter()
+}
+
+onMounted(restartTypewriter)
+watch(() => totalChars.value, restartTypewriter)
+onBeforeUnmount(stopTypewriter)
+
+const visibleText = (flat: FlatParagraph): string => {
+  if (!props.typewriter) return flat.text
+  const visible = reveal.shown - flat.start
+  if (visible <= 0) return ''
+  return flat.text.slice(0, visible)
+}
+
+const sectionDone = (si: number): boolean => {
+  if (!props.typewriter) return true
+  const end = sectionEnds.value[si] ?? 0
+  return reveal.shown >= end
+}
+
+const flatIndexOf = (secIndex: number, paraIndex: number): number => {
+  let idx = 0
+  for (let si = 0; si < secIndex; si++) {
+    idx += (props.sections?.[si]?.paragraphs ?? []).length
+  }
+  return idx + paraIndex
 }
 
 const DOC_TYPE_LABELS: Record<string, string> = {
@@ -103,9 +212,18 @@ function onCite(id: string): void {
       class="report-block report-stagger"
       :style="{ '--i': i }"
     >
-      <h4 class="report-title">{{ s.title }}</h4>
+      <h4 class="report-title">
+        {{ s.title }}
+        <span v-if="typewriter && !sectionDone(i)" class="reveal-badge">生成中…</span>
+        <span v-else-if="typewriter" class="reveal-badge is-done">已完成</span>
+      </h4>
       <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
-        <template v-for="(seg, k) in parseSegments(p)" :key="k">
+        <template
+          v-for="(seg, k) in parseSegments(
+            visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
+          )"
+          :key="k"
+        >
           <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
             <button
               type="button"
@@ -144,6 +262,29 @@ function onCite(id: string): void {
 
 .report-title {
   margin: 0 0 8px;
+}
+
+.reveal-badge {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-color-primary);
+  vertical-align: middle;
+}
+
+.reveal-badge.is-done {
+  animation: reveal-done-fade 1.2s ease forwards;
+  color: var(--el-text-color-secondary);
+}
+
+@keyframes reveal-done-fade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .report-paragraph {

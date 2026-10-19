@@ -183,6 +183,20 @@ onBeforeUnmount(() => {
   if (phaseTimer) clearInterval(phaseTimer)
   window.removeEventListener('keydown', onKeydown)
 })
+
+// E：进入结果页首次 running 自动滚到报告区顶部（仅一次，确保生成过程在视口内）
+const scrolledToReport = shallowRef(false)
+watch(
+  () => store.status,
+  async (s) => {
+    if (s !== 'running' || scrolledToReport.value) return
+    scrolledToReport.value = true
+    await nextTick()
+    document
+      .querySelector('[data-testid="loading-report"]')
+      ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  },
+)
 </script>
 
 <template>
@@ -295,7 +309,20 @@ onBeforeUnmount(() => {
             :sections="store.streamSections"
             :llm-status="'ok'"
             :evidence="store.report?.evidence ?? []"
+            :typewriter="true"
           />
+          <!-- E：下一段占位（已有 i 段且流未结束） -->
+          <div
+            v-if="store.streamSections.length > 0"
+            data-testid="section-placeholder"
+            class="section-placeholder"
+          >
+            <div class="section-placeholder-label">
+              正在撰写第 {{ store.streamSections.length + 1 }} 段…
+            </div>
+            <div class="app-skeleton" style="height: 14px; margin: 8px 0"></div>
+            <div class="app-skeleton" style="height: 14px; width: 70%"></div>
+          </div>
           <div
             v-else
             data-testid="skeleton-report"
@@ -430,6 +457,28 @@ onBeforeUnmount(() => {
   margin-bottom: 12px;
   font-size: 13px;
   color: var(--el-color-primary);
+}
+
+/* E：下一段占位（脉冲标签 + 骨架线） */
+.section-placeholder {
+  margin-top: 8px;
+}
+
+.section-placeholder-label {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  animation: placeholder-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes placeholder-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* 参数页：单卡居中 */

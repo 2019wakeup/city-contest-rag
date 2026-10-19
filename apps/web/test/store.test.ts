@@ -201,6 +201,66 @@ describe('recommend store 状态机', () => {
     expect(store.report?.llmStatus).toBe('ok')
   })
 
+  it('步骤排队渐进点亮：首个立即，后续每 220ms 一个（E）', async () => {
+    vi.useFakeTimers()
+    try {
+      const store = useRecommendStore()
+      let finish: () => void = () => {}
+      streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+        handlers?.onStep?.({ name: 'parse', ms: 1 })
+        handlers?.onStep?.({ name: 'mapping', ms: 2 })
+        handlers?.onStep?.({ name: 'recall', ms: 3 })
+        await new Promise<void>((resolve) => {
+          finish = () => {
+            handlers?.onDone?.(reportFixture('ok'))
+            resolve()
+          }
+        })
+      })
+
+      const runPromise = store.run(validScene)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(store.liveSteps.length).toBe(1) // 首个立即放出
+
+      await vi.advanceTimersByTimeAsync(220)
+      expect(store.liveSteps.length).toBe(2)
+      await vi.advanceTimersByTimeAsync(220)
+      expect(store.liveSteps.length).toBe(3)
+
+      finish()
+      await runPromise
+      expect(store.status).toBe('done')
+      expect(store.liveSteps).toEqual([])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('流太快结束时剩余步骤以 100ms 快速补放后才转 done（E）', async () => {
+    vi.useFakeTimers()
+    try {
+      const store = useRecommendStore()
+      streamRecommendMock.mockImplementation(async (_scene, handlers) => {
+        handlers?.onStep?.({ name: 'parse', ms: 1 })
+        handlers?.onStep?.({ name: 'mapping', ms: 2 })
+        handlers?.onStep?.({ name: 'recall', ms: 3 })
+        handlers?.onDone?.(reportFixture('ok'))
+      })
+
+      const runPromise = store.run(validScene)
+      await vi.advanceTimersByTimeAsync(0)
+      expect(store.status).toBe('running') // onDone 已到，仍有 2 步待补放
+
+      await vi.advanceTimersByTimeAsync(100)
+      await vi.advanceTimersByTimeAsync(100)
+      await runPromise
+      expect(store.status).toBe('done')
+      expect(store.liveSteps).toEqual([])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('流式失败（onError）→ 回退 JSON 接口重试一次成功', async () => {
     streamRecommendMock.mockImplementation(async (_scene, handlers) => {
       handlers?.onError?.('流式挂了')

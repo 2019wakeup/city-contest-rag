@@ -991,6 +991,129 @@ describe('RecommendView 推荐工作台', () => {
     document.documentElement.classList.remove('dark')
   })
 
+  it('段落打字机：60字/120ms 逐字揭示 + 生成中→已完成小标（E）', async () => {
+    vi.useFakeTimers()
+    try {
+      const para = '字'.repeat(61) + '。'
+      const sections = [{ title: '推荐理由', paragraphs: [para], evidenceIds: [] }]
+      const wrapper = mount(ReportSection, {
+        props: { sections, llmStatus: 'ok', typewriter: true },
+      })
+
+      const pEl = wrapper.find('.report-paragraph')
+      const initial = pEl.text()
+      expect(initial.length).toBeLessThanOrEqual(60)
+      expect(wrapper.text()).toContain('生成中…')
+
+      await vi.advanceTimersByTimeAsync(120)
+      expect(pEl.text().length).toBeGreaterThan(initial.length)
+
+      for (let i = 0; i < 4; i++) await vi.advanceTimersByTimeAsync(120)
+      expect(pEl.text()).toBe(para)
+      expect(wrapper.text()).toContain('已完成')
+      expect(wrapper.text()).not.toContain('生成中')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('reduced-motion：打字机直接显示全文（E）', async () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia
+    try {
+      const para = '字'.repeat(80)
+      const wrapper = mount(ReportSection, {
+        props: {
+          sections: [{ title: 't', paragraphs: [para], evidenceIds: [] }],
+          llmStatus: 'ok',
+          typewriter: true,
+        },
+      })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.report-paragraph').text()).toBe(para)
+      expect(wrapper.text()).not.toContain('生成中')
+    } finally {
+      window.matchMedia = original
+    }
+  })
+
+  it('下一段占位：已有 i 段且流未结束 → 正在撰写第 i+1 段（E）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.status = 'running'
+    store.step = 'result'
+    store.report = null
+    store.streamSections = [{ title: '推荐理由', paragraphs: ['段'], evidenceIds: [] }]
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    const placeholder = wrapper.find('[data-testid="section-placeholder"]')
+    expect(placeholder.exists()).toBe(true)
+    expect(placeholder.text()).toContain('正在撰写第 2 段…')
+
+    store.status = 'done'
+    await flushPromises()
+    expect(wrapper.find('[data-testid="section-placeholder"]').exists()).toBe(false)
+  })
+
+  it('进入结果页首次 running 自动滚到报告区（仅一次）（E）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.step = 'result'
+    store.status = 'idle'
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const holder = document.createElement('div')
+    document.body.appendChild(holder)
+    const wrapper = mount(RecommendView, {
+      global: { plugins: [pinia, router] },
+      attachTo: holder,
+    })
+    await flushPromises()
+
+    const spy = vi.fn()
+    const original = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = spy as unknown as typeof original
+    try {
+      store.status = 'running'
+      await flushPromises()
+      expect(spy).toHaveBeenCalledTimes(1)
+
+      store.status = 'done'
+      await flushPromises()
+      store.status = 'running'
+      await flushPromises()
+      expect(spy).toHaveBeenCalledTimes(1)
+    } finally {
+      Element.prototype.scrollIntoView = original
+      wrapper.unmount()
+      holder.remove()
+    }
+  })
+
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
     vi.useFakeTimers()
     try {
