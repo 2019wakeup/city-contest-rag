@@ -581,6 +581,7 @@ const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // R6-4：知识 ≤2
 const MAX_LITERATURE_PER_CANDIDATE = 2; // 文献 1–2 优先
 const ALL_EVIDENCE_DOC_TYPES = ['knowledge', 'standard', 'literature', 'enterprise'] as const;
 const LIT_OR_STD_DOC_TYPES = ['literature', 'standard'] as const;
+const LITFULL_PREFIX = 'litfull-'; // S1：文献全文块属噪声，证据链排除（题录 lit-* 不受影响）
 
 /** 病害类型 → 中文检索词（cases.json/注册表 slug 对齐） */
 const DISTRESS_CN: Record<string, string> = {
@@ -690,6 +691,7 @@ export function selectCandidateHits(
 
   const tryPush = (h: SearchHit): boolean => {
     if (chosen.length >= EVIDENCE_SLOTS) return false;
+    if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
     if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
     if (seenDocIds.has(h.provenance.sourceDocId)) return false;
     if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
@@ -773,6 +775,7 @@ async function retrieveEvidence(
       let literatureCount = 0;
       const canTake = (h: SearchHit): boolean => {
         if (chosen.length >= EVIDENCE_SLOTS) return false;
+        if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
         if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
         if (seenDocIds.has(h.provenance.sourceDocId)) return false;
         if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
@@ -836,6 +839,7 @@ async function retrieveEvidence(
           .lastIndexOf('knowledge');
         for (const h of litHits) {
           if (replaceIdx < 0) break;
+          if (h.chunkId.startsWith(LITFULL_PREFIX)) continue; // S1
           if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) continue;
           if (seenDocIds.has(h.provenance.sourceDocId)) continue;
           if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) continue;
@@ -857,6 +861,7 @@ async function retrieveEvidence(
             .sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId))
             .find((h) => {
               if (mySet.has(h.chunkId)) return false;
+              if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
               if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
               if (seenDocIds.has(h.provenance.sourceDocId)) return false;
               if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;

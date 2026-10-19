@@ -42,12 +42,15 @@ function makeHit(chunkId: string, docType: SearchHit['docType'], text: string): 
   };
 }
 
-/** 21 条命中：literature/knowledge/standard 交错（各 7 条），每个 chunk 独立 docId */
+/** 21 条命中：literature/knowledge/standard 交错（各 7 条），每个 chunk 独立 docId；
+ * 其中 literature 混合 litfull-（全文块，噪声）与 lit-（题录）。 */
 function makeHitList(): SearchHit[] {
   const pattern: Array<SearchHit['docType']> = ['literature', 'knowledge', 'standard'];
-  return Array.from({ length: 21 }, (_, i) =>
-    makeHit(`doc-${String(i).padStart(2, '0')}:0:v1`, pattern[i % 3], `命中 ${i}`),
-  );
+  return Array.from({ length: 21 }, (_, i) => {
+    const dt = pattern[i % 3];
+    const prefix = dt === 'literature' && i % 6 === 0 ? 'litfull' : 'doc';
+    return makeHit(`${prefix}-${String(i).padStart(2, '0')}:0:v1`, dt, `命中 ${i}`);
+  });
 }
 
 describe('R6 挑选逻辑（selectCandidateHits 单元）', () => {
@@ -66,6 +69,17 @@ describe('R6 挑选逻辑（selectCandidateHits 单元）', () => {
       for (const h of chosen) othersUsed.add(h.chunkId);
     }
     for (const [, n] of global) expect(n).toBeLessThanOrEqual(3);
+  });
+
+  it('S1：文献槽排除 litfull- 全文块（退而用题录/知识/标准补齐）', () => {
+    const global = new Map<string, number>();
+    const othersUsed = new Set<string>();
+    const hits = makeHitList();
+    for (let round = 0; round < 3; round++) {
+      const chosen = selectCandidateHits(hits, global, othersUsed);
+      expect(chosen.some((h) => h.chunkId.startsWith('litfull-'))).toBe(false);
+      for (const h of chosen) othersUsed.add(h.chunkId);
+    }
   });
 });
 
@@ -166,5 +180,8 @@ describe('R6 证据多样性验收（fake store 注入）', () => {
       for (const id of ids) chunkCount.set(id, (chunkCount.get(id) ?? 0) + 1);
     }
     for (const [, n] of chunkCount) expect(n).toBeLessThanOrEqual(3);
+
+    // S1：证据链不含 litfull- 全文块
+    expect(report.evidence.some((e) => e.chunkId.startsWith('litfull-'))).toBe(false);
   });
 });

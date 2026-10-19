@@ -101,8 +101,9 @@ describe('R6 验收（真实语料索引 + SqliteVectorStore，真实 BM25 检�
         }
       }
 
-      // R6-4：文献/规范参与
+      // R6-4：文献/规范参与 + S1：证据链不含 litfull- 全文块
       const typeByChunk = new Map(report.evidence.map((e) => [e.chunkId, e.docType]));
+      expect(report.evidence.some((e) => e.chunkId.startsWith('litfull-')), `${id} 含 litfull`).toBe(false);
       for (const cand of report.candidates) {
         totalCandidates += 1;
         const types = cand.evidenceIds.map((cid) => typeByChunk.get(cid)!);
