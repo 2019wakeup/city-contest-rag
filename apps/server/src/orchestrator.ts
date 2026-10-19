@@ -577,11 +577,33 @@ function hasAny(value: string, keywords: string[]): boolean {
 const EVIDENCE_FETCH_K = 12; // R6-1：每候选先取 12 再挑选
 const EVIDENCE_SLOTS = 3;
 const GLOBAL_CHUNK_LIMIT = 3; // R6-1：同 chunk 全局最多出现在 3 个候选
-const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // R6-4：知识 ≤2
-const MAX_LITERATURE_PER_CANDIDATE = 2; // 文献 1–2 优先
-const ALL_EVIDENCE_DOC_TYPES = ['knowledge', 'standard', 'literature', 'enterprise'] as const;
+const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // 知识 ≤2
+const MAX_STANDARD_PER_CANDIDATE = 1; // P0-B2：标准 ≤1
+const MAX_TABLE_PER_CANDIDATE = 1; // P0-B2：表格 ≤1（定量命中优先占槽）
+const MAX_LIT_FAMILY_PER_CANDIDATE = 2; // P0-B2：文献题录+章节全文 1–2 条
+const LIT_FAMILY_TYPES: ReadonlySet<string> = new Set(['literature', 'literature-full']);
+const ALL_EVIDENCE_DOC_TYPES = [
+  'knowledge',
+  'standard',
+  'literature',
+  'enterprise',
+  'table',
+  'literature-full',
+] as const;
 const LIT_OR_STD_DOC_TYPES = ['literature', 'standard'] as const;
-const LITFULL_PREFIX = 'litfull-'; // S1：文献全文块属噪声，证据链排除（题录 lit-* 不受影响）
+const LITFULL_PREFIX = 'litfull-'; // S1：旧 litfull- 前缀题录块（docType=literature）属噪声，证据链排除
+
+/** S1/P0-B2：旧 litfull- 前缀块（docType=literature）排除；新 docType literature-full 章节块不受影响（id 前缀不同） */
+function isLegacyLitfull(h: SearchHit): boolean {
+  return h.docType === 'literature' && h.chunkId.startsWith(LITFULL_PREFIX);
+}
+
+/** P0-B2：table/literature-full 的 docId 各自独立（复合键），其余 docType 共享每候选 docId 唯一性 */
+function docKeyOf(h: SearchHit): string {
+  return h.docType === 'table' || h.docType === 'literature-full'
+    ? `${h.docType}:${h.provenance.sourceDocId}`
+    : h.provenance.sourceDocId;
+}
 
 /** 病害类型 → 中文检索词（cases.json/注册表 slug 对齐） */
 const DISTRESS_CN: Record<string, string> = {
@@ -673,8 +695,10 @@ function topDimCnOf(cand: Candidate, targets: TargetProfile, usedDims: Set<strin
 }
 
 /**
- * R2/R6 挑选：未被其他候选使用的命中优先（组内保持相关度顺序）；
- * 配额：知识 ≤2、文献 ≤2 优先纳入、标准不限（R6-4 标准 ≥0）、chunk 全局 ≤3、docId 每候选 ≤1。
+ * R2/R6/P0-B2 挑选：未被其他候选使用的命中优先（组内保持相关度顺序）。
+ * 配额：知识 ≤2、标准 ≤1、表格 ≤1（定量命中优先占槽）、文献家族（literature+literature-full）1–2
+ * 且题录 lit-* 优先、chunk 全局 ≤3、docId 每候选 ≤1（table/literature-full 各自独立）。
+ * S1：旧 litfull- 前缀（docType=literature）排除；新 docType literature-full 不受影响。
  */
 export function selectCandidateHits(
   hits: SearchHit[],
@@ -685,27 +709,36 @@ export function selectCandidateHits(
     (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
   );
   const chosen: SearchHit[] = [];
-  const seenDocIds = new Set<string>();
+  const seenDocKeys = new Set<string>();
   let knowledgeCount = 0;
-  let literatureCount = 0;
+  let standardCount = 0;
+  let tableCount = 0;
+  let litFamilyCount = 0;
 
   const tryPush = (h: SearchHit): boolean => {
     if (chosen.length >= EVIDENCE_SLOTS) return false;
-    if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
+    if (isLegacyLitfull(h)) return false;
     if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
-    if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+    const docKey = docKeyOf(h);
+    if (seenDocKeys.has(docKey)) return false;
     if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
-    if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
+    if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) return false;
+    if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) return false;
+    if (LIT_FAMILY_TYPES.has(h.docType) && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) return false;
     chosen.push(h);
-    seenDocIds.add(h.provenance.sourceDocId);
+    seenDocKeys.add(docKey);
     globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
     if (h.docType === 'knowledge') knowledgeCount += 1;
-    if (h.docType === 'literature') literatureCount += 1;
+    if (h.docType === 'standard') standardCount += 1;
+    if (h.docType === 'table') tableCount += 1;
+    if (LIT_FAMILY_TYPES.has(h.docType)) litFamilyCount += 1;
     return true;
   };
 
-  // 第一遍：文献优先纳入（检索到即优先）；第二遍：其余按相关度补足
-  for (const h of ordered) if (h.docType === 'literature') tryPush(h);
+  // 优先序（P0-B2）：题录文献 → 表格（定量优先占槽）→ 文献章节全文（补充）→ 其余
+  for (const h of ordered) if (h.docType === 'literature' && !isLegacyLitfull(h)) tryPush(h);
+  for (const h of ordered) if (h.docType === 'table') tryPush(h);
+  for (const h of ordered) if (h.docType === 'literature-full') tryPush(h);
   for (const h of ordered) tryPush(h);
   return chosen;
 }
@@ -768,44 +801,54 @@ async function retrieveEvidence(
       const cand = candidates[i];
       queries.push(primaryTexts[i]);
 
-      // 候选内挑选状态
+      // 候选内挑选状态（B2 配额同 selectCandidateHits）
       const chosen: Array<{ hit: SearchHit; queryIndex: number }> = [];
-      const seenDocIds = new Set<string>();
+      const seenDocKeys = new Set<string>();
       let knowledgeCount = 0;
-      let literatureCount = 0;
+      let standardCount = 0;
+      let tableCount = 0;
+      let litFamilyCount = 0;
       const canTake = (h: SearchHit): boolean => {
         if (chosen.length >= EVIDENCE_SLOTS) return false;
-        if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
+        if (isLegacyLitfull(h)) return false;
         if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
-        if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+        if (seenDocKeys.has(docKeyOf(h))) return false;
         if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
-        if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
+        if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) return false;
+        if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) return false;
+        if (LIT_FAMILY_TYPES.has(h.docType) && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) return false;
         return true;
       };
       const take = (h: SearchHit, queryIndex: number): boolean => {
         if (!canTake(h)) return false;
         chosen.push({ hit: h, queryIndex });
-        seenDocIds.add(h.provenance.sourceDocId);
+        seenDocKeys.add(docKeyOf(h));
         globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
         if (h.docType === 'knowledge') knowledgeCount += 1;
-        if (h.docType === 'literature') literatureCount += 1;
+        if (h.docType === 'standard') standardCount += 1;
+        if (h.docType === 'table') tableCount += 1;
+        if (LIT_FAMILY_TYPES.has(h.docType)) litFamilyCount += 1;
         return true;
       };
       const takeBack = (idx: number): void => {
         const old = chosen[idx];
         globalChunkCount.set(old.hit.chunkId, Math.max(0, (globalChunkCount.get(old.hit.chunkId) ?? 1) - 1));
-        seenDocIds.delete(old.hit.provenance.sourceDocId);
+        seenDocKeys.delete(docKeyOf(old.hit));
         if (old.hit.docType === 'knowledge') knowledgeCount -= 1;
-        if (old.hit.docType === 'literature') literatureCount -= 1;
+        if (old.hit.docType === 'standard') standardCount -= 1;
+        if (old.hit.docType === 'table') tableCount -= 1;
+        if (LIT_FAMILY_TYPES.has(old.hit.docType)) litFamilyCount -= 1;
       };
 
-      // 主查询（queryIndex 0）：未被他人使用的命中优先 + 文献优先
+      // 主查询（queryIndex 0）：未被他人使用的命中优先 + B2 优先序
       const primaryHits = await searchOne(primaryTexts[i], EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
       pool.push(...primaryHits);
       const orderedPrimary = [...primaryHits].sort(
         (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
       );
-      for (const h of orderedPrimary) if (h.docType === 'literature') take(h, 0);
+      for (const h of orderedPrimary) if (h.docType === 'literature' && !isLegacyLitfull(h)) take(h, 0);
+      for (const h of orderedPrimary) if (h.docType === 'table') take(h, 0);
+      for (const h of orderedPrimary) if (h.docType === 'literature-full') take(h, 0);
       for (const h of orderedPrimary) take(h, 0);
 
       // R6-1：第二查询 = 纯场景查询（病害+气候+荷载，不带候选材料）
@@ -829,25 +872,37 @@ async function retrieveEvidence(
         }
       }
 
-      // R6-4：无文献/规范 → 「维度+文献类」二次查询，替换 1 条知识槽（queryIndex 3）
-      if (!chosen.some((c) => (LIT_OR_STD_DOC_TYPES as readonly string[]).includes(c.hit.docType))) {
+      // R6-4：无文献/规范/表格 → 「维度+文献类」二次查询，替换 1 条知识槽（queryIndex 3）
+      const hasQuantitative = chosen.some((c) =>
+        [...LIT_OR_STD_DOC_TYPES, 'table', 'literature-full'].includes(c.hit.docType),
+      );
+      if (!hasQuantitative) {
         const dimCn = topDimCnOf(cand, targets, usedDims) || '高温';
-        const litHits = await searchOne(`${dimCn} ${sceneQueryText}`, 6, [...LIT_OR_STD_DOC_TYPES]);
+        const litHits = await searchOne(`${dimCn} ${sceneQueryText}`, 8, [
+          ...LIT_OR_STD_DOC_TYPES,
+          'table',
+          'literature-full',
+        ]);
         pool.push(...litHits);
         const replaceIdx = chosen
           .map((c) => c.hit.docType)
           .lastIndexOf('knowledge');
         for (const h of litHits) {
           if (replaceIdx < 0) break;
-          if (h.chunkId.startsWith(LITFULL_PREFIX)) continue; // S1
+          if (isLegacyLitfull(h)) continue;
           if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) continue;
-          if (seenDocIds.has(h.provenance.sourceDocId)) continue;
-          if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) continue;
+          if (seenDocKeys.has(docKeyOf(h))) continue;
+          if (h.docType === 'literature' && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) continue;
+          if (h.docType === 'literature-full' && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) continue;
+          if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) continue;
+          if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) continue;
           takeBack(replaceIdx);
           chosen[replaceIdx] = { hit: h, queryIndex: 3 };
-          seenDocIds.add(h.provenance.sourceDocId);
+          seenDocKeys.add(docKeyOf(h));
           globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
-          if (h.docType === 'literature') literatureCount += 1;
+          if (h.docType === 'standard') standardCount += 1;
+          if (h.docType === 'table') tableCount += 1;
+          if (LIT_FAMILY_TYPES.has(h.docType)) litFamilyCount += 1;
           break;
         }
       }
@@ -861,21 +916,25 @@ async function retrieveEvidence(
             .sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId))
             .find((h) => {
               if (mySet.has(h.chunkId)) return false;
-              if (h.chunkId.startsWith(LITFULL_PREFIX)) return false; // S1
+              if (isLegacyLitfull(h)) return false;
               if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
-              if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+              if (seenDocKeys.has(docKeyOf(h))) return false;
               if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
-              if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
+              if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) return false;
+              if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) return false;
+              if (LIT_FAMILY_TYPES.has(h.docType) && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) return false;
               return true;
             });
           if (replacement) {
             const oldHit = chosen[lastIdx].hit;
             takeBack(lastIdx);
             chosen[lastIdx] = { hit: replacement, queryIndex: 2 };
-            seenDocIds.add(replacement.provenance.sourceDocId);
+            seenDocKeys.add(docKeyOf(replacement));
             globalChunkCount.set(replacement.chunkId, (globalChunkCount.get(replacement.chunkId) ?? 0) + 1);
             if (replacement.docType === 'knowledge') knowledgeCount += 1;
-            if (replacement.docType === 'literature') literatureCount += 1;
+            if (replacement.docType === 'standard') standardCount += 1;
+            if (replacement.docType === 'table') tableCount += 1;
+            if (LIT_FAMILY_TYPES.has(replacement.docType)) litFamilyCount += 1;
             mySet.delete(oldHit.chunkId);
             mySet.add(replacement.chunkId);
           }

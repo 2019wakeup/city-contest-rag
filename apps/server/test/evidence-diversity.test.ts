@@ -54,7 +54,7 @@ function makeHitList(): SearchHit[] {
 }
 
 describe('R6 挑选逻辑（selectCandidateHits 单元）', () => {
-  it('配额与去重：知识 ≤2、文献 ≤2 优先、标准不限、docId 不重复、chunk 全局 ≤3', () => {
+  it('配额与去重：知识 ≤2、标准 ≤1、文献家族 ≤2 优先、docId 不重复、chunk 全局 ≤3', () => {
     const global = new Map<string, number>();
     const othersUsed = new Set<string>();
     const hits = makeHitList();
@@ -65,7 +65,8 @@ describe('R6 挑选逻辑（selectCandidateHits 单元）', () => {
       expect(new Set(docIds).size).toBe(docIds.length);
       const types = chosen.map((h) => h.docType);
       expect(types.filter((t) => t === 'knowledge').length).toBeLessThanOrEqual(2);
-      expect(types.filter((t) => t === 'literature').length).toBeLessThanOrEqual(2);
+      expect(types.filter((t) => t === 'standard').length).toBeLessThanOrEqual(1);
+      expect(types.filter((t) => t === 'literature' || t === 'literature-full').length).toBeLessThanOrEqual(2);
       for (const h of chosen) othersUsed.add(h.chunkId);
     }
     for (const [, n] of global) expect(n).toBeLessThanOrEqual(3);
@@ -80,6 +81,30 @@ describe('R6 挑选逻辑（selectCandidateHits 单元）', () => {
       expect(chosen.some((h) => h.chunkId.startsWith('litfull-'))).toBe(false);
       for (const h of chosen) othersUsed.add(h.chunkId);
     }
+  });
+
+  it('P0-B2 配额：表格优先占槽、题录优先于章节全文、旧 litfull 排除、literature-full 允许', () => {
+    const global = new Map<string, number>();
+    const others = new Set<string>();
+    const hits = [
+      makeHit('litfull-01:0:v1', 'literature', '旧全文块'),
+      makeHit('lit-01:0:v1', 'literature', '题录'),
+      makeHit('tab-01:0:v1', 'table', '定量表'),
+      makeHit('litsec-01:0:v1', 'literature-full', '章节块'),
+      makeHit('k-01:0:v1', 'knowledge', '知识'),
+      makeHit('s-01:0:v1', 'standard', '规范'),
+    ];
+    const chosen = selectCandidateHits(hits, global, others);
+    expect(chosen.some((h) => h.chunkId.startsWith('litfull-'))).toBe(false);
+    expect(chosen.some((h) => h.docType === 'table')).toBe(true);
+    expect(chosen.some((h) => h.docType === 'literature-full')).toBe(true);
+    expect(chosen.filter((h) => h.docType === 'standard').length).toBeLessThanOrEqual(1);
+    expect(
+      chosen.filter((h) => h.docType === 'literature' || h.docType === 'literature-full').length,
+    ).toBeLessThanOrEqual(2);
+    const litIdx = chosen.findIndex((h) => h.docType === 'literature');
+    const fullIdx = chosen.findIndex((h) => h.docType === 'literature-full');
+    if (litIdx >= 0 && fullIdx >= 0) expect(litIdx).toBeLessThan(fullIdx);
   });
 });
 
