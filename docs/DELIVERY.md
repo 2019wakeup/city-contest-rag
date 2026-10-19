@@ -53,7 +53,7 @@
 
 | 路径 | 内容 | 规模 |
 |---|---|---|
-| knowledge/entries.json | 知识条目（实体+定量关系，全部 DOI/规范号溯源） | 42 条 / 94 关系 |
+| knowledge/entries.json | 知识条目（实体+定量关系，全部 DOI/规范号溯源） | 42 条材料 × 94 维度块（拆分后入库 94 个维度 chunk） |
 | standards/*.md | 8 份规范条文摘录（JTG 3410/5142/5210/5421/F40/D50 + AASHTO） | 57 条文 |
 | literature/from-xlsx.json | 文献题录（由 City_Contest/文献调研.xlsx 脚本转换） | 142 条（109 含 DOI） |
 | literature-full/*.md | 「材料-性能关系」7 篇文献全文（按章节切块入库，溯源头部含原 PDF 路径） | 7 篇 |
