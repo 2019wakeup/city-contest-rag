@@ -27,12 +27,16 @@ const RerankResponseSchema = z
           queryIndex: z.number().int(),
           chunkId: z.string(),
           score: z.number().min(0).max(1),
-          reason: z.string(),
+          reason: z.string().optional(),
         })
         .passthrough(),
     ),
   })
   .passthrough();
+
+const MAX_REASON_CHARS = 20;
+const HIT_TEXT_CHARS = 100; // 每 hit 节选 100 字符（控输入长度）
+const DEFAULT_RERANK_TIMEOUT_MS = 8000; // 真实 LLM 实测 4.4s，8s 超时留余量并保留回退
 
 /** RERANK=off 强制关闭；默认 llm（未配置 key/LLM_OFF 时自动 off；注入 fake 视为可用） */
 export function rerankEnabled(llm?: LlmCall): boolean {
@@ -53,7 +57,7 @@ function buildPrompt(perCandidate: Array<{ query: string; hits: SearchHit[] }>):
     .map(
       (p, qi) =>
         `[Q${qi}] ${p.query}\n` +
-        p.hits.map((h, hi) => `  ${qi}-${hi} :: ${h.chunkId} :: ${h.text.slice(0, 160)}`).join('\n'),
+        p.hits.map((h, hi) => `  ${qi}-${hi} :: ${h.chunkId} :: ${h.text.slice(0, HIT_TEXT_CHARS)}`).join('\n'),
     )
     .join('\n\n');
   return readPrompt('rerank.md').replace('{{items}}', items);
@@ -68,7 +72,7 @@ export async function rerankHits(
   const raw = await callLlmText(buildPrompt(perCandidate), {
     temperature: 0,
     llm,
-    timeoutMs: opts.timeoutMs ?? 5000,
+    timeoutMs: opts.timeoutMs ?? DEFAULT_RERANK_TIMEOUT_MS,
   });
   if (raw === null) return originalOrder(perCandidate);
   try {
@@ -81,7 +85,7 @@ export async function rerankHits(
       const p = perCandidate[r.queryIndex];
       if (!p) continue;
       const hit = p.hits.find((h) => h.chunkId === r.chunkId);
-      if (hit) scored.set(`${r.queryIndex}:${r.chunkId}`, { hit, score: r.score, reason: r.reason });
+      if (hit) scored.set(`${r.queryIndex}:${r.chunkId}`, { hit, score: r.score, reason: (r.reason ?? '').slice(0, MAX_REASON_CHARS) });
     }
 
     const map = new Map<number, RerankItem[]>();

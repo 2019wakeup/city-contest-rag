@@ -577,7 +577,7 @@ function hasAny(value: string, keywords: string[]): boolean {
 // ---------------------------------------------------------------------------
 
 const EVIDENCE_FETCH_K = 20; // P0-B3：每候选先召回 20 再重排/挑选
-const RERANK_TOP_K = 8; // P0-B3：一次 LLM 调用重排每查询 top-8
+const RERANK_TOP_K = 6; // P0-B3：一次 LLM 调用重排每查询 top-6（5 查询=30 项，控输入/输出）
 const EVIDENCE_SLOTS = 3;
 const GLOBAL_CHUNK_LIMIT = 3; // R6-1：同 chunk 全局最多出现在 3 个候选
 const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // 知识 ≤2

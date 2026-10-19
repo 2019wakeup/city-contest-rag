@@ -45,6 +45,32 @@ describe('B3 LLM 批量重排（rerankHits）', () => {
     expect(map.get(0)![0].reason).toBe('高度相关');
   });
 
+  it('输出省略 reason（可选字段）→ 仍按分数降序生效', async () => {
+    const llm: LlmCall = async () =>
+      JSON.stringify({
+        results: [
+          { queryIndex: 0, chunkId: 'doc-a:0:v1', score: 0.3 },
+          { queryIndex: 0, chunkId: 'doc-b:0:v1', score: 0.8 },
+          { queryIndex: 0, chunkId: 'doc-c:0:v1', score: 0.6 },
+        ],
+      });
+    const map = await rerankHits(perCandidate, { llm });
+    expect(map.get(0)!.map((r) => r.hit.chunkId)).toEqual(['doc-b:0:v1', 'doc-c:0:v1', 'doc-a:0:v1']);
+    expect(map.get(0)![0].reason).toBe('');
+  });
+
+  it('输出 reason 超 20 字 → 截断而非整体失败', async () => {
+    const llm: LlmCall = async () =>
+      JSON.stringify({
+        results: [
+          { queryIndex: 0, chunkId: 'doc-a:0:v1', score: 0.9, reason: '这是一段超过二十个字符的非常冗长的相关性理由说明文字' },
+        ],
+      });
+    const map = await rerankHits(perCandidate, { llm });
+    expect(map.get(0)![0].hit.chunkId).toBe('doc-a:0:v1');
+    expect(map.get(0)![0].reason.length).toBeLessThanOrEqual(20);
+  });
+
   it('非法 JSON → 回退原序且不抛错', async () => {
     const map = await rerankHits(perCandidate, { llm: async () => 'not-json{{{' });
     expect(map.get(0)!.map((r) => r.hit.chunkId)).toEqual(['doc-a:0:v1', 'doc-b:0:v1', 'doc-c:0:v1']);

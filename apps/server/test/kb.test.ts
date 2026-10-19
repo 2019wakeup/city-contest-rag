@@ -106,15 +106,19 @@ describe('T10 知识库管理路由', () => {
     expect(stats.count).toBe(1);
   });
 
-  it('rebuild：语料全量重建，两次 count 不变（幂等）', async () => {
-    const app = makeApp();
-    const first = (await (
-      await app.request('/api/v1/kb/rebuild', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
-    ).json()) as { count: number };
-    expect(first.count).toBeGreaterThan(0);
-    const second = (await (
-      await app.request('/api/v1/kb/rebuild', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
-    ).json()) as { count: number };
-    expect(second.count).toBe(first.count);
-  });
+  it(
+    'rebuild：语料全量重建，两次 count 不变（幂等）',
+    async () => {
+      const app = makeApp();
+      const first = (await (
+        await app.request('/api/v1/kb/rebuild', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+      ).json()) as { count: number };
+      expect(first.count).toBeGreaterThan(0);
+      const second = (await (
+        await app.request('/api/v1/kb/rebuild', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+      ).json()) as { count: number };
+      expect(second.count).toBe(first.count);
+    },
+    180000, // 语料扩容（全文/表格块）后全量重建约 30s
+  );
 });
