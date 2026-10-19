@@ -3,6 +3,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { performance } from 'node:perf_hooks';
 import { SqliteVectorStore } from '@road-rec/retrieval';
 import { SceneInputSchema } from '@road-rec/contracts';
 import type { CorpusChunk, SceneInput } from '@road-rec/contracts';
@@ -154,6 +155,49 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     const { steps: _s1, ...rest1 } = r1;
     const { steps: _s2, ...rest2 } = r2;
     expect(rest1).toEqual(rest2);
+  });
+
+  it('B3 候选按名次重编号：candidates[0].id=cand-1 且依次递增，benchmark 列头跟随', async () => {
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    expect(report.candidates.map((c) => c.id)).toEqual([
+      'cand-1',
+      'cand-2',
+      'cand-3',
+      'cand-4',
+      'cand-5',
+    ]);
+    const ids = new Set(report.candidates.map((c) => c.id));
+    for (const row of report.benchmark) {
+      for (const key of Object.keys(row.candidates)) {
+        expect(ids.has(key), `benchmark 列 ${key}`).toBe(true);
+      }
+    }
+    for (const cand of report.candidates) {
+      for (const evId of cand.evidenceIds) {
+        expect(evId).toMatch(/:/);
+      }
+    }
+  });
+
+  it('B4 步骤耗时增量为与上一步差值：ms 非负且总和 ≈ 总时长（累计语义会显著超）', async () => {
+    const t0 = performance.now();
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    const elapsed = performance.now() - t0;
+    expect(report.steps).toHaveLength(6);
+    for (const s of report.steps) expect(s.ms).toBeGreaterThanOrEqual(0);
+    const sum = report.steps.reduce((acc, s) => acc + s.ms, 0);
+    expect(sum).toBeGreaterThan(0);
+    // 增量语义：总和 ≈ 总时长；累计语义下总和 ≈ 3.5×末步，两条上界都可拦截
+    expect(sum).toBeLessThanOrEqual(elapsed + 500);
+    expect(sum).toBeLessThanOrEqual(report.steps[5].ms * 2 + 150);
   });
 
   it('R-雷达（UI#13）：lowTemp 方向修复——最抗冻候选雷达低温分最高', async () => {

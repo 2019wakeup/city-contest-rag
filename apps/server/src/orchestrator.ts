@@ -107,7 +107,7 @@ const PERF_ALIAS: Record<string, string> = {
 const DIM_META: Array<{ dim: string; label: string; unit: string }> = [
   { dim: 'highTemp', label: '高温性能', unit: '℃' },
   { dim: 'lowTemp', label: '低温性能', unit: '℃' },
-  { dim: 'fatigue', label: '疲劳性能', unit: '次' },
+  { dim: 'fatigue', label: '疲劳性能', unit: '万次' }, // B1：量纲全局统一
   { dim: 'waterStability', label: '水稳定性', unit: '%' },
   { dim: 'lcc', label: '全生命周期成本', unit: '万元' },
   { dim: 'carbon', label: '碳排放', unit: 'tCO2e' },
@@ -126,8 +126,12 @@ export async function recommend(
 ): Promise<RecommendationReport> {
   const steps: StepRecord[] = [];
   const startedAt = performance.now();
+  let lastMarkAt = startedAt;
   const mark = (name: string) => {
-    const step: StepRecord = { name, ms: Math.round(performance.now() - startedAt) };
+    // B4：ms 为与上一步的差值（第一步距 start），各步之和 ≈ 总时长
+    const now = performance.now();
+    const step: StepRecord = { name, ms: Math.round(now - lastMarkAt) };
+    lastMarkAt = now;
     steps.push(step);
     hooks?.onStep?.(step);
   };
@@ -293,11 +297,11 @@ export function deriveSceneTags(scene: SceneInput, db: RelationDb): string[] {
       if (candidates.some((s) => s && freeText.includes(s))) tags.add(r.id);
     }
   }
-  // cases.json 英文取值映射（env/noise 的 strict/low-noise 无中文同义词可匹配）
+  // cases.json/注册表英文取值映射（env: strict/high；noise: strict/low-noise/low/high）
   const env = scene.constraints.env.toLowerCase();
   const noise = scene.constraints.noise.toLowerCase();
   if (env === 'strict' || env === 'high') tags.add('k-env');
-  if (noise === 'strict' || noise === 'low-noise') tags.add('k-noise-ctl');
+  if (['strict', 'low-noise', 'low', 'high'].includes(noise)) tags.add('k-noise-ctl');
   return [...tags].sort();
 }
 
@@ -543,7 +547,12 @@ function rankCandidates(
       evidenceIds: [],
     });
   });
-  return candidates.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  candidates.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  // B3：排序完成后按名次重编号（第一名=cand-1），benchmark 列头/evidence 映射/报告 prompt 指代自动跟随
+  candidates.forEach((c, i) => {
+    c.id = `cand-${i + 1}`;
+  });
+  return candidates;
 }
 
 function hasAny(value: string, keywords: string[]): boolean {
