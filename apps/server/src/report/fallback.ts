@@ -33,17 +33,57 @@ export const SECTION_SPECS = [
 
 const SectionResponseSchema = z.object({ section: ReportSectionSchema }).passthrough();
 
+const MAX_SECTION_EVIDENCE = 3;
+
+/**
+ * R4：报告证据跨节去重——后节剔除已用 id，不足时从证据池顺延补充
+ * （目标条数 = 原条数（1..3），去重后逐条补足）。
+ */
+export function filterSectionEvidenceIds(
+  rawIds: string[],
+  pool: string[],
+  used: Set<string>,
+): string[] {
+  const target = Math.min(Math.max(rawIds.length, 1), MAX_SECTION_EVIDENCE);
+  const ids: string[] = [];
+  for (const id of rawIds) {
+    if (ids.length >= target) break;
+    if (!used.has(id) && !ids.includes(id)) {
+      ids.push(id);
+      used.add(id);
+    }
+  }
+  for (const id of pool) {
+    if (ids.length >= target) break;
+    if (!used.has(id)) {
+      ids.push(id);
+      used.add(id);
+    }
+  }
+  return ids;
+}
+
+/** 批量模式：对整组 sections 做跨节证据去重 + 顺延补充 */
+export function dedupeSectionEvidence(sections: ReportSection[], pool: string[]): ReportSection[] {
+  const used = new Set<string>();
+  return sections.map((s) => ({ ...s, evidenceIds: filterSectionEvidenceIds(s.evidenceIds, pool, used) }));
+}
+
 /**
  * 流式模式：单章节生成（每 section 一次 LLM 调用）。
  * 成功 → {section: 过滤后的章节, fromLlm: true}；失败 → 对应模板章节 {fromLlm: false}。
+ * usedIds 传递跨节已用证据（R4 去重 + 顺延补充）。
  */
 export async function generateReportSection(
   base: ReportBase,
   index: number,
   llm?: LlmCall,
+  usedIds?: Set<string>,
 ): Promise<{ section: ReportSection; fromLlm: boolean }> {
   const spec = SECTION_SPECS[index];
   const allowed = new Set(base.evidence.map((e) => e.chunkId));
+  const pool = base.evidence.map((e) => e.chunkId);
+  const used = usedIds ?? new Set<string>();
   const prompt = `${buildReportPrompt(base)}
 
 本次只生成第 ${index + 1} 节「${spec.title}」，输出 JSON：
@@ -56,19 +96,15 @@ export async function generateReportSection(
     llm,
   });
   if (data) {
+    const filtered = data.section.evidenceIds.filter((id) => allowed.has(id));
     return {
-      section: {
-        ...data.section,
-        evidenceIds: data.section.evidenceIds.filter((id) => allowed.has(id)),
-      },
+      section: { ...data.section, evidenceIds: filterSectionEvidenceIds(filtered, pool, used) },
       fromLlm: true,
     };
   }
   const fallback = buildFallbackSections(base)[index];
-  return {
-    section: fallback ?? { title: spec.title, paragraphs: ['（模板降级）'], evidenceIds: [] },
-    fromLlm: false,
-  };
+  const sec = fallback ?? { title: spec.title, paragraphs: ['（模板降级）'], evidenceIds: [] };
+  return { section: { ...sec, evidenceIds: filterSectionEvidenceIds(sec.evidenceIds, pool, used) }, fromLlm: false };
 }
 
 function buildReportPrompt(base: ReportBase): string {
@@ -118,6 +154,8 @@ export async function buildReportSections(
     sections = buildFallbackSections(base);
     llmStatus = 'degraded';
   }
+  // R4：跨节证据去重（后节剔已用 id，不足顺延补充）
+  sections = dedupeSectionEvidence(sections, base.evidence.map((e) => e.chunkId));
 
   const result = sections as ReportSection[] & { llmStatus: LlmStatus };
   result.llmStatus = llmStatus;

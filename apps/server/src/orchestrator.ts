@@ -195,8 +195,9 @@ export async function recommend(
   if (hooks?.onSection) {
     const built: ReportSection[] = [];
     let allFromLlm = true;
+    const usedSectionIds = new Set<string>(); // R4：跨节证据去重
     for (let i = 0; i < SECTION_SPECS.length; i++) {
-      const { section, fromLlm } = await generateReportSection(base, i, deps.llmCall);
+      const { section, fromLlm } = await generateReportSection(base, i, deps.llmCall, usedSectionIds);
       if (!fromLlm) allFromLlm = false;
       built.push(section);
       hooks.onSection(i, section);

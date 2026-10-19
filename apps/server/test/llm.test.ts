@@ -93,6 +93,23 @@ describe('T9 LLM 报告生成 + 对话面板', () => {
     return { scene, targets, candidates, evidence, benchmark };
   }
 
+  it('R4 报告证据跨节去重：第二节不与第一节重复，不足时顺延补充', async () => {
+    // 预置 7 个独立 docId 的知识条目（保证证据池 ≥6）
+    const seed = Array.from({ length: 7 }, (_, i) =>
+      makeChunk(`r4-${i}:0:v1`, `知识条目 ${i} SBS 改性沥青 高温 车辙 疲劳 水稳 碳排 低温 寿命 施工`),
+    );
+    await store.add(seed, seed.map(() => [1, 0]));
+    const base = await makeBase();
+    expect(base.evidence.length).toBeGreaterThanOrEqual(6);
+    const out = await buildReportSections(base, async () => '{{{');
+    expect(out.llmStatus).toBe('degraded');
+    const first = out[0].evidenceIds;
+    const second = out[1].evidenceIds;
+    expect(first.length).toBeGreaterThanOrEqual(3);
+    expect(second.length).toBeGreaterThanOrEqual(3);
+    expect(second.every((id) => !first.includes(id))).toBe(true);
+  });
+
   it('generateStructured：fake LLM 返回合法 JSON → status ok 且数据透传', async () => {
     const { data, status } = await generateStructured({
       prompt: 'x',
