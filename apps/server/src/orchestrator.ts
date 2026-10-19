@@ -32,7 +32,7 @@ export interface EmbedderLike {
   dim: number;
   modelName: string;
   modelVersion: string;
-  embed(texts: string[]): Promise<number[][]>;
+  embed(texts: string[], opts?: { mode?: 'query' | 'passage' }): Promise<number[][]>;
 }
 
 export interface RecommendDeps {
@@ -673,7 +673,7 @@ async function retrieveEvidence(
   let vectors: number[][] | null = null;
   if (deps.embedder) {
     try {
-      vectors = await deps.embedder.embed(texts);
+      vectors = await deps.embedder.embed(texts, { mode: 'query' });
     } catch {
       vectors = null;
     }

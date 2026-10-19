@@ -23,7 +23,7 @@ import type { VectorStore } from './types';
 
 /** 结构性接口：与 packages/embedding 的 Embedder 兼容，避免跨包依赖 */
 export interface EmbedderLike {
-  embed(texts: string[]): Promise<number[][]>;
+  embed(texts: string[], opts?: { mode?: 'query' | 'passage' }): Promise<number[][]>;
   dim: number;
   modelName: string;
   modelVersion: string;
@@ -273,7 +273,7 @@ export async function buildIndex(opts: BuildOptions): Promise<BuildResult> {
 
   if (needFullRebuild) {
     await opts.store.rebuild();
-    const vectors = await embedder.embed(planned.map((p) => p.chunk.text));
+    const vectors = await embedder.embed(planned.map((p) => p.chunk.text), { mode: 'passage' });
     await addWithProvenance(opts.store, planned, vectors, embedder, pipelineRev);
     writeManifest(manifestPath, buildManifest(planned, embedder, pipelineRev));
     return { added: planned.length, skipped: 0, total: planned.length };
@@ -307,7 +307,7 @@ export async function buildIndex(opts: BuildOptions): Promise<BuildResult> {
 
   for (const docId of toDelete) await opts.store.delete(docId);
   if (toEmbed.length > 0) {
-    const vectors = await embedder.embed(toEmbed.map((p) => p.chunk.text));
+    const vectors = await embedder.embed(toEmbed.map((p) => p.chunk.text), { mode: 'passage' });
     await addWithProvenance(opts.store, toEmbed, vectors, embedder, pipelineRev);
   }
 

@@ -75,7 +75,9 @@ async function ingestDocument(
       embeddedAt: new Date().toISOString(),
     },
   }));
-  const vectors = deps.embedder ? await deps.embedder.embed(parts) : parts.map(() => []);
+  const vectors = deps.embedder
+    ? await deps.embedder.embed(parts, { mode: 'passage' })
+    : parts.map(() => []);
   await deps.store.add(chunks, vectors);
   return chunks.map((c) => c.chunkId);
 }
@@ -142,7 +144,7 @@ export function registerKb(app: OpenAPIHono, deps: AppDeps): void {
     let vector: number[] | undefined;
     if (deps.embedder) {
       try {
-        vector = (await deps.embedder.embed([parsed.data.query]))[0];
+        vector = (await deps.embedder.embed([parsed.data.query], { mode: 'query' }))[0];
       } catch {
         vector = undefined;
       }

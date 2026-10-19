@@ -125,4 +125,55 @@ describe('createEmbedder（stub pipeline，不下载真实模型）', () => {
     const e = await createEmbedder({}, makeDeps());
     expect(await e.embed([])).toEqual([]);
   });
+
+  it('R3 前缀：multilingual-e5-small query/passage 前缀（EMBEDDING_PREFIX_MODE=auto 默认）', async () => {
+    delete process.env.EMBEDDING_PREFIX_MODE;
+    const dim = MODEL_REGISTRY['multilingual-e5-small'].dim;
+    const seen: string[][] = [];
+    const createPipeline = async (): Promise<TransformerPipeline> =>
+      ((texts: unknown) => {
+        const arr = Array.isArray(texts) ? (texts as string[]) : [texts as string];
+        seen.push(arr);
+        return Promise.resolve(arr.map(() => Array.from({ length: dim }, () => 1)));
+      }) as TransformerPipeline;
+    const e = await createEmbedder({ model: 'multilingual-e5-small' }, makeDeps({ createPipeline }));
+    await e.embed(['查询文本'], { mode: 'query' });
+    expect(seen[0][0]).toBe('query: 查询文本');
+    await e.embed(['文档文本'], { mode: 'passage' });
+    expect(seen[1][0]).toBe('passage: 文档文本');
+  });
+
+  it('R3 前缀：bge-m3 不加前缀（query 模式亦然）', async () => {
+    delete process.env.EMBEDDING_PREFIX_MODE;
+    const dim = MODEL_REGISTRY['bge-m3'].dim;
+    const seen: string[][] = [];
+    const createPipeline = async (): Promise<TransformerPipeline> =>
+      ((texts: unknown) => {
+        const arr = Array.isArray(texts) ? (texts as string[]) : [texts as string];
+        seen.push(arr);
+        return Promise.resolve(arr.map(() => Array.from({ length: dim }, () => 1)));
+      }) as TransformerPipeline;
+    const e = await createEmbedder({ model: 'bge-m3' }, makeDeps({ createPipeline }));
+    await e.embed(['查询文本'], { mode: 'query' });
+    expect(seen[0][0]).toBe('查询文本');
+  });
+
+  it('R3 前缀：EMBEDDING_PREFIX_MODE=off 时 e5 也不加前缀', async () => {
+    process.env.EMBEDDING_PREFIX_MODE = 'off';
+    try {
+      const dim = MODEL_REGISTRY['multilingual-e5-small'].dim;
+      const seen: string[][] = [];
+      const createPipeline = async (): Promise<TransformerPipeline> =>
+        ((texts: unknown) => {
+          const arr = Array.isArray(texts) ? (texts as string[]) : [texts as string];
+          seen.push(arr);
+          return Promise.resolve(arr.map(() => Array.from({ length: dim }, () => 1)));
+        }) as TransformerPipeline;
+      const e = await createEmbedder({ model: 'multilingual-e5-small' }, makeDeps({ createPipeline }));
+      await e.embed(['查询文本'], { mode: 'query' });
+      expect(seen[0][0]).toBe('查询文本');
+    } finally {
+      delete process.env.EMBEDDING_PREFIX_MODE;
+    }
+  });
 });

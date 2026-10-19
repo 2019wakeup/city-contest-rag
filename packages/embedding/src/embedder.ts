@@ -16,9 +16,14 @@ export const MODEL_REGISTRY: Record<EmbedderModel, { name: string; dim: number }
   'multilingual-e5-small': { name: 'Xenova/multilingual-e5-small', dim: 384 },
 };
 
+/** 嵌入模式：query（检索侧）/ passage（文档侧）。e5 系列需要 query:/passage: 前缀，bge-m3 不加。 */
+export type EmbedMode = 'query' | 'passage';
+
+const E5_PREFIX: Record<EmbedMode, string> = { query: 'query: ', passage: 'passage: ' };
+
 export interface Embedder {
-  /** 返回 n×dim 矩阵（mean 池化 + L2 归一化） */
-  embed(texts: string[]): Promise<number[][]>;
+  /** 返回 n×dim 矩阵（mean 池化 + L2 归一化）；mode 决定 e5 的 query/passage 前缀（默认 passage） */
+  embed(texts: string[], opts?: { mode?: EmbedMode }): Promise<number[][]>;
   dim: number;
   modelName: string;
   /** 模型版本标识（transformers.js 库版本），参与 provenance，换库/换模型强制重建 */
@@ -93,6 +98,10 @@ export async function createEmbedder(
     env.remoteHost = process.env.HF_ENDPOINT;
   }
 
+  // e5 系列 query/passage 前缀开关：auto（默认，e5 开 bge 关）| off
+  const prefixMode = process.env.EMBEDDING_PREFIX_MODE === 'off' ? 'off' : 'auto';
+  const usePrefix = prefixMode === 'auto' && model === 'multilingual-e5-small';
+
   const pipe = await deps.createPipeline(modelName, opts.cacheDir);
   const modelVersion = deps.getLibraryVersion();
 
@@ -100,10 +109,12 @@ export async function createEmbedder(
     dim,
     modelName,
     modelVersion,
-    async embed(texts: string[]): Promise<number[][]> {
+    async embed(texts: string[], embedOpts?: { mode?: EmbedMode }): Promise<number[][]> {
       if (texts.length === 0) return [];
-      // 文档侧嵌入：mean 池化 + L2 归一化（bge-m3 推荐；e5 系列的 query/passage 前缀由调用方决定）
-      const outputs = await pipe(texts, { pooling: 'mean', normalize: true });
+      const mode: EmbedMode = embedOpts?.mode ?? 'passage';
+      const inputs = usePrefix ? texts.map((t) => `${E5_PREFIX[mode]}${t}`) : texts;
+      // 文档侧嵌入：mean 池化 + L2 归一化
+      const outputs = await pipe(inputs, { pooling: 'mean', normalize: true });
       const vectors = flattenVectors(outputs);
       if (vectors.length !== texts.length) {
         throw new Error(`embedding 输出行数与输入不一致：期望 ${texts.length}，实际 ${vectors.length}`);
