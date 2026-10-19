@@ -1,0 +1,122 @@
+/**
+ * 灵动交互层（micro-interactions）基础：
+ * tokens + 全局护栏（reduced-motion / hover:none）+ 通用交互类。
+ * 只用 transform/opacity/filter；禁止 transition: all（避免大面重绘）。
+ */
+
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 280ms;
+  --motion-pop: 420ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sharp: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 全局护栏：reduced-motion 下关闭动效（瞬时完成，保留 opacity/color 语义） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 触屏设备：关闭聚光/磁性 */
+@media (hover: none) {
+  .spotlight-card::before,
+  .magnetic {
+    transition: none;
+  }
+
+  .spotlight-card::before {
+    display: none;
+  }
+}
+
+/* 通用按压：按下 80ms ease-sharp 缩放 0.96，释放 180ms ease-spring 回弹 */
+.pressable {
+  transition: transform var(--motion-base) var(--ease-spring);
+}
+
+.pressable:active {
+  transform: scale(0.96);
+  transition: transform 80ms var(--ease-sharp);
+}
+
+/* 悬浮抬升（卡片） */
+.hover-lift {
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* 键盘焦点环：主色描边（仅键盘导航） */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--el-color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- 聚光（useSpotlight）：卡片叠加 radial 高光 ---- */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(110, 123, 242, 0.16),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--motion-base) var(--ease-out);
+  pointer-events: none;
+}
+
+html:not(.dark) .spotlight-card::before {
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(110, 123, 242, 0.1),
+    transparent 70%
+  );
+}
+
+.spotlight-card.has-spotlight::before {
+  opacity: 1;
+}
+
+/* ---- 涟漪（ripple）：点击点扩散，280ms 后移除 ---- */
+.ripple-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.18;
+  transform: scale(0);
+  animation: ripple-spread var(--motion-slow) var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-spread {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
