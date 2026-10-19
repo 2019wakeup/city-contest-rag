@@ -58,8 +58,8 @@ async function recommend(scene: unknown): Promise<{ status: number; report: Repo
 }
 
 function canonicalize(report: Report): string {
-  // 确定性校验：剔除 steps 耗时后序列化
-  const { steps: _steps, ...rest } = report;
+  // 确定性校验：只比较数值/结构（LLM 接入后 sections 文案每次不同，steps 耗时每次不同，均剔除）
+  const { steps: _steps, sections: _sections, ...rest } = report as Report & { sections?: unknown };
   return JSON.stringify(rest);
 }
 
@@ -89,9 +89,13 @@ async function main(): Promise<void> {
       }
       assert(rep.steps.length === 6, `${label} steps=${rep.steps.length}（应 6）`);
       assert(rep.adapterMode.a === 'mock' && rep.adapterMode.c === 'mock', `${label} adapterMode=${JSON.stringify(rep.adapterMode)}（应 mock）`);
-      const r2 = await recommend(c.scene);
-      assert(r2.status === 200, `${label} 第二遍 HTTP ${r2.status}`);
-      assert(canonicalize(rep) === canonicalize(r2.report), `${label} 两遍结果不相等（确定性破坏）`);
+      // 确定性校验：LLM 已启用时 notes→场景抽取是非确定性的（属预期），故对比时剔除 notes，
+      // 只验证「同一结构化场景 → 同一数值结果」这条确定性红线（sections 文案在 canonicalize 中剔除）。
+      const sceneNoNotes = { ...(c.scene as Record<string, unknown>), notes: '' };
+      const r2 = await recommend(sceneNoNotes);
+      const r3 = await recommend(sceneNoNotes);
+      assert(r2.status === 200 && r3.status === 200, `${label} 确定性对比 HTTP ${r2.status}/${r3.status}`);
+      assert(canonicalize(r2.report) === canonicalize(r3.report), `${label} 两遍结果不相等（确定性破坏）`);
       top1Signatures.push(signature(rep.candidates));
       console.log(`✓ ${label} 通过（top1=${top1Signatures[top1Signatures.length - 1]}, candidates=${rep.candidates.length}, evidence=${rep.evidence.length}, llmStatus=${rep.llmStatus}）`);
     } catch (err) {
