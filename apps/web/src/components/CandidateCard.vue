@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 import type { AdapterMode, Candidate, EvidenceRef } from '@road-rec/contracts'
 import { formatNumber } from '@/utils/format'
+import { useSpotlight } from '@/composables/useSpotlight'
 import { PERF_LABELS, labelOf } from '@/utils/labels'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
@@ -59,14 +60,19 @@ const strengthSummary = computed(() =>
 )
 
 const isTop1 = computed(() => props.index === 0)
+
+// 灵动层：聚光（候选卡，不含表格行）
+const spotlight = useSpotlight()
 </script>
 
 <template>
   <el-card
     shadow="hover"
     data-testid="candidate-card"
-    class="candidate-card"
+    class="candidate-card spotlight-card hover-lift"
     :class="{ 'is-top1': isTop1 }"
+    @pointermove="spotlight.onPointerMove"
+    @pointerleave="spotlight.onPointerLeave"
   >
     <template #header>
       <button
@@ -99,7 +105,13 @@ const isTop1 = computed(() => props.index === 0)
       </button>
     </template>
 
-    <template v-if="expanded">
+    <div
+      class="candidate-body"
+      :class="{ 'is-expanded': expanded }"
+      data-testid="candidate-body"
+    >
+      <div class="candidate-body-inner">
+      <template v-if="expanded">
       <el-descriptions :column="2" size="small" border class="candidate-formula">
         <el-descriptions-item label="沥青">
           {{ formula?.binder?.type ?? '—' }}（{{ formula?.binder?.grade ?? '—' }}）
@@ -164,6 +176,8 @@ const isTop1 = computed(() => props.index === 0)
         :highlight-id="highlightId"
       />
     </template>
+      </div>
+    </div>
   </el-card>
 </template>
 
@@ -223,6 +237,29 @@ const isTop1 = computed(() => props.index === 0)
 
 .additive-tag {
   margin-right: 4px;
+}
+
+/* 灵动层：弹性展开（grid-template-rows 0fr↔1fr，可打断） */
+.candidate-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--motion-fast) var(--ease-sharp),
+    opacity var(--motion-fast) var(--ease-sharp);
+}
+
+.candidate-body.is-expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--motion-slow) var(--ease-out),
+    opacity var(--motion-base) var(--ease-out);
+}
+
+.candidate-body-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .candidate-predictions {

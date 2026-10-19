@@ -252,6 +252,9 @@ describe('CaseCard 场景行中文标签（UI#11）', () => {
   it('场景行标签映射为中文，summary 与场景行各司其职且各出现一次', () => {
     const wrapper = mount(CaseCard, { props: { item: caseWithEnTags } })
 
+    // 灵动层：案例卡聚光
+    expect(wrapper.find('[data-testid="case-card"]').classes()).toContain('spotlight-card')
+
     // P6：载入按钮带 aria-label
     expect(wrapper.find('[data-testid="case-load"]').attributes('aria-label')).toBe(
       '载入案例：华南高温重载车辙',

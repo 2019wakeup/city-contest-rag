@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { useSpotlight } from '@/composables/useSpotlight'
+
 import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf as labelOfLabel } from '@/utils/labels'
 
 import type { CaseSeed } from '@road-rec/contracts'
@@ -15,6 +17,9 @@ const TAG_LABELS: Record<string, string> = {
 
 const labelOf = (tag: string): string => labelOfLabel(TAG_LABELS, tag)
 
+// 灵动层：聚光（案例卡）
+const spotlight = useSpotlight()
+
 const sceneSummary = computed(() => {
   const scene = props.item?.scene
   if (!scene) return ''
@@ -28,7 +33,14 @@ function onLoad(): void {
 </script>
 
 <template>
-  <el-card shadow="hover" data-testid="case-card" class="case-card" @click="onLoad">
+  <el-card
+    shadow="hover"
+    data-testid="case-card"
+    class="case-card spotlight-card hover-lift"
+    @click="onLoad"
+    @pointermove="spotlight.onPointerMove"
+    @pointerleave="spotlight.onPointerLeave"
+  >
     <h4 class="case-title">{{ item.title }}</h4>
     <p data-testid="case-summary" class="case-summary">{{ item.summary }}</p>
     <p v-if="sceneSummary" data-testid="case-scene" class="case-scene">{{ sceneSummary }}</p>

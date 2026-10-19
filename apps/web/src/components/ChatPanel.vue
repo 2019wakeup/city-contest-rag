@@ -131,6 +131,7 @@ function onEnterKey(event: KeyboardEvent): void {
       />
       <el-button
         type="primary"
+        class="pressable"
         data-testid="chat-send"
         :disabled="sending || !question.trim()"
         @click="send"

@@ -277,13 +277,15 @@ onBeforeUnmount(() => {
   cursor: pointer;
   box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
   transition:
-    width 0.15s ease,
-    box-shadow 0.15s ease;
+    width var(--motion-base) var(--ease-spring),
+    transform var(--motion-base) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-out);
 }
 
-/* D：竖条 hover 宽度 48→52 + 主色微光 */
+/* 灵动层：竖条 hover 宽度 48→52 + translateX(-2px) + 主色微光 */
 .chat-rail:hover {
   width: 52px;
+  transform: translateY(-50%) translateX(-2px);
   box-shadow:
     -8px 0 24px rgba(0, 0, 0, 0.35),
     0 0 16px var(--el-color-primary-light-7);

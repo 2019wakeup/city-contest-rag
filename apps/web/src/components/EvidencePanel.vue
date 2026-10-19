@@ -98,6 +98,7 @@ function toggle(id: string): void {
           }"
           :data-evidence-id="hit.chunkId"
           data-testid="evidence-item"
+          :aria-expanded="expandedIds.has(hit.chunkId)"
           @click="toggle(hit.chunkId)"
         >
           <span class="evidence-type-bar" :style="{ background: docTypeColor(hit.docType ?? '') }"></span>
@@ -116,6 +117,7 @@ function toggle(id: string): void {
               ></div>
             </div>
             <div class="evidence-item-detail">
+              <div class="evidence-detail-inner">
               <p class="evidence-text">{{ hit.text }}</p>
               <p class="evidence-provenance">
                 来源：{{ hit.provenance?.sourceDocId ?? '未知' }}
@@ -125,6 +127,7 @@ function toggle(id: string): void {
               <p data-testid="evidence-score" class="evidence-score">
                 相关度（归一化）：{{ scoreTextOf(hit) }}
               </p>
+              </div>
             </div>
           </div>
         </button>
@@ -205,7 +208,7 @@ function toggle(id: string): void {
 
 .evidence-arrow {
   color: var(--el-text-color-secondary);
-  transition: transform 0.18s ease;
+  transition: transform var(--motion-base) var(--ease-spring);
 }
 
 .evidence-item.is-expanded .evidence-arrow {
@@ -227,17 +230,25 @@ function toggle(id: string): void {
 }
 
 .evidence-item-detail {
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
-  overflow: hidden;
   transition:
-    max-height 0.18s ease,
-    opacity 0.18s ease;
+    grid-template-rows var(--motion-fast) var(--ease-sharp),
+    opacity var(--motion-fast) var(--ease-sharp);
 }
 
 .evidence-item.is-expanded .evidence-item-detail {
-  max-height: 600px;
+  grid-template-rows: 1fr;
   opacity: 1;
+  transition:
+    grid-template-rows var(--motion-slow) var(--ease-out),
+    opacity var(--motion-base) var(--ease-out);
+}
+
+.evidence-detail-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .evidence-text {

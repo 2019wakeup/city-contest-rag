@@ -1444,6 +1444,43 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.findComponent(StepStepper).exists()).toBe(true)
   })
 
+  it('灵动层：候选卡聚光 class 与弹性展开切换（微动效）', async () => {
+    const wrapper = await mountView()
+    const card = wrapper.findAll('[data-testid="candidate-card"]')[0]
+    expect(card.classes()).toContain('spotlight-card')
+
+    const toggle = wrapper.findAll('[data-testid="candidate-toggle"]')[0]
+    expect(toggle.attributes('aria-expanded')).toBe('true') // 首卡默认展开
+    expect(wrapper.findAll('[data-testid="candidate-body"]')[0].classes()).toContain('is-expanded')
+
+    await toggle.trigger('click')
+    expect(wrapper.findAll('[data-testid="candidate-body"]')[0].classes()).not.toContain(
+      'is-expanded',
+    )
+  })
+
+  it('灵动层：证据卡弹性展开 aria-expanded 切换（微动效）', async () => {
+    const wrapper = await mountView()
+    // 首卡默认展开（其证据链在 DOM 中）
+    const item = wrapper.findAll('[data-testid="evidence-item"]')[0]
+    expect(item.attributes('aria-expanded')).toBe('true')
+
+    await item.trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-item"]')[0].attributes('aria-expanded')).toBe(
+      'false',
+    )
+    await wrapper.findAll('[data-testid="evidence-item"]')[0].trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-item"]')[0].attributes('aria-expanded')).toBe(
+      'true',
+    )
+  })
+
+  it('灵动层：追问发送按钮 pressable class（微动效）', async () => {
+    const wrapper = await mountView()
+    await openChatDock(wrapper)
+    expect(wrapper.find('[data-testid="chat-send"]').classes()).toContain('pressable')
+  })
+
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
     vi.useFakeTimers()
     try {
