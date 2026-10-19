@@ -8,6 +8,8 @@ export const DOC_TYPE_LABELS: Record<string, string> = {
   standard: '规范',
   literature: '文献',
   enterprise: '企业资料',
+  table: '定量表格',
+  'literature-full': '文献章节',
 }
 
 export const TRAFFIC_LEVEL_LABELS: Record<string, string> = {

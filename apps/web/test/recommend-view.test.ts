@@ -7,6 +7,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getCases, postChat, postRecommend, streamRecommend } from '@/api/client'
+import { DOC_TYPE_LABELS, labelOf } from '@/utils/labels'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
@@ -1527,6 +1528,62 @@ describe('RecommendView 推荐工作台', () => {
 
     wrapper.unmount()
     holder.remove()
+  })
+
+  it('RAG P0：新 docType 标签映射与配色 class（表格/全文章节）', () => {
+    expect(labelOf(DOC_TYPE_LABELS, 'table')).toBe('定量表格')
+    expect(labelOf(DOC_TYPE_LABELS, 'literature-full')).toBe('文献章节')
+
+    const evidence = [
+      { ...makeReport().evidence[0], chunkId: 't-1', docType: 'table' as const, text: '实测对比\n| 指标 | 值 |\n| --- | --- |\n| 高温 | 82 |' },
+      { ...makeReport().evidence[0], chunkId: 'lf-1', docType: 'literature-full' as const, text: '论文全文章节内容。' },
+    ]
+    const wrapper = mount(EvidencePanel, { props: { evidence, ids: ['t-1', 'lf-1'] } })
+
+    const chips = wrapper.findAll('.evidence-item .evidence-doc-type')
+    expect(chips[0].text()).toBe('定量表格')
+    expect(chips[0].classes()).toContain('doc-type--table')
+    expect(chips[1].text()).toBe('文献章节')
+    expect(chips[1].classes()).toContain('doc-type--literature-full')
+  })
+
+  it('RAG P0：表格证据展开渲染 table、行截断提示、折叠态显示 caption（表格展示）', () => {
+    const rows = Array.from({ length: 10 }, (_, i) => `| 第${i + 1}行 | ${i + 1} |`).join('\n')
+    const evidence = [
+      {
+        ...makeReport().evidence[0],
+        chunkId: 't-1',
+        docType: 'table' as const,
+        text: `实测数据对比表。\n| 指标 | 值 |\n| --- | --- |\n${rows}`,
+      },
+    ]
+    const wrapper = mount(EvidencePanel, { props: { evidence, ids: ['t-1'] } })
+
+    // 展开态（首条默认展开）：渲染 <table>，表头正确
+    const table = wrapper.find('table.evidence-table')
+    expect(table.exists()).toBe(true)
+    expect(table.find('thead').text()).toContain('指标')
+    expect(table.findAll('tbody tr').length).toBe(9) // 8 行 + 1 截断提示行
+    expect(wrapper.text()).toContain('…（共 10 行）')
+    expect(wrapper.text()).not.toContain('第9行')
+  })
+
+  it('RAG P0：表格证据折叠态只显示 caption 首句（表格展示）', () => {
+    const evidence = [
+      { ...makeReport().evidence[0], chunkId: 'a-1', text: '普通段落。' },
+      {
+        ...makeReport().evidence[0],
+        chunkId: 't-1',
+        docType: 'table' as const,
+        text: '实测数据对比表。\n| 指标 | 值 |\n| --- | --- |\n| 高温 | 82 |',
+      },
+    ]
+    const wrapper = mount(EvidencePanel, { props: { evidence, ids: ['a-1', 't-1'] } })
+
+    const items = wrapper.findAll('[data-testid="evidence-item"]')
+    const summary = items[1].find('.evidence-summary').text()
+    expect(summary).toContain('实测数据对比表')
+    expect(summary).not.toContain('|')
   })
 
   it('P6 文案：空态无 build:index、源码无 Failed to fetch（P6）', () => {
