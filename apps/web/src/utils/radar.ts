@@ -5,14 +5,14 @@ import { formatNumber } from '@/utils/format'
  * aliases = 后端预测/目标 perf 可能出现的中文名。
  */
 export const RADAR_INDICATORS = [
-  { key: 'highTemp', name: '高温', aliases: ['高温PG'] },
-  { key: 'lowTemp', name: '低温', aliases: ['低温PG'] },
-  { key: 'fatigue', name: '疲劳', aliases: [] },
-  { key: 'waterStability', name: '水稳', aliases: ['水稳TSR'] },
-  { key: 'lcc', name: 'LCC', aliases: ['成本'] },
-  { key: 'carbon', name: '碳排', aliases: [] },
+  { key: 'highTemp', name: '高温', aliases: ['高温PG', '高温性能'] },
+  { key: 'lowTemp', name: '低温', aliases: ['低温PG', '低温性能'] },
+  { key: 'fatigue', name: '疲劳', aliases: ['疲劳性能'] },
+  { key: 'waterStability', name: '水稳', aliases: ['水稳TSR', '水稳定性'] },
+  { key: 'lcc', name: 'LCC', aliases: ['成本', '全生命周期成本'] },
+  { key: 'carbon', name: '碳排', aliases: ['碳排放'] },
   { key: 'expectedLife', name: '寿命', aliases: ['预期寿命'] },
-  { key: 'constructability', name: '施工', aliases: ['施工和易性'] },
+  { key: 'constructability', name: '施工', aliases: ['施工和易性', '施工可行性'] },
 ] as const
 
 export type RadarDim = (typeof RADAR_INDICATORS)[number]['key']
@@ -37,7 +37,12 @@ export function findRadarPrediction(
 /** 按展示 label（如「高温性能」「成本」）反查雷达维度。 */
 export function radarDimOfLabel(label: string): RadarDim | null {
   for (const indicator of RADAR_INDICATORS) {
-    if (label === indicator.name || indicator.aliases.includes(label)) return indicator.key
+    if (
+      label === indicator.name ||
+      (indicator.aliases as readonly string[]).includes(label)
+    ) {
+      return indicator.key
+    }
   }
   return null
 }
