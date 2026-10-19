@@ -572,7 +572,42 @@ describe('RecommendView 推荐工作台', () => {
     expect(nums[0].classes()).toContain('mono')
 
     const source = readFileSync('src/components/ReportSection.vue', 'utf8')
-    expect(source).toContain('max-width: 34em')
+    expect(source).toContain('max-width: 476px')
+  })
+
+  it('排版重构：连续要点段落合并为一个 ul（微调）', () => {
+    const sections = [
+      {
+        title: '要点',
+        paragraphs: ['· 一', '· 二', '· 三', '· 四', '· 五'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const uls = wrapper.findAll('ul.report-points')
+    expect(uls.length).toBe(1)
+    expect(uls[0].findAll('li').length).toBe(5)
+  })
+
+  it('排版重构：非连续要点分组为多个 ul（微调）', () => {
+    const sections = [
+      {
+        title: '要点',
+        paragraphs: ['· 一', '普通正文段', '· 二', '· 三'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const uls = wrapper.findAll('ul.report-points')
+    expect(uls.length).toBe(2)
+    expect(uls[0].findAll('li').length).toBe(1)
+    expect(uls[1].findAll('li').length).toBe(2)
   })
 
   it('排版重构：要点段落转 ul 且去前缀（排版）', () => {
@@ -645,7 +680,7 @@ describe('RecommendView 推荐工作台', () => {
 
   it('P5 报告正文排版规格 + 数字单位 &nbsp;（P5）', () => {
     const source = readFileSync('src/components/ReportSection.vue', 'utf8')
-    expect(source).toContain('max-width: 34em')
+    expect(source).toContain('max-width: 476px')
     expect(source).toContain('font-size: 16px')
 
     const sections = [

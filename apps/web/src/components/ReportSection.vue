@@ -202,6 +202,34 @@ const pointItems = (text: string): string[] =>
     .filter(Boolean)
     .map((l) => l.replace(/^[·\-•]\s*/, ''))
 
+// 微调：连续的要点段落合并为一个 ul（非连续的分组）
+interface ParagraphRun {
+  kind: 'points' | 'para'
+  paraIndex: number
+  items: string[]
+}
+
+const sectionRuns = computed<ParagraphRun[][]>(() =>
+  (props.sections ?? []).map((s, si) => {
+    const runs: ParagraphRun[] = []
+    let pendingItems: string[] | null = null
+    ;(s.paragraphs ?? []).forEach((_p, j) => {
+      const text = finalTextOf(si, j)
+      if (isPointList(text)) {
+        if (!pendingItems) {
+          pendingItems = []
+          runs.push({ kind: 'points', paraIndex: j, items: pendingItems })
+        }
+        pendingItems.push(...pointItems(text))
+      } else {
+        pendingItems = null
+        runs.push({ kind: 'para', paraIndex: j, items: [] })
+      }
+    })
+    return runs
+  }),
+)
+
 const evidenceById = computed(
   () => new Map((props.evidence ?? []).map((e) => [e.chunkId, e])),
 )
@@ -286,9 +314,9 @@ function toggleRefs(secIndex: number): void {
         <span v-else-if="typewriter" class="reveal-badge is-done">已完成</span>
       </h4>
 
-      <template v-for="(p, j) in s.paragraphs ?? []" :key="j">
-        <ul v-if="isPointList(finalTextOf(i, j))" class="report-points">
-          <li v-for="(item, li) in pointItems(finalTextOf(i, j))" :key="li">
+      <template v-for="(run, r) in sectionRuns[i] ?? []" :key="r">
+        <ul v-if="run.kind === 'points'" class="report-points">
+          <li v-for="(item, li) in run.items" :key="li">
             <template v-for="(seg, k) in parseSegments(item)" :key="k">
               <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
                 <button
@@ -306,8 +334,12 @@ function toggleRefs(secIndex: number): void {
             </template>
           </li>
         </ul>
-        <p v-else class="report-paragraph" :class="{ 'report-lead': j === 0 }">
-          <template v-for="(seg, k) in parseSegments(finalTextOf(i, j))" :key="k">
+        <p
+          v-else
+          class="report-paragraph"
+          :class="{ 'report-lead': run.paraIndex === 0 }"
+        >
+          <template v-for="(seg, k) in parseSegments(finalTextOf(i, run.paraIndex))" :key="k">
             <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
               <button
                 type="button"
@@ -405,18 +437,18 @@ function toggleRefs(secIndex: number): void {
   }
 }
 
-/* 排版重构：正文 34em（476px）/ 14px / 1.75；段距 20px */
+/* 排版重构：正文 px 常量（避免 em 随 font-size 漂移）；段距 20px */
 .report-paragraph {
-  max-width: 34em;
+  max-width: 476px;
   margin: 0 0 20px;
   font-size: 14px;
   line-height: 1.75;
   color: var(--el-text-color-regular);
 }
 
-/* 排版重构：结论先行块（每节第 1 段） */
+/* 排版重构：结论先行块（每节第 1 段，15px × 34em = 510px） */
 .report-paragraph.report-lead {
-  max-width: 34em;
+  max-width: 510px;
   padding: 10px 12px;
   border-left: 3px solid var(--el-color-primary);
   background: var(--el-fill-color-light);
@@ -428,7 +460,7 @@ function toggleRefs(secIndex: number): void {
 
 /* 排版重构：要点列表（去前缀，条目间距 8px） */
 .report-points {
-  max-width: 34em;
+  max-width: 476px;
   margin: 0 0 20px;
   padding-left: 22px;
   font-size: 14px;
