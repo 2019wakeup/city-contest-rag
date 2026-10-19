@@ -540,7 +540,7 @@ describe('RecommendView 推荐工作台', () => {
 
   it('P5 缺置信区间显示「置信区间不可用（模块 C 未提供）」（P5）', () => {
     const cand = makeCandidate('cand-1')
-    cand.predictions = [{ perf: 'highTemp', value: 80, ciLow: null, ciHigh: null, unit: '℃' }]
+    cand.predictions = [{ perf: 'highTemp', value: 80, ciLow: undefined, ciHigh: undefined, unit: '℃' }]
     const wrapper = mount(CandidateCard, {
       props: {
         candidate: cand,
