@@ -900,6 +900,8 @@ describe('RecommendView 推荐工作台', () => {
 
     const guide = wrapper.find('[data-testid="empty-guide"]')
     expect(guide.exists()).toBe(true)
+    // 灵动层：空态交错入场 class
+    expect(guide.classes()).toContain('stagger-item')
 
     await wrapper.find('[data-testid="goto-cases"]').trigger('click')
     await flushPromises()

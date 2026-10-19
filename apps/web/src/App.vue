@@ -168,31 +168,25 @@ onMounted(() => {
           @click="toggleTheme"
         >
           <svg
-            v-if="isDark"
-            class="app-menu-icon"
+            class="theme-icon"
+            :class="{ 'is-moon': isDark }"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <circle cx="12" cy="12" r="4" />
-            <path
-              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
-            />
-          </svg>
-          <svg
-            v-else
-            class="app-menu-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            <g class="theme-moon">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </g>
+            <g class="theme-sun">
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+              />
+            </g>
           </svg>
         </button>
 
@@ -280,6 +274,33 @@ onMounted(() => {
   gap: 8px;
   padding: 12px 8px;
   border-top: 1px solid var(--app-border);
+}
+
+/* 灵动层：sun↔moon 单 SVG 交叉淡入+旋转缩放 */
+.theme-icon g {
+  transition:
+    transform var(--motion-base) var(--ease-spring),
+    opacity var(--motion-base) var(--ease-out);
+}
+
+.theme-icon .theme-sun {
+  opacity: 1;
+  transform: none;
+}
+
+.theme-icon .theme-moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.8);
+}
+
+.theme-icon.is-moon .theme-sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.8);
+}
+
+.theme-icon.is-moon .theme-moon {
+  opacity: 1;
+  transform: none;
 }
 
 .app-icon-btn {

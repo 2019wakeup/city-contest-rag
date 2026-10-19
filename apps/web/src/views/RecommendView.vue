@@ -345,7 +345,11 @@ watch(
         <SceneForm :initial-scene="initialScene" @submit="onSubmit" />
       </el-card>
 
-      <el-card data-testid="empty-guide" class="panel input-card empty-guide">
+      <el-card
+        data-testid="empty-guide"
+        class="panel input-card empty-guide stagger-item"
+        style="--i: 0"
+      >
         <div class="empty-guide-body">
           <div class="empty-guide-icon" aria-hidden="true">
             <svg

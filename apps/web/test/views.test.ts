@@ -206,9 +206,15 @@ describe('CasesView 典型案例页', () => {
     const wrapper = mount(CasesView, { global: { plugins: [router] } })
     await flushPromises()
 
-    expect(wrapper.findAll('[data-testid="case-card"]')).toHaveLength(5)
+    const cards = wrapper.findAll('[data-testid="case-card"]')
+    expect(cards).toHaveLength(5)
     expect(wrapper.text()).toContain('华南高温重载车辙')
     expect(wrapper.text()).toContain('华南高温重载车辙摘要')
+
+    // 灵动层：交错入场 class + --i 序号
+    expect(cards[0].classes()).toContain('stagger-item')
+    expect(cards[0].attributes('style')).toContain('--i')
+    expect(cards[4].attributes('style')).toContain('--i: 4')
   })
 
   it('点击案例卡片载入工作台（router.push /recommend?case=…）', async () => {
@@ -228,8 +234,7 @@ describe('CasesView 典型案例页', () => {
   })
 })
 
-describe('CaseCard 场景行中文标签（UI#11）', () => {
-  const caseWithEnTags: CaseSeed = {
+describe('CaseCard 场景行中文标签（UI#11）', () => {  const caseWithEnTags: CaseSeed = {
     schemaVersion: '1',
     id: 'case-01',
     title: '华南高温重载车辙',
@@ -312,6 +317,18 @@ describe('App 主题切换与侧栏折叠（UI二轮）', () => {
 
     expect(document.documentElement.classList.contains('dark')).toBe(false)
     expect(localStorage.getItem('theme')).toBe('light')
+  })
+
+  it('灵动层：主题切换单 SVG 形变（不换两套图标资源）（微动效）', async () => {
+    const wrapper = await mountApp()
+    const toggle = wrapper.find('[data-testid="theme-toggle"]')
+    const svgs = toggle.findAll('svg')
+    expect(svgs.length).toBe(1)
+    // 暗色默认 → moon 态
+    expect(svgs[0].classes()).toContain('is-moon')
+
+    await toggle.trigger('click')
+    expect(toggle.findAll('svg')[0].classes()).not.toContain('is-moon')
   })
 
   it('localStorage 记录 light 时挂载不启用暗色', async () => {

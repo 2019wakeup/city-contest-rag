@@ -2,11 +2,22 @@
 import { onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { ripple } from '@/composables/ripple'
+import { useMagnetic } from '@/composables/useMagnetic'
+
 import { kbStats } from '@/api/client'
 import type { KbStats } from '@/api/client'
 
 // 欢迎页：系统定位 + 三亮点 + 双 CTA + 数据规模徽章（kb/stats 实时取，失败静默隐藏）。
 const router = useRouter()
+
+// 灵动层：主 CTA 磁性 + 涟漪
+const magnetic = useMagnetic({ max: 4 })
+
+function onCtaClick(event: MouseEvent, path: string): void {
+  ripple(event, event.currentTarget as HTMLElement)
+  void router.push(path)
+}
 const stats = shallowRef<KbStats | null>(null)
 
 const highlights = [
@@ -53,12 +64,22 @@ onMounted(async () => {
         <el-button
           type="primary"
           size="large"
+          class="pressable ripple-host magnetic"
           data-testid="cta-recommend"
-          @click="router.push('/recommend')"
+          @click="onCtaClick($event, '/recommend')"
+          @pointermove="magnetic.onPointerMove"
+          @pointerleave="magnetic.onPointerLeave"
         >
           开始推荐
         </el-button>
-        <el-button size="large" data-testid="cta-cases" @click="router.push('/cases')">
+        <el-button
+          size="large"
+          class="pressable ripple-host magnetic"
+          data-testid="cta-cases"
+          @click="onCtaClick($event, '/cases')"
+          @pointermove="magnetic.onPointerMove"
+          @pointerleave="magnetic.onPointerLeave"
+        >
           查看典型案例
         </el-button>
       </div>
@@ -169,6 +190,11 @@ onMounted(async () => {
   margin: 0 0 32px;
   font-size: 16px;
   color: var(--el-text-color-secondary);
+}
+
+.magnetic {
+  transition: transform var(--motion-base) var(--ease-spring);
+  will-change: transform;
 }
 
 .welcome-ctas {

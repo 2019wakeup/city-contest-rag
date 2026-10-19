@@ -40,14 +40,19 @@ function loadCase(id: string): void {
     />
     <el-row :gutter="16">
       <el-col
-        v-for="c in cases ?? []"
+        v-for="(c, i) in cases ?? []"
         :key="c.id"
         :xs="24"
         :sm="12"
         :md="8"
         class="cases-col"
       >
-        <CaseCard :item="c" @load="loadCase" />
+        <CaseCard
+          :item="c"
+          class="stagger-item"
+          :style="{ '--i': i }"
+          @load="loadCase"
+        />
       </el-col>
     </el-row>
     <el-empty
