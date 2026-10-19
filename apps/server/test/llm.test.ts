@@ -146,6 +146,43 @@ describe('T9 LLM 报告生成 + 对话面板', () => {
     }
   });
 
+  it('B-排版：报告 prompt 含短段/要点行/结论句形态约束', async () => {
+    const base = await makeBase();
+    let captured = '';
+    const llm: LlmCall = async (prompt) => {
+      captured = prompt;
+      return JSON.stringify({
+        sections: [{ title: '首选方案说明', paragraphs: ['结论句', '解释一'], evidenceIds: [] }],
+      });
+    };
+    await buildReportSections(base, llm);
+    expect(captured).toContain('首选方案说明');
+    expect(captured).toContain('90');
+    expect(captured).toContain('要点');
+    expect(captured).toContain('≤60');
+    expect(captured).toContain('一句话结论');
+  });
+
+  it('B-排版：fallback 模板形态——首选节结论句(≤60)+短段(≤90)，对比节要点行(2–5 条 ≤60)', async () => {
+    const base = await makeBase();
+    const out = await buildReportSections(base, async () => '{{{');
+    expect(out.llmStatus).toBe('degraded');
+    for (const s of out) {
+      for (const p of s.paragraphs) {
+        expect(p.length, `${s.title}: ${p.slice(0, 20)}…`).toBeLessThanOrEqual(90);
+      }
+    }
+    const first = out[0];
+    expect(first.title).toContain('首选方案');
+    expect(first.paragraphs[0].length).toBeLessThanOrEqual(60); // 一句话结论
+    const compare = out.find((s) => s.title.includes('对比'));
+    expect(compare).toBeDefined();
+    const bullets = compare!.paragraphs.filter((p) => p.startsWith('· '));
+    expect(bullets.length).toBeGreaterThanOrEqual(2);
+    expect(bullets.length).toBeLessThanOrEqual(5);
+    for (const b of bullets) expect(b.length).toBeLessThanOrEqual(60);
+  });
+
   it('LLM_OFF=1 → generateStructured 立即 degraded（不触网）', async () => {
     vi.stubEnv('LLM_OFF', '1');
     vi.stubEnv('DEEPSEEK_API_KEY', '');

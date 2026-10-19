@@ -27,8 +27,8 @@ const SectionsResponseSchema = z
 
 /** 流式报告章节规格（SSE 每 section 一次 LLM 结构化调用） */
 export const SECTION_SPECS = [
-  { title: '首选方案' },
-  { title: '方案对比' },
+  { title: '首选方案说明' },
+  { title: '方案对比总结' },
 ] as const;
 
 const SectionResponseSchema = z.object({ section: ReportSectionSchema }).passthrough();
@@ -153,10 +153,11 @@ export function buildFallbackSections(base: ReportBase): ReportSection[] {
   const ranked = base.candidates;
   if (ranked.length > 0) {
     const top = ranked[0];
+    // 排版规范：第 1 段 = 一句话结论（≤60 字），后续短段每段一句（≤90 字）
     sections.push({
-      title: '首选方案',
+      title: '首选方案说明',
       paragraphs: [
-        `综合加权得分最高的是「${top.formula.binder.type} + ${top.formula.gradation.type}」组合（综合得分 ${top.score}）。`,
+        `推荐方案 1：「${top.formula.binder.type} + ${top.formula.gradation.type}」，综合得分最高。`,
         radarSummary(top.radar),
         `该方案预期寿命约 ${top.expectedLife} 年，全生命周期成本估算 ${top.lcc} 万元。`,
       ],
@@ -164,12 +165,17 @@ export function buildFallbackSections(base: ReportBase): ReportSection[] {
     });
   }
   if (ranked.length > 1) {
-    const second = ranked[1];
+    // 方案对比总结：短结论段 + 要点行（· 开头，每条 ≤60 字，2–5 条）
+    const bullets = ranked.slice(0, 3).map(
+      (c, i) =>
+        `· 第 ${i + 1} 名：「${c.formula.binder.type} + ${c.formula.gradation.type}」（得分 ${c.score}）。`,
+    );
     sections.push({
-      title: '方案对比',
+      title: '方案对比总结',
       paragraphs: [
-        `共对比 ${ranked.length} 个候选组合，排名第二的是「${second.formula.binder.type} + ${second.formula.gradation.type}」（得分 ${second.score}）。`,
-        '以上数值结论均来自确定性计算（当前为模板文案降级模式，LLM 不可用）。',
+        `共对比 ${ranked.length} 个候选方案，前 3 名要点如下。`,
+        ...bullets,
+        '以上数值结论均来自确定性计算（模板文案降级模式）。',
       ],
       evidenceIds,
     });
