@@ -36,15 +36,16 @@ const SectionResponseSchema = z.object({ section: ReportSectionSchema }).passthr
 const MAX_SECTION_EVIDENCE = 3;
 
 /**
- * R4：报告证据跨节去重——后节剔除已用 id，不足时从证据池顺延补充
- * （目标条数 = 原条数（1..3），去重后逐条补足）。
+ * R4/R6-5：报告证据过滤——剔除已用 id，不足时从证据池顺延补充；
+ * 目标条数 = max(原条数, minTarget)，上限 3（R6-5：结论节 ≥2、对比节 ≥3）。
  */
 export function filterSectionEvidenceIds(
   rawIds: string[],
   pool: string[],
   used: Set<string>,
+  minTarget = 1,
 ): string[] {
-  const target = Math.min(Math.max(rawIds.length, 1), MAX_SECTION_EVIDENCE);
+  const target = Math.min(Math.max(rawIds.length, minTarget), MAX_SECTION_EVIDENCE);
   const ids: string[] = [];
   for (const id of rawIds) {
     if (ids.length >= target) break;
@@ -63,10 +64,17 @@ export function filterSectionEvidenceIds(
   return ids;
 }
 
-/** 批量模式：对整组 sections 做跨节证据去重 + 顺延补充 */
-export function dedupeSectionEvidence(sections: ReportSection[], pool: string[]): ReportSection[] {
+/** 批量模式：跨节证据去重 + 顺延补充（R6-5：结论节 ≥2、对比节 ≥3） */
+export function dedupeSectionEvidence(
+  sections: ReportSection[],
+  pool: string[],
+  minPerSection: number[] = [2, 3],
+): ReportSection[] {
   const used = new Set<string>();
-  return sections.map((s) => ({ ...s, evidenceIds: filterSectionEvidenceIds(s.evidenceIds, pool, used) }));
+  return sections.map((s, i) => ({
+    ...s,
+    evidenceIds: filterSectionEvidenceIds(s.evidenceIds, pool, used, minPerSection[i] ?? 1),
+  }));
 }
 
 /**
@@ -97,14 +105,19 @@ export async function generateReportSection(
   });
   if (data) {
     const filtered = data.section.evidenceIds.filter((id) => allowed.has(id));
+    const minTarget = index === 0 ? 2 : 3; // R6-5：结论节 ≥2、对比节 ≥3
     return {
-      section: { ...data.section, evidenceIds: filterSectionEvidenceIds(filtered, pool, used) },
+      section: { ...data.section, evidenceIds: filterSectionEvidenceIds(filtered, pool, used, minTarget) },
       fromLlm: true,
     };
   }
   const fallback = buildFallbackSections(base)[index];
   const sec = fallback ?? { title: spec.title, paragraphs: ['（模板降级）'], evidenceIds: [] };
-  return { section: { ...sec, evidenceIds: filterSectionEvidenceIds(sec.evidenceIds, pool, used) }, fromLlm: false };
+  const minTarget = index === 0 ? 2 : 3;
+  return {
+    section: { ...sec, evidenceIds: filterSectionEvidenceIds(sec.evidenceIds, pool, used, minTarget) },
+    fromLlm: false,
+  };
 }
 
 function buildReportPrompt(base: ReportBase): string {

@@ -14,6 +14,7 @@ import type {
   RecommendationReport,
   ReportSection,
   SceneInput,
+  SearchHit,
   StepRecord,
   TargetProfile,
 } from '@road-rec/contracts';
@@ -172,8 +173,13 @@ export async function recommend(
   const ranked = rankCandidates(parsedScene, assembled, [...predictionsWithMode], targets);
   mark('rank');
 
-  // ⑥ 证据检索（每候选按类型标签 search top3）+ 报告文案（LLM ok/模板降级）+ 组装
-  const { evidence, byCandidate, retrievalWarnings } = await retrieveEvidence(ranked, parsedScene, deps);
+  // ⑥ 证据检索（R1/R2/R6：差异化查询 + 足量 + 集合互异 + 文献参与）+ 报告文案 + 组装
+  const { evidence, byCandidate, retrievalWarnings, queries, slotSources } = await retrieveEvidence(
+    ranked,
+    parsedScene,
+    targets,
+    deps,
+  );
   for (const cand of ranked) {
     cand.evidenceIds = byCandidate.get(cand.id) ?? [];
   }
@@ -220,6 +226,9 @@ export async function recommend(
     adapterMode: { a: adapterModeA, c: adapterModeC },
     warnings,
     steps,
+    // R6 调试/验收透出（passthrough 字段，契约不变）：候选查询文本与各槽来源查询序号
+    evidenceQueries: queries,
+    evidenceSlotSources: slotSources,
   });
   return report;
 }
@@ -562,12 +571,16 @@ function hasAny(value: string, keywords: string[]): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// ⑥ 证据检索（R1 差异化查询 + R2 多样性配额）
+// ⑥ 证据检索（R1/R2/R6：差异化查询 + 足量 + 集合互异 + 文献参与）
 // ---------------------------------------------------------------------------
 
-const EVIDENCE_FETCH_K = 8; // 每候选先取 8 再挑选（配额挑选需要余量）
+const EVIDENCE_FETCH_K = 12; // R6-1：每候选先取 12 再挑选
 const EVIDENCE_SLOTS = 3;
-const GLOBAL_CHUNK_LIMIT = 2; // 同 chunk 全局最多出现在 2 个候选
+const GLOBAL_CHUNK_LIMIT = 3; // R6-1：同 chunk 全局最多出现在 3 个候选
+const MAX_KNOWLEDGE_PER_CANDIDATE = 2; // R6-4：知识 ≤2
+const MAX_LITERATURE_PER_CANDIDATE = 2; // 文献 1–2 优先
+const ALL_EVIDENCE_DOC_TYPES = ['knowledge', 'standard', 'literature', 'enterprise'] as const;
+const LIT_OR_STD_DOC_TYPES = ['literature', 'standard'] as const;
 
 /** 病害类型 → 中文检索词（cases.json/注册表 slug 对齐） */
 const DISTRESS_CN: Record<string, string> = {
@@ -595,9 +608,8 @@ const RADAR_DIM_CN: Record<string, string> = {
   constructability: '施工',
 };
 
-/** R1：按候选差异化查询——场景词 + 配方全字段 + 该候选雷达优势 Top2 维度中文名 */
-function buildCandidateQuery(scene: SceneInput, cand: Candidate): string {
-  const sceneWords = [
+function buildSceneWords(scene: SceneInput): string {
+  return [
     scene.climate.zone,
     scene.traffic.level,
     ...scene.distresses.map((d) => DISTRESS_CN[d.type] ?? d.type),
@@ -606,100 +618,279 @@ function buildCandidateQuery(scene: SceneInput, cand: Candidate): string {
   ]
     .filter(Boolean)
     .join(' ');
+}
+
+/** R6-3：候选查询三段——①场景词 ②配方全字段（含掺量数值）③该候选 Top1 雷达维中文名
+ * （并列取权重最高者；无第一取最强且不同于其他候选的维度）。 */
+function buildCandidateQuery(
+  scene: SceneInput,
+  cand: Candidate,
+  targets: TargetProfile,
+  usedDims: Set<string>,
+): string {
+  const sceneWords = buildSceneWords(scene);
   const f = cand.formula;
   const formulaWords = [
     f.binder.type,
     f.binder.grade,
     f.binder.pg,
-    f.modifier.type,
+    f.modifier.type ? `${f.modifier.type}${f.modifier.dosage}%` : '',
     f.gradation.type,
-    ...f.additives.map((a) => a.type),
+    ...f.additives.map((a) => `${a.type}${a.dosage}%`),
   ]
     .filter(Boolean)
     .join(' ');
-  const topDims = (Object.entries(cand.radar) as Array<[string, number]>)
-    .filter(([dim]) => RADAR_DIM_CN[dim] !== undefined)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 2)
-    .map(([dim]) => RADAR_DIM_CN[dim]);
-  return `${sceneWords} ${formulaWords} ${topDims.join(' ')}`;
+  const dimCn = topDimCnOf(cand, targets, usedDims);
+  return `${sceneWords} ${formulaWords} ${dimCn}`.trim();
+}
+
+/** 该候选 Top1 雷达维度中文名（并列取权重最高者；无第一取最强且不同于其他候选者） */
+function topDimCnOf(cand: Candidate, targets: TargetProfile, usedDims: Set<string>): string {
+  const dimWeights: Record<string, number> = {};
+  for (const p of targets.priorities) {
+    const d = PERF_ALIAS[p.perf];
+    if (d) dimWeights[d] = (dimWeights[d] ?? 0) + p.weight;
+  }
+  const radarDims = (Object.entries(cand.radar) as Array<[string, number]>).filter(
+    ([d]) => RADAR_DIM_CN[d] !== undefined,
+  );
+  if (radarDims.length === 0) return '';
+  const topScore = Math.max(...radarDims.map(([, v]) => v));
+  let dim: string;
+  const ties = radarDims.filter(([, v]) => v === topScore).map(([d]) => d);
+  if (ties.length === 1) {
+    dim = ties[0];
+  } else {
+    dim = ties.slice().sort((a, b) => (dimWeights[b] ?? 0) - (dimWeights[a] ?? 0))[0];
+  }
+  if (!dim) {
+    const ranked = radarDims.slice().sort((a, b) => b[1] - a[1]).map(([d]) => d);
+    dim = ranked.find((d) => !usedDims.has(d)) ?? ranked[0];
+  }
+  usedDims.add(dim);
+  return RADAR_DIM_CN[dim];
 }
 
 /**
- * R2 多样性挑选：每候选 3 条——
- * 同 chunk 全局 ≤2、同 docId 每候选 ≤1、知识 ≤2、标准 ≤1、文献 1–2（检索到即优先纳入）。
+ * R2/R6 挑选：未被其他候选使用的命中优先（组内保持相关度顺序）；
+ * 配额：知识 ≤2、文献 ≤2 优先纳入、标准不限（R6-4 标准 ≥0）、chunk 全局 ≤3、docId 每候选 ≤1。
  */
-export function selectDiverseEvidence(
+export function selectCandidateHits(
   hits: SearchHit[],
   globalChunkCount: Map<string, number>,
+  othersUsed: Set<string>,
 ): SearchHit[] {
+  const ordered = [...hits].sort(
+    (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
+  );
   const chosen: SearchHit[] = [];
   const seenDocIds = new Set<string>();
   let knowledgeCount = 0;
-  let standardCount = 0;
   let literatureCount = 0;
 
   const tryPush = (h: SearchHit): boolean => {
     if (chosen.length >= EVIDENCE_SLOTS) return false;
     if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
     if (seenDocIds.has(h.provenance.sourceDocId)) return false;
-    if (h.docType === 'knowledge' && knowledgeCount >= 2) return false;
-    if (h.docType === 'standard' && standardCount >= 1) return false;
-    if (h.docType === 'literature' && literatureCount >= 2) return false;
+    if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
+    if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
     chosen.push(h);
     seenDocIds.add(h.provenance.sourceDocId);
     globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
     if (h.docType === 'knowledge') knowledgeCount += 1;
-    if (h.docType === 'standard') standardCount += 1;
     if (h.docType === 'literature') literatureCount += 1;
     return true;
   };
 
   // 第一遍：文献优先纳入（检索到即优先）；第二遍：其余按相关度补足
-  for (const h of hits) if (h.docType === 'literature') tryPush(h);
-  for (const h of hits) tryPush(h);
+  for (const h of ordered) if (h.docType === 'literature') tryPush(h);
+  for (const h of ordered) tryPush(h);
   return chosen;
+}
+
+function setsEqual(a: Set<string>, b: Set<string>): boolean {
+  return a.size === b.size && [...a].every((x) => b.has(x));
+}
+
+interface EvidenceRetrievalResult {
+  evidence: EvidenceRef[];
+  byCandidate: Map<string, string[]>;
+  retrievalWarnings: string[];
+  queries: string[];
+  slotSources: number[][];
 }
 
 async function retrieveEvidence(
   candidates: Candidate[],
   scene: SceneInput,
+  targets: TargetProfile,
   deps: RecommendDeps,
-): Promise<{ evidence: EvidenceRef[]; byCandidate: Map<string, string[]>; retrievalWarnings: string[] }> {
+): Promise<EvidenceRetrievalResult> {
   const warnings: string[] = [];
   const evidenceMap = new Map<string, EvidenceRef>();
   const byCandidate = new Map<string, string[]>();
   const globalChunkCount = new Map<string, number>();
-  const texts = candidates.map((c) => buildCandidateQuery(scene, c));
-  let vectors: number[][] | null = null;
-  if (deps.embedder) {
-    try {
-      vectors = await deps.embedder.embed(texts, { mode: 'query' });
-    } catch {
-      vectors = null;
+  const othersUsed = new Set<string>();
+  const chosenSets: Set<string>[] = [];
+  const pool: SearchHit[] = [];
+  const queries: string[] = [];
+  const slotSources: number[][] = [];
+  const usedDims = new Set<string>();
+
+  const sceneQueryText = buildSceneWords(scene);
+  const primaryTexts = candidates.map((c) => buildCandidateQuery(scene, c, targets, usedDims));
+
+  const searchOne = async (
+    text: string,
+    topK: number,
+    docTypes?: string[],
+  ): Promise<SearchHit[]> => {
+    let vector: number[] | undefined;
+    if (deps.embedder) {
+      try {
+        vector = (await deps.embedder.embed([text], { mode: 'query' }))[0];
+      } catch {
+        vector = undefined;
+      }
     }
-  }
+    return deps.store.search({
+      text,
+      vector,
+      topK,
+      filter: docTypes ? { docTypes } : undefined,
+    });
+  };
+
   try {
     for (let i = 0; i < candidates.length; i++) {
-      const hits = await deps.store.search({
-        text: texts[i],
-        vector: vectors?.[i],
-        topK: EVIDENCE_FETCH_K,
-        // R3-C3：enterprise 企业资料同为语料，进证据链
-        filter: { docTypes: ['knowledge', 'standard', 'literature', 'enterprise'] },
-      });
-      const chosen = selectDiverseEvidence(hits, globalChunkCount);
-      const ids: string[] = [];
-      for (const h of chosen) {
-        if (!evidenceMap.has(h.chunkId)) evidenceMap.set(h.chunkId, h);
-        ids.push(h.chunkId);
+      const cand = candidates[i];
+      queries.push(primaryTexts[i]);
+
+      // 候选内挑选状态
+      const chosen: Array<{ hit: SearchHit; queryIndex: number }> = [];
+      const seenDocIds = new Set<string>();
+      let knowledgeCount = 0;
+      let literatureCount = 0;
+      const canTake = (h: SearchHit): boolean => {
+        if (chosen.length >= EVIDENCE_SLOTS) return false;
+        if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
+        if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+        if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
+        if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
+        return true;
+      };
+      const take = (h: SearchHit, queryIndex: number): boolean => {
+        if (!canTake(h)) return false;
+        chosen.push({ hit: h, queryIndex });
+        seenDocIds.add(h.provenance.sourceDocId);
+        globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
+        if (h.docType === 'knowledge') knowledgeCount += 1;
+        if (h.docType === 'literature') literatureCount += 1;
+        return true;
+      };
+      const takeBack = (idx: number): void => {
+        const old = chosen[idx];
+        globalChunkCount.set(old.hit.chunkId, Math.max(0, (globalChunkCount.get(old.hit.chunkId) ?? 1) - 1));
+        seenDocIds.delete(old.hit.provenance.sourceDocId);
+        if (old.hit.docType === 'knowledge') knowledgeCount -= 1;
+        if (old.hit.docType === 'literature') literatureCount -= 1;
+      };
+
+      // 主查询（queryIndex 0）：未被他人使用的命中优先 + 文献优先
+      const primaryHits = await searchOne(primaryTexts[i], EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
+      pool.push(...primaryHits);
+      const orderedPrimary = [...primaryHits].sort(
+        (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
+      );
+      for (const h of orderedPrimary) if (h.docType === 'literature') take(h, 0);
+      for (const h of orderedPrimary) take(h, 0);
+
+      // R6-1：第二查询 = 纯场景查询（病害+气候+荷载，不带候选材料）
+      if (chosen.length < EVIDENCE_SLOTS) {
+        const sceneHits = await searchOne(sceneQueryText, EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
+        pool.push(...sceneHits);
+        for (const h of sceneHits) {
+          if (chosen.length >= EVIDENCE_SLOTS) break;
+          take(h, 1);
+        }
       }
-      byCandidate.set(candidates[i].id, ids);
+
+      // R6-1：仍不足 → 从全候选池按相关度补（queryIndex 2）
+      if (chosen.length < EVIDENCE_SLOTS) {
+        const poolSorted = [...pool].sort(
+          (a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId),
+        );
+        for (const h of poolSorted) {
+          if (chosen.length >= EVIDENCE_SLOTS) break;
+          take(h, 2);
+        }
+      }
+
+      // R6-4：无文献/规范 → 「维度+文献类」二次查询，替换 1 条知识槽（queryIndex 3）
+      if (!chosen.some((c) => (LIT_OR_STD_DOC_TYPES as readonly string[]).includes(c.hit.docType))) {
+        const dimCn = topDimCnOf(cand, targets, usedDims) || '高温';
+        const litHits = await searchOne(`${dimCn} ${sceneQueryText}`, 6, [...LIT_OR_STD_DOC_TYPES]);
+        pool.push(...litHits);
+        const replaceIdx = chosen
+          .map((c) => c.hit.docType)
+          .lastIndexOf('knowledge');
+        for (const h of litHits) {
+          if (replaceIdx < 0) break;
+          if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) continue;
+          if (seenDocIds.has(h.provenance.sourceDocId)) continue;
+          if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) continue;
+          takeBack(replaceIdx);
+          chosen[replaceIdx] = { hit: h, queryIndex: 3 };
+          seenDocIds.add(h.provenance.sourceDocId);
+          globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
+          if (h.docType === 'literature') literatureCount += 1;
+          break;
+        }
+      }
+
+      // R6-2：与先前候选集合完全相同 → 替换 1 条为未用命中
+      const mySet = new Set(chosen.map((c) => c.hit.chunkId));
+      for (const prev of chosenSets) {
+        if (setsEqual(prev, mySet)) {
+          const lastIdx = chosen.length - 1;
+          const replacement = [...pool]
+            .sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId))
+            .find((h) => {
+              if (mySet.has(h.chunkId)) return false;
+              if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
+              if (seenDocIds.has(h.provenance.sourceDocId)) return false;
+              if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
+              if (h.docType === 'literature' && literatureCount >= MAX_LITERATURE_PER_CANDIDATE) return false;
+              return true;
+            });
+          if (replacement) {
+            const oldHit = chosen[lastIdx].hit;
+            takeBack(lastIdx);
+            chosen[lastIdx] = { hit: replacement, queryIndex: 2 };
+            seenDocIds.add(replacement.provenance.sourceDocId);
+            globalChunkCount.set(replacement.chunkId, (globalChunkCount.get(replacement.chunkId) ?? 0) + 1);
+            if (replacement.docType === 'knowledge') knowledgeCount += 1;
+            if (replacement.docType === 'literature') literatureCount += 1;
+            mySet.delete(oldHit.chunkId);
+            mySet.add(replacement.chunkId);
+          }
+          break;
+        }
+      }
+      chosenSets.push(new Set(chosen.map((c) => c.hit.chunkId)));
+
+      const ids = chosen.map((c) => c.hit.chunkId);
+      for (const c of chosen) {
+        if (!evidenceMap.has(c.hit.chunkId)) evidenceMap.set(c.hit.chunkId, c.hit);
+      }
+      for (const id of ids) othersUsed.add(id);
+      byCandidate.set(cand.id, ids);
+      slotSources.push(chosen.map((c) => c.queryIndex));
     }
   } catch (err) {
     warnings.push(`证据检索失败：${err instanceof Error ? err.message : String(err)}`);
   }
-  return { evidence: [...evidenceMap.values()], byCandidate, retrievalWarnings: warnings };
+  return { evidence: [...evidenceMap.values()], byCandidate, retrievalWarnings: warnings, queries, slotSources };
 }
 
 // ---------------------------------------------------------------------------
