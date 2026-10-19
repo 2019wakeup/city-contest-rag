@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, shallowRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 
 import type { RecommendationReport } from '@road-rec/contracts'
 import ChatPanel from '@/components/ChatPanel.vue'
@@ -30,16 +30,31 @@ function persistDockWidth(width: number): void {
   localStorage.setItem(DOCK_STORAGE_KEY, String(width))
 }
 
-function openDock(): void {
+// P6：焦点归还——关闭/收起后回到触发按钮（FAB/竖条；按 testid 重新查询，
+// 因为关闭后面板重渲染出新的触发元素，缓存旧元素会脱离文档无法聚焦）
+let lastTriggerKind: 'fab' | 'rail' | null = null
+
+function restoreFocus(): void {
+  if (!lastTriggerKind) return
+  document
+    .querySelector<HTMLElement>(`[data-testid="chat-${lastTriggerKind}"]`)
+    ?.focus()
+}
+
+function openDock(event: MouseEvent): void {
+  const testid = (event.currentTarget as HTMLElement).dataset.testid
+  lastTriggerKind = testid === 'chat-rail' ? 'rail' : 'fab'
   dockState.value = 'open'
 }
 
 function dockToRail(): void {
   dockState.value = 'docked'
+  void nextTick().then(restoreFocus)
 }
 
 function closeDock(): void {
   dockState.value = 'closed'
+  void nextTick().then(restoreFocus)
 }
 
 // 拖拽改宽（mousedown→mousemove clamp→mouseup 持久化；拖拽中 body 禁选中）
@@ -94,6 +109,8 @@ onBeforeUnmount(() => {
     v-if="props.report && dockState === 'open'"
     class="chat-dock dock-enter"
     data-testid="chat-dock"
+    role="dialog"
+    aria-label="追问面板：基于当前报告的智能问答"
     :style="{ width: `${dockWidth}px` }"
   >
     <div

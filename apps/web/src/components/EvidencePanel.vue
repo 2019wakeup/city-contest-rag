@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
+import { DOC_TYPE_LABELS } from '@/utils/labels'
 import { scoreDisplayText } from '@/utils/score'
 import type { EvidenceRef } from '@road-rec/contracts'
 
@@ -11,12 +12,6 @@ const props = defineProps<{
   highlightId?: string | null
 }>()
 
-const DOC_TYPE_LABELS: Record<string, string> = {
-  knowledge: '知识条目',
-  standard: '规范',
-  literature: '文献',
-  enterprise: '企业资料',
-}
 
 /** 类型色条（色彩只表达类型，不喧宾夺主）。 */
 const DOC_TYPE_COLORS: Record<string, string> = {
@@ -81,7 +76,7 @@ function toggle(id: string): void {
     <template #header>证据链</template>
     <el-empty
       v-if="(evidence ?? []).length === 0"
-      description="知识库为空，请执行 pnpm build:index"
+      description="知识库暂无内容，请先导入资料"
       :image-size="48"
     />
     <el-empty
@@ -92,9 +87,10 @@ function toggle(id: string): void {
     <template v-else>
       <p class="evidence-count">共 {{ matches.length }} 条证据 · 按相关度排序</p>
       <div class="evidence-list">
-        <div
+        <button
           v-for="hit in matches"
           :key="hit.chunkId"
+          type="button"
           class="evidence-item"
           :class="{
             'is-expanded': expandedIds.has(hit.chunkId),
@@ -131,7 +127,7 @@ function toggle(id: string): void {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     </template>
   </el-card>
@@ -153,6 +149,10 @@ function toggle(id: string): void {
 .evidence-item {
   position: relative;
   display: flex;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
   gap: 10px;
   padding: 10px 12px 10px 16px;
   border: 1px solid var(--app-border);

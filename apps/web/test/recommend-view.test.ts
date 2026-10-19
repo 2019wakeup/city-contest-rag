@@ -1309,6 +1309,105 @@ describe('RecommendView 推荐工作台', () => {
     }
   })
 
+  it('P6 button 语义：候选卡头与证据卡为真 button、角标保持 button（P6）', async () => {
+    const wrapper = await mountView()
+    const toggle = wrapper.findAll('[data-testid="candidate-toggle"]')[0]
+    expect(toggle.element.tagName).toBe('BUTTON')
+    const evidenceItem = wrapper.findAll('[data-testid="evidence-item"]')[0]
+    expect(evidenceItem.element.tagName).toBe('BUTTON')
+  })
+
+  it('P6 ChatDock：role=dialog/aria-label，关闭后焦点归还触发按钮（P6）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.report = makeReport()
+    store.status = 'done'
+    store.step = 'result'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const holder = document.createElement('div')
+    document.body.appendChild(holder)
+    const wrapper = mount(RecommendView, {
+      global: { plugins: [pinia, router] },
+      attachTo: holder,
+    })
+    await flushPromises()
+
+    const fab = wrapper.find('[data-testid="chat-fab"]').element as HTMLElement
+    fab.focus()
+    await wrapper.find('[data-testid="chat-fab"]').trigger('click')
+    await flushPromises()
+
+    const dock = wrapper.find('[data-testid="chat-dock"]')
+    expect(dock.attributes('role')).toBe('dialog')
+    expect(dock.attributes('aria-label')).toBeTruthy()
+
+    await wrapper.find('[data-testid="chat-dock-close"]').trigger('click')
+    await flushPromises()
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    expect(document.activeElement?.getAttribute('data-testid')).toBe('chat-fab')
+
+    wrapper.unmount()
+    holder.remove()
+  })
+
+  it('P6 文案：空态无 build:index、源码无 Failed to fetch（P6）', () => {
+    const wrapper = mount(EvidencePanel, { props: { evidence: [], ids: [] } })
+    expect(wrapper.text()).toContain('知识库暂无内容，请先导入资料')
+    expect(wrapper.text()).not.toContain('build:index')
+    for (const file of ['src/api/client.ts', 'src/components/ChatPanel.vue']) {
+      expect(readFileSync(file, 'utf8')).not.toContain('Failed to fetch')
+    }
+  })
+
+  it('P6 降级提示改文案（P6）', () => {
+    const wrapper = mount(ReportSection, {
+      props: { sections: [], llmStatus: 'degraded' },
+    })
+    expect(wrapper.text()).toContain('AI 文案暂不可用，以下为模板文案（数值不受影响）')
+  })
+
+  it('P6 雷达图：ResizeObserver 监听容器重绘 + role=img/aria-label（P6）', async () => {
+    const observedCallbacks: Array<() => void> = []
+    class MockResizeObserver {
+      constructor(callback: () => void) {
+        observedCallbacks.push(callback)
+      }
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
+    }
+    const original = (globalThis as { ResizeObserver?: unknown }).ResizeObserver
+    ;(globalThis as { ResizeObserver?: unknown }).ResizeObserver = MockResizeObserver
+
+    try {
+      chartOptions.length = 0
+      const cand = makeCandidate('cand-1')
+      const wrapper = mount(RadarChart, {
+        props: { radar: cand.radar, predictions: cand.predictions },
+      })
+      const before = chartOptions.length
+      expect(before).toBeGreaterThanOrEqual(1)
+
+      const container = wrapper.find('.radar-chart')
+      expect(container.attributes('role')).toBe('img')
+      expect(container.attributes('aria-label')).toContain('八维画像')
+
+      observedCallbacks[0]?.()
+      await new Promise((resolve) => setTimeout(resolve, 20))
+      expect(chartOptions.length).toBe(before + 1)
+    } finally {
+      ;(globalThis as { ResizeObserver?: unknown }).ResizeObserver = original
+    }
+  })
+
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
     vi.useFakeTimers()
     try {

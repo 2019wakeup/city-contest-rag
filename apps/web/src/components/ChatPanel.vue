@@ -74,10 +74,10 @@ async function send(): Promise<void> {
     )
     store.chat.push({ role: 'assistant', content: reply || streaming.value })
     streaming.value = ''
-  } catch (err) {
+  } catch {
     store.chat.push({
       role: 'assistant',
-      content: `对话失败：${err instanceof Error ? err.message : String(err)}`,
+      content: '对话服务暂时不可用，请稍后重试',
     })
   } finally {
     typing.value = false

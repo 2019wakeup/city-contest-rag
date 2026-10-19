@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, watch } from 'vue'
 
+import { DOC_TYPE_LABELS } from '@/utils/labels'
 import type { EvidenceRef, ReportSection as ReportSectionItem } from '@road-rec/contracts'
 
 const props = defineProps<{
@@ -152,12 +153,6 @@ const flatIndexOf = (secIndex: number, paraIndex: number): number => {
   return idx + paraIndex
 }
 
-const DOC_TYPE_LABELS: Record<string, string> = {
-  knowledge: '知识条目',
-  standard: '规范',
-  literature: '文献',
-  enterprise: '企业资料',
-}
 
 const evidenceById = computed(
   () => new Map((props.evidence ?? []).map((e) => [e.chunkId, e])),
@@ -208,7 +203,7 @@ function onCite(id: string): void {
       type="info"
       :closable="false"
       show-icon
-      title="文案模板降级：LLM 不可用，以下文案由确定性模板生成，数据结果不受影响"
+      title="AI 文案暂不可用，以下为模板文案（数值不受影响）"
       class="report-degraded"
     />
     <el-empty

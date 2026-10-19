@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 import type { AdapterMode, Candidate, EvidenceRef } from '@road-rec/contracts'
 import { formatNumber } from '@/utils/format'
+import { PERF_LABELS, labelOf } from '@/utils/labels'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
@@ -26,18 +27,9 @@ const radar = computed(() => props.candidate?.radar)
 const explanations = computed(() => props.candidate?.explanations ?? [])
 
 // 预测项英文键名 → 中文（与雷达图 8 维口径一致，UI#5）。
-const PERF_LABELS: Record<string, string> = {
-  highTemp: '高温性能',
-  lowTemp: '低温性能',
-  fatigue: '疲劳',
-  waterStability: '水稳TSR',
-  lcc: 'LCC',
-  carbon: '碳排',
-  expectedLife: '预期寿命',
-  constructability: '施工可行性',
-}
 
-const perfLabel = (perf: string): string => PERF_LABELS[perf] ?? perf
+
+const perfLabel = (perf: string): string => labelOf(PERF_LABELS, perf)
 
 // UI二轮：折叠摘要行显示雷达三强项（与雷达图维度口径一致）。
 const RADAR_STRENGTH_LABELS: Array<{ key: keyof NonNullable<Candidate['radar']>; label: string }> = [
@@ -77,10 +69,10 @@ const isTop1 = computed(() => props.index === 0)
     :class="{ 'is-top1': isTop1 }"
   >
     <template #header>
-      <div
+      <button
+        type="button"
         class="candidate-header"
         data-testid="candidate-toggle"
-        role="button"
         :aria-expanded="expanded"
         @click="emit('toggle')"
       >
@@ -104,7 +96,7 @@ const isTop1 = computed(() => props.index === 0)
         </el-tooltip>
         <el-tag v-if="isMock" type="warning" data-testid="mock-badge">模拟数据</el-tag>
         <span class="candidate-toggle-hint">{{ expanded ? '收起' : '展开' }}</span>
-      </div>
+      </button>
     </template>
 
     <template v-if="expanded">
@@ -184,6 +176,13 @@ const isTop1 = computed(() => props.index === 0)
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
   user-select: none;
 }

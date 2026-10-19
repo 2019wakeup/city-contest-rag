@@ -40,19 +40,20 @@ function render(): void {
   })
 }
 
-function onResize(): void {
-  chart.value?.resize()
-}
+// P6：容器 ResizeObserver（折叠侧栏等布局变化即时重绘）
+let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
   if (!chartEl.value) return
   chart.value = echarts.init(chartEl.value)
   render()
-  window.addEventListener('resize', onResize)
+  resizeObserver = new ResizeObserver(() => chart.value?.resize())
+  resizeObserver.observe(chartEl.value)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize)
+  resizeObserver?.disconnect()
+  resizeObserver = null
   chart.value?.dispose()
 })
 
@@ -60,7 +61,12 @@ watch(() => props.explanations, render)
 </script>
 
 <template>
-  <div ref="chart" class="waterfall-chart"></div>
+  <div
+    ref="chart"
+    class="waterfall-chart"
+    role="img"
+    aria-label="特征贡献瀑布图（正值正向贡献、负值负向贡献）"
+  ></div>
 </template>
 
 <style scoped>

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { getCases } from '@/api/client'
 import { useRecommendStore } from '@/stores/recommend'
+import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf } from '@/utils/labels'
 import { formatNumber } from '@/utils/format'
 import type { Candidate, CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
@@ -128,36 +129,17 @@ function restoreOriginal(): void {
   void applyAdjust()
 }
 
-// P3：场景 chips（气候/交通/病害/预算/工期）——来自 report.scene
-const TRAFFIC_LEVEL_LABELS: Record<string, string> = {
-  light: '轻交通',
-  medium: '中等交通',
-  heavy: '重交通',
-  channelized: '渠化重载',
-}
-const DISTRESS_LABELS: Record<string, string> = {
-  rutting: '车辙',
-  shoving: '推移拥包',
-  'transverse-crack': '横向裂缝',
-  'longitudinal-crack': '纵向裂缝',
-  'fatigue-crack': '疲劳裂缝',
-  'water-damage': '水损害',
-  raveling: '松散剥落',
-  pothole: '坑槽',
-  skid: '抗滑不足',
-  noise: '交通噪声',
-}
-
+// P3：场景 chips（气候/交通/病害/预算/工期）——来自 report.scene（标签统一 labels.ts，P6）
 const sceneChips = computed<string[]>(() => {
   const scene = report.value?.scene
   if (!scene) return []
   const chips: string[] = []
   if (scene.climate?.zone) chips.push(scene.climate.zone)
   if (scene.traffic?.level) {
-    chips.push(TRAFFIC_LEVEL_LABELS[scene.traffic.level] ?? scene.traffic.level)
+    chips.push(labelOf(TRAFFIC_LEVEL_LABELS, scene.traffic.level))
   }
   for (const d of scene.distresses ?? []) {
-    chips.push(DISTRESS_LABELS[d.type] ?? d.type)
+    chips.push(labelOf(DISTRESS_LABELS, d.type))
   }
   if (scene.constraints?.budget != null) chips.push(`${scene.constraints.budget} 万元`)
   if (scene.constraints?.schedule != null) chips.push(`${scene.constraints.schedule} 天`)

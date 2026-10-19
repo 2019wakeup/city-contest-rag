@@ -252,6 +252,11 @@ describe('CaseCard 场景行中文标签（UI#11）', () => {
   it('场景行标签映射为中文，summary 与场景行各司其职且各出现一次', () => {
     const wrapper = mount(CaseCard, { props: { item: caseWithEnTags } })
 
+    // P6：载入按钮带 aria-label
+    expect(wrapper.find('[data-testid="case-load"]').attributes('aria-label')).toBe(
+      '载入案例：华南高温重载车辙',
+    )
+
     const summaryEl = wrapper.find('[data-testid="case-summary"]')
     const sceneEl = wrapper.find('[data-testid="case-scene"]')
     expect(summaryEl.exists()).toBe(true)
@@ -266,7 +271,7 @@ describe('CaseCard 场景行中文标签（UI#11）', () => {
     const sceneText = sceneEl.text()
     expect(sceneText).toContain('重交通')
     expect(sceneText).toContain('车辙')
-    expect(sceneText).toContain('推挤')
+    expect(sceneText).toContain('推移拥包')
     expect(sceneText).not.toContain('heavy')
     expect(sceneText).not.toContain('rutting')
     expect(sceneText).not.toContain('shoving')

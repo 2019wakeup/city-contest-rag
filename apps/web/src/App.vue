@@ -43,13 +43,13 @@ onMounted(() => {
   <el-container class="app-shell">
     <el-aside :width="collapsed ? '64px' : '200px'" data-testid="app-aside" class="app-aside">
       <div class="app-brand" :class="{ 'app-brand-collapsed': collapsed }">
-        <span
+        <button
+          type="button"
           data-testid="app-logo-mark"
           class="app-logo-mark"
-          role="button"
           aria-label="回到首页"
           @click="goHome"
-        >材</span>
+        >材</button>
         <div v-if="!collapsed" class="app-brand-text">
           <div class="app-logo">数智选材</div>
           <div class="app-subtitle">沥青材料智能推荐</div>

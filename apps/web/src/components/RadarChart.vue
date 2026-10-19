@@ -100,17 +100,25 @@ function render(): void {
   })
 }
 
-function onResize(): void {
-  chart.value?.resize()
-}
+
 
 let themeObserver: MutationObserver | null = null
+let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
   if (!chartEl.value) return
   chart.value = echarts.init(chartEl.value)
   render()
-  window.addEventListener('resize', onResize)
+  // P6：容器 ResizeObserver（折叠侧栏等布局变化即时重绘）
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(() => {
+      chart.value?.resize()
+      render()
+    })
+    resizeObserver.observe(chartEl.value)
+  } else {
+    window.addEventListener('resize', render)
+  }
   // 主题切换（html.class 变化）→ 重绘（A：暗色/亮色即时生效）
   themeObserver = new MutationObserver(() => render())
   themeObserver.observe(document.documentElement, {
@@ -120,7 +128,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize)
+  resizeObserver?.disconnect()
+  resizeObserver = null
+  window.removeEventListener('resize', render)
   themeObserver?.disconnect()
   themeObserver = null
   chart.value?.dispose()
@@ -131,7 +141,12 @@ watch(() => [props.radar, props.predictions], render)
 
 <template>
   <div>
-    <div ref="chart" class="radar-chart"></div>
+    <div
+      ref="chart"
+      class="radar-chart"
+      role="img"
+      aria-label="八维画像雷达图：高温、低温、疲劳、水稳、LCC、碳排、寿命、施工（0-100 分）"
+    ></div>
     <p class="radar-caption">八维画像 · 绝对评分（0-100）</p>
   </div>
 </template>

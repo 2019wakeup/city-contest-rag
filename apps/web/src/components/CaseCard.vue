@@ -1,28 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf as labelOfLabel } from '@/utils/labels'
+
 import type { CaseSeed } from '@road-rec/contracts'
 
 const props = defineProps<{ item: CaseSeed }>()
 const emit = defineEmits<{ load: [id: string] }>()
 
-// 场景内部英文标签 → 中文（面向用户不出现内部键名，UI#11）。
 const TAG_LABELS: Record<string, string> = {
-  heavy: '重交通',
-  medium: '中交通',
-  light: '轻交通',
-  rutting: '车辙',
-  shoving: '推挤',
-  'transverse-crack': '横向裂缝',
-  'fatigue-crack': '疲劳裂缝',
-  raveling: '松散',
-  pothole: '坑槽',
-  'water-damage': '水损害',
-  skid: '抗滑不足',
-  noise: '降噪要求',
+  ...TRAFFIC_LEVEL_LABELS,
+  ...DISTRESS_LABELS,
 }
 
-const labelOf = (tag: string): string => TAG_LABELS[tag] ?? tag
+const labelOf = (tag: string): string => labelOfLabel(TAG_LABELS, tag)
 
 const sceneSummary = computed(() => {
   const scene = props.item?.scene
@@ -41,7 +32,13 @@ function onLoad(): void {
     <h4 class="case-title">{{ item.title }}</h4>
     <p data-testid="case-summary" class="case-summary">{{ item.summary }}</p>
     <p v-if="sceneSummary" data-testid="case-scene" class="case-scene">{{ sceneSummary }}</p>
-    <el-button type="primary" size="small" data-testid="case-load" @click.stop="onLoad">
+    <el-button
+      type="primary"
+      size="small"
+      data-testid="case-load"
+      :aria-label="`载入案例：${item.title}`"
+      @click.stop="onLoad"
+    >
       载入工作台
     </el-button>
   </el-card>
