@@ -58,9 +58,13 @@ const strengths = computed(() => {
     .map((d) => ({ label: d.label, value: Number(r[d.key]) || 0 }))
     .sort((a, b) => b.value - a.value)
     .slice(0, 3)
-    .map((d) => `${d.label} ${d.value}`)
+    .map((d) => `${d.label} ${d.value} 分`)
     .join(' · ')
 })
+
+const strengthSummary = computed(() =>
+  strengths.value ? `优势项：${strengths.value}` : '',
+)
 
 const isTop1 = computed(() => props.index === 0)
 </script>
@@ -90,13 +94,14 @@ const isTop1 = computed(() => props.index === 0)
           首选
         </el-tag>
         <span class="candidate-title">
-          方案 {{ index + 1 }}（{{ candidate?.id ?? '未知' }}）
-          <span class="candidate-mix">
-            {{ formula?.binder?.type ?? '—' }} + {{ formula?.gradation?.type ?? '—' }}
-          </span>
+          方案 {{ index + 1 }} · {{ formula?.binder?.type ?? '—' }}
         </span>
-        <span v-if="!expanded" class="candidate-strengths tabular">{{ strengths }}</span>
-        <span class="candidate-score tabular">综合得分 {{ (candidate?.score ?? 0).toFixed(3) }}</span>
+        <span v-if="!expanded" class="candidate-strengths tabular">{{ strengthSummary }}</span>
+        <el-tooltip content="加权归一化得分（0–1，越高越好）" placement="top">
+          <span class="candidate-score tabular">
+            综合得分 {{ (candidate?.score ?? 0).toFixed(3) }}
+          </span>
+        </el-tooltip>
         <el-tag v-if="isMock" type="warning" data-testid="mock-badge">模拟数据</el-tag>
         <span class="candidate-toggle-hint">{{ expanded ? '收起' : '展开' }}</span>
       </div>

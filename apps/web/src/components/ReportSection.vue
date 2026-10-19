@@ -35,6 +35,11 @@ function parseSegments(paragraph: string): Segment[] {
   return segments
 }
 
+/** P2：正文中 cand-N（backend 已按名次重编号）→ 「方案 N」。 */
+function humanizeCandidateRefs(text: string): string {
+  return text.replace(/\bcand-(\d+)\b/gi, (_match, n: string) => `方案 ${n}`)
+}
+
 // ===== E：打字机逐字揭示 =====
 const TYPE_CHARS_PER_TICK = 60
 const TYPE_TICK_MS = 120
@@ -220,7 +225,9 @@ function onCite(id: string): void {
       <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
         <template
           v-for="(seg, k) in parseSegments(
-            visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
+            humanizeCandidateRefs(
+              visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
+            ),
           )"
           :key="k"
         >

@@ -419,7 +419,11 @@ watch(
             </el-table>
           </el-collapse-item>
           <el-collapse-item title="与规范查表基线对比" name="benchmark">
-            <BenchmarkTable :rows="report.benchmark ?? []" />
+            <BenchmarkTable
+              :rows="report.benchmark ?? []"
+              :candidates="report.candidates ?? []"
+              :targets="report.targets ?? null"
+            />
           </el-collapse-item>
         </el-collapse>
 

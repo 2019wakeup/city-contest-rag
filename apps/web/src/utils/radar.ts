@@ -34,6 +34,17 @@ export function findRadarPrediction(
   return (predictions ?? []).find((p) => p.perf != null && keys.has(p.perf))
 }
 
+/** 按展示 label（如「高温性能」「成本」）反查雷达维度。 */
+export function radarDimOfLabel(label: string): RadarDim | null {
+  for (const indicator of RADAR_INDICATORS) {
+    if (label === indicator.name || indicator.aliases.includes(label)) return indicator.key
+  }
+  return null
+}
+
+/** 低越优维度（P2：基准表方向与达标判定）。 */
+export const LOWER_BETTER_DIMS: ReadonlySet<RadarDim> = new Set(['lcc', 'carbon'])
+
 /**
  * 雷达 tooltip 文本：维度名 + 绝对评分（0-100）+ 绝对值与单位。
  * 无预测值时只显示评分。

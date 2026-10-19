@@ -9,6 +9,7 @@ import { getCases, postChat, postRecommend, streamRecommend } from '@/api/client
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
+import BenchmarkTable from '@/components/BenchmarkTable.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import ChatPanel from '@/components/ChatPanel.vue'
 import EvidencePanel from '@/components/EvidencePanel.vue'
@@ -681,7 +682,8 @@ describe('RecommendView 推荐工作台', () => {
         expanded: false,
       },
     })
-    expect(wrapper.text()).toContain('高温 80 · 施工 80 · 水稳 75')
+    // P2：优势项前缀 + 分后缀
+    expect(wrapper.text()).toContain('优势项：高温 80 分 · 施工 80 分 · 水稳 75 分')
     expect(wrapper.find('[data-testid="top1-badge"]').exists()).toBe(true)
 
     const second = mount(CandidateCard, {
@@ -694,6 +696,48 @@ describe('RecommendView 推荐工作台', () => {
       },
     })
     expect(second.find('[data-testid="top1-badge"]').exists()).toBe(false)
+  })
+
+  it('P2 口径统一：无裸 cand-N、候选头与基准列头方案名、得分 tooltip', async () => {
+    const wrapper = await mountView()
+    const headers = wrapper.findAll('.el-collapse-item__header')
+    for (const h of headers) {
+      if (h.text().includes('基准')) await h.trigger('click')
+    }
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).not.toContain('cand-1')
+    expect(text).not.toContain('cand-2')
+    expect(text).toContain('方案 1')
+    expect(text).toContain('方案 1·SBS改性沥青')
+    expect(text).toContain('优势项：')
+  })
+
+  it('P2 基准表：方向/Δ与百分比/未达标标红/低越优注', async () => {
+    const rows = [{ label: '高温性能', unit: '℃', baseline: 64, candidates: { 'cand-1': 76 } }]
+    const targets = {
+      schemaVersion: '1' as const,
+      targets: [{ perf: '高温PG', value: 80, unit: '℃' }],
+      priorities: [],
+    }
+    const wrapper = mount(BenchmarkTable, {
+      props: { rows, candidates: [makeCandidate('cand-1')], targets },
+    })
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('高越好')
+    expect(text).toContain('+12℃')
+    expect(text).toContain('+18.8%')
+    expect(wrapper.find('.is-below').exists()).toBe(true)
+    expect(text).toContain('低温/成本/碳排越低越好')
+  })
+
+  it('P2 基准表：标题只出现一次（collapse 内不重复）', async () => {
+    const wrapper = await mountView()
+    const count = wrapper.text().split('与规范查表基线对比').length - 1
+    expect(count).toBe(1)
   })
 
   it('空态引导卡：两个行动按钮，查看案例跳转 /cases（UI二轮）', async () => {
@@ -752,9 +796,9 @@ describe('RecommendView 推荐工作台', () => {
     expect(alignOf('目标值')).toBe('right')
     expect(alignOf('权重')).toBe('right')
     expect(alignOf('规范基线')).toBe('right')
-    // 动态候选列（cand-1/cand-2）同样右对齐
-    expect(alignOf('cand-1')).toBe('right')
-    expect(alignOf('cand-2')).toBe('right')
+    // P2：动态候选列头改为「方案 N·简称」，同样右对齐
+    expect(alignOf('方案 1·SBS改性沥青')).toBe('right')
+    expect(alignOf('方案 2·SBS改性沥青')).toBe('right')
   })
 
   it('Esc 收起已展开候选卡（UI二轮键盘）', async () => {
