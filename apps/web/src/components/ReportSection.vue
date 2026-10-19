@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 
 import { DOC_TYPE_LABELS } from '@/utils/labels'
 import type { EvidenceRef, ReportSection as ReportSectionItem } from '@road-rec/contracts'
@@ -17,22 +17,46 @@ const emit = defineEmits<{ cite: [evidenceId: string] }>()
 // chunkId 形态（如 k-modifier-002:0、std-9:1、lit-012:0:bge-m3@1）。
 const ID_PATTERN = /[a-z][a-z0-9-]*(?::\d+)+(?::[a-z0-9._-]+)?/gi
 
+// 排版重构：数字+单位 → num-strong；方案 N → cand-chip（先切证据 id，再对纯文本段强调）。
+const NUM_STRONG_PATTERN = /(\d+(?:\.\d+)?)\s*(mm|℃|%|年|万元|tCO2e|万次|分)/g
+const CAND_CHIP_PATTERN = /方案\s*\d+/g
+
 interface Segment {
   text: string
   id?: string
+  /** 纯文本段的内联强调类型。 */
+  em?: 'num' | 'chip'
 }
 
-/** 段落中裸证据 id → 可点击角标（点击滚动定位到证据链对应 chunk）。 */
+function emphasizeText(text: string): Segment[] {
+  const combined = new RegExp(
+    `(${CAND_CHIP_PATTERN.source})|(${NUM_STRONG_PATTERN.source})`,
+    'g',
+  )
+  const segments: Segment[] = []
+  let last = 0
+  for (const m of text.matchAll(combined)) {
+    const index = m.index ?? 0
+    if (index > last) segments.push({ text: text.slice(last, index) })
+    if (m[1]) segments.push({ text: m[1], em: 'chip' })
+    else if (m[2]) segments.push({ text: m[2], em: 'num' })
+    last = index + m[0].length
+  }
+  if (last < text.length) segments.push({ text: text.slice(last) })
+  return segments
+}
+
+/** 段落分段：先切证据 id（不受强调影响），再对纯文本段做 num-strong/cand-chip。 */
 function parseSegments(paragraph: string): Segment[] {
   const segments: Segment[] = []
   let last = 0
   for (const m of paragraph.matchAll(ID_PATTERN)) {
     const index = m.index ?? 0
-    if (index > last) segments.push({ text: paragraph.slice(last, index) })
+    if (index > last) segments.push(...emphasizeText(paragraph.slice(last, index)))
     segments.push({ text: m[0], id: m[0] })
     last = index + m[0].length
   }
-  if (last < paragraph.length) segments.push({ text: paragraph.slice(last) })
+  if (last < paragraph.length) segments.push(...emphasizeText(paragraph.slice(last)))
   return segments
 }
 
@@ -153,6 +177,30 @@ const flatIndexOf = (secIndex: number, paraIndex: number): number => {
   return idx + paraIndex
 }
 
+/** 段落最终文本（揭示 → 方案化 → 单位 nbsp）。 */
+const finalTextOf = (secIndex: number, paraIndex: number): string => {
+  const flat = flatParagraphs.value[flatIndexOf(secIndex, paraIndex)]
+  const raw = flat?.text ?? (props.sections?.[secIndex]?.paragraphs ?? [])[paraIndex] ?? ''
+  return withUnitNbsp(
+    humanizeCandidateRefs(visibleText(flat ?? { text: raw, secIndex, start: 0 })),
+  )
+}
+
+// 排版重构：要点自动成列表（每行均以 · / - / • 前缀开头）
+const isPointList = (text: string): boolean => {
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+  return lines.length > 0 && lines.every((l) => /^[·\-•]\s/.test(l))
+}
+
+const pointItems = (text: string): string[] =>
+  text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => l.replace(/^[·\-•]\s*/, ''))
 
 const evidenceById = computed(
   () => new Map((props.evidence ?? []).map((e) => [e.chunkId, e])),
@@ -193,6 +241,20 @@ const citeTooltip = (id: string): string => {
 function onCite(id: string): void {
   emit('cite', id)
 }
+
+// 排版重构：关联证据收拢（每节独立展开态，默认收起）
+const openRefs = ref<Set<number>>(new Set())
+
+function refsOpen(secIndex: number): boolean {
+  return openRefs.value.has(secIndex)
+}
+
+function toggleRefs(secIndex: number): void {
+  const next = new Set(openRefs.value)
+  if (next.has(secIndex)) next.delete(secIndex)
+  else next.add(secIndex)
+  openRefs.value = next
+}
 </script>
 
 <template>
@@ -218,47 +280,75 @@ function onCite(id: string): void {
       :style="{ '--i': i }"
     >
       <h4 class="report-title">
+        <span class="report-title-num mono tabular">{{ String(i + 1).padStart(2, '0') }}</span>
         {{ s.title }}
         <span v-if="typewriter && !sectionDone(i)" class="reveal-badge">生成中…</span>
         <span v-else-if="typewriter" class="reveal-badge is-done">已完成</span>
       </h4>
-      <p v-for="(p, j) in s.paragraphs ?? []" :key="j" class="report-paragraph">
-        <template
-          v-for="(seg, k) in parseSegments(
-            withUnitNbsp(
-              humanizeCandidateRefs(
-                visibleText(flatParagraphs[flatIndexOf(i, j)] ?? { text: p, secIndex: i, start: 0 }),
-              ),
-            ),
-          )"
-          :key="k"
-        >
-          <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
-            <button
-              type="button"
-              class="report-cite"
-              data-testid="evidence-cite"
-              @click="onCite(seg.id)"
-            >
-              {{ citeLabel(seg.id) }}
-            </button>
-          </el-tooltip>
-          <template v-else>{{ seg.text }}</template>
-        </template>
-      </p>
+
+      <template v-for="(p, j) in s.paragraphs ?? []" :key="j">
+        <ul v-if="isPointList(finalTextOf(i, j))" class="report-points">
+          <li v-for="(item, li) in pointItems(finalTextOf(i, j))" :key="li">
+            <template v-for="(seg, k) in parseSegments(item)" :key="k">
+              <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
+                <button
+                  type="button"
+                  class="report-cite"
+                  data-testid="evidence-cite"
+                  @click="onCite(seg.id)"
+                >
+                  {{ citeLabel(seg.id) }}
+                </button>
+              </el-tooltip>
+              <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
+              <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+          </li>
+        </ul>
+        <p v-else class="report-paragraph" :class="{ 'report-lead': j === 0 }">
+          <template v-for="(seg, k) in parseSegments(finalTextOf(i, j))" :key="k">
+            <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
+              <button
+                type="button"
+                class="report-cite"
+                data-testid="evidence-cite"
+                @click="onCite(seg.id)"
+              >
+                {{ citeLabel(seg.id) }}
+              </button>
+            </el-tooltip>
+            <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
+            <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
+            <template v-else>{{ seg.text }}</template>
+          </template>
+        </p>
+      </template>
+
       <div v-if="(s.evidenceIds ?? []).length > 0" class="report-refs">
-        <el-tooltip
-          v-for="eid in s.evidenceIds ?? []"
-          :key="eid"
-          :content="citeTooltip(eid)"
-          placement="top"
+        <button
+          type="button"
+          class="report-refs-toggle"
+          data-testid="refs-toggle"
+          :aria-expanded="refsOpen(i)"
+          @click="toggleRefs(i)"
         >
-          <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(eid)">
-            <el-tag size="small" type="info" class="report-ref-tag">
-              {{ citeLabel(eid) }}
-            </el-tag>
-          </span>
-        </el-tooltip>
+          {{ refsOpen(i) ? '收起' : `关联证据 · ${(s.evidenceIds ?? []).length} 条` }}
+        </button>
+        <div v-if="refsOpen(i)" class="report-refs-row">
+          <el-tooltip
+            v-for="eid in s.evidenceIds ?? []"
+            :key="eid"
+            :content="citeTooltip(eid)"
+            placement="top"
+          >
+            <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(eid)">
+              <el-tag size="small" type="info" class="report-ref-tag">
+                {{ citeLabel(eid) }}
+              </el-tag>
+            </span>
+          </el-tooltip>
+        </div>
       </div>
     </section>
   </el-card>
@@ -269,15 +359,27 @@ function onCite(id: string): void {
   margin-bottom: 12px;
 }
 
-/* P5：节标题 16px/600 + 上间距 24px；节间 32px */
+/* 排版重构：节间 40px */
 .report-block + .report-block {
-  margin-top: 32px;
+  margin-top: 40px;
 }
 
+/* 排版重构：节标题 = mono 两位编号 + 16px/600 标题，间距 8px */
 .report-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   margin: 0 0 8px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.report-title-num {
+  font-family:
+    'SF Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
 }
 
 .reveal-badge {
@@ -303,11 +405,58 @@ function onCite(id: string): void {
   }
 }
 
+/* 排版重构：正文 34em（476px）/ 14px / 1.75；段距 20px */
 .report-paragraph {
-  max-width: 40em;
-  margin: 0 0 16px;
-  line-height: 1.7;
+  max-width: 34em;
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.75;
   color: var(--el-text-color-regular);
+}
+
+/* 排版重构：结论先行块（每节第 1 段） */
+.report-paragraph.report-lead {
+  max-width: 34em;
+  padding: 10px 12px;
+  border-left: 3px solid var(--el-color-primary);
+  background: var(--el-fill-color-light);
+  background: color-mix(in srgb, var(--el-color-primary-light-9) 8%, transparent);
+  border-radius: 0 var(--app-radius-inner) var(--app-radius-inner) 0;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* 排版重构：要点列表（去前缀，条目间距 8px） */
+.report-points {
+  max-width: 34em;
+  margin: 0 0 20px;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--el-text-color-regular);
+}
+
+.report-points li {
+  margin: 8px 0;
+}
+
+/* 排版重构：数字+单位强调 */
+.num-strong {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--el-color-primary);
+}
+
+/* 排版重构：「方案 N」胶囊 */
+.cand-chip {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  font-size: 13px;
+  line-height: 20px;
 }
 
 .report-cite {
@@ -328,11 +477,34 @@ function onCite(id: string): void {
   background: var(--el-color-primary-light-8);
 }
 
+/* 排版重构：关联证据收拢胶囊 */
 .report-refs {
+  margin-bottom: 12px;
+}
+
+.report-refs-toggle {
+  padding: 4px 12px;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 999px;
+  background: var(--el-fill-color-blank);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.report-refs-toggle:hover {
+  border-color: var(--el-color-primary);
+  color: var(--el-color-primary);
+}
+
+.report-refs-row {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-top: 8px;
 }
 
 .report-ref-wrap {

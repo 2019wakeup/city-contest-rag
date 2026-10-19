@@ -554,9 +554,98 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.text()).toContain('置信区间不可用（模块 C 未提供）')
   })
 
+  it('排版重构：结论先行块/节编号/行宽（排版）', () => {
+    const sections = [
+      { title: '推荐理由', paragraphs: ['首段结论。', '普通正文。'], evidenceIds: [] },
+      { title: '对比分析', paragraphs: ['第二段结论。'], evidenceIds: [] },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const leads = wrapper.findAll('.report-lead')
+    expect(leads.length).toBe(2) // 每节第 1 段
+    expect(leads[0].text()).toBe('首段结论。')
+
+    const nums = wrapper.findAll('.report-title-num')
+    expect(nums.map((n) => n.text())).toEqual(['01', '02'])
+    expect(nums[0].classes()).toContain('mono')
+
+    const source = readFileSync('src/components/ReportSection.vue', 'utf8')
+    expect(source).toContain('max-width: 34em')
+  })
+
+  it('排版重构：要点段落转 ul 且去前缀（排版）', () => {
+    const sections = [
+      {
+        title: '要点',
+        paragraphs: ['· 掺量 4.5% 时效果最优\n· 低温性能提升明显'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const ul = wrapper.find('ul.report-points')
+    expect(ul.exists()).toBe(true)
+    const lis = ul.findAll('li')
+    expect(lis.length).toBe(2)
+    expect(lis[0].text()).not.toContain('·')
+    expect(lis[0].text()).toContain('掺量')
+    expect(lis[1].text()).toContain('低温性能')
+  })
+
+  it('排版重构：数字单位 num-strong 与方案 N cand-chip（排版）', () => {
+    const sections = [
+      {
+        title: '强调',
+        paragraphs: ['掺量 4.5% 时较方案 2 更优，寿命达 12年。'],
+        evidenceIds: [],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok' },
+    })
+
+    const nums = wrapper.findAll('.num-strong')
+    expect(nums.length).toBe(2)
+    expect(nums[0].text()).toContain('4.5')
+    expect(nums[1].text()).toContain('12')
+
+    const chip = wrapper.find('.cand-chip')
+    expect(chip.exists()).toBe(true)
+    expect(chip.text()).toBe('方案 2')
+  })
+
+  it('排版重构：关联证据默认收起、点击展开显示收起（排版）', async () => {
+    const sections = [
+      {
+        title: '推荐理由',
+        paragraphs: ['推荐依据如下。'],
+        evidenceIds: ['chunk-1'],
+      },
+    ]
+    const wrapper = mount(ReportSection, {
+      props: { sections, llmStatus: 'ok', evidence: [] },
+    })
+
+    const toggle = wrapper.find('[data-testid="refs-toggle"]')
+    expect(toggle.exists()).toBe(true)
+    expect(toggle.text()).toContain('关联证据 · 1 条')
+    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(0) // 默认收起
+
+    await toggle.trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(1)
+    expect(wrapper.find('[data-testid="refs-toggle"]').text()).toContain('收起')
+
+    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
+    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(0)
+  })
+
   it('P5 报告正文排版规格 + 数字单位 &nbsp;（P5）', () => {
     const source = readFileSync('src/components/ReportSection.vue', 'utf8')
-    expect(source).toContain('max-width: 40em')
+    expect(source).toContain('max-width: 34em')
     expect(source).toContain('font-size: 16px')
 
     const sections = [
@@ -689,6 +778,9 @@ describe('RecommendView 推荐工作台', () => {
       props: { sections, llmStatus: 'ok', evidence: [] },
     })
 
+    // 排版重构：关联证据默认收起 → 先展开
+    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
+
     const cites = wrapper.findAll('[data-testid="evidence-cite"]')
     expect(cites.length).toBe(2) // 段落内联 1 + 底部引用 1
     // 展示编号而非裸 id
@@ -715,6 +807,9 @@ describe('RecommendView 推荐工作台', () => {
     const wrapper = mount(ReportSection, {
       props: { sections, llmStatus: 'ok', evidence },
     })
+
+    // 排版重构：关联证据默认收起 → 先展开
+    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
 
     const chips = wrapper.findAll('[data-testid="evidence-cite"]')
     expect(chips.length).toBe(3)
@@ -1522,6 +1617,9 @@ describe('RecommendView 推荐工作台', () => {
     vi.useFakeTimers()
     try {
       const wrapper = await mountView()
+      // 排版重构：关联证据默认收起 → 先展开再点角标
+      await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
+      await flushPromises()
       await wrapper.findAll('[data-testid="evidence-cite"]')[0].trigger('click')
       await flushPromises()
 

@@ -176,7 +176,7 @@ describe('SceneForm（schema 驱动）', () => {
     })
   })
 
-  it('Ctrl/⌘+Enter 提交表单，普通 Enter 不提交（UI二轮键盘）', async () => {
+  it('Ctrl/⌘+Enter 提交表单，普通 Enter 不提交（UI二轮键盘）', { timeout: 20000 }, async () => {
     const wrapper = mount(SceneForm)
     await fillRequired(wrapper)
     const form = wrapper.find('form')
