@@ -24,7 +24,8 @@ function defaultValue(def: FieldDef): unknown {
     case 'select':
       return def.options?.[0]?.value ?? ''
     case 'number':
-      return 0
+      // P1：数值字段初值 null（显示 placeholder 示例），必填校验拦截空值。
+      return null
     case 'checkbox':
       return [] as string[]
     default:
@@ -37,6 +38,9 @@ const values = reactive<Record<string, unknown>>({})
 for (const { path, def } of fields) {
   values[path] = defaultValue(def)
 }
+
+/** P1：ESAL 显示单位为「万次」——用户输 3000 提交 esal=3000×10⁴；回填时反向 ÷10⁴。 */
+const ESAL_PATH = 'traffic.esal'
 
 function getByPath(source: unknown, path: string): unknown {
   let node = source as Record<string, unknown>
@@ -52,8 +56,13 @@ function applyScene(scene: SceneInput | null | undefined): void {
   if (!scene) return
   for (const { path, def } of fields) {
     if (path === 'distresses') continue
-    const v = getByPath(scene, path)
-    values[path] = v === undefined ? defaultValue(def) : v
+    let v = getByPath(scene, path)
+    if (v === undefined) {
+      v = defaultValue(def)
+    } else if (path === ESAL_PATH && typeof v === 'number') {
+      v = v / 1e4
+    }
+    values[path] = v
   }
   values.distresses = (scene.distresses ?? []).map((d) => d.type)
 }
@@ -75,7 +84,11 @@ function buildScene(): SceneInput {
   const root: Record<string, unknown> = { schemaVersion: SCHEMA_VERSION }
   for (const { path } of fields) {
     if (path === 'distresses') continue
-    setByPath(root, path, values[path])
+    let value = values[path]
+    if (path === ESAL_PATH && typeof value === 'number') {
+      value = value * 1e4
+    }
+    setByPath(root, path, value)
   }
   // 唯一特例：checkbox 控件的目标字段是对象数组（distresses）；
   // 严重程度默认「中」，与 FIELD_REGISTRY.distresses.placeholder 的约定一致。
@@ -86,7 +99,34 @@ function buildScene(): SceneInput {
   return root as unknown as SceneInput
 }
 
+// ---- P1：必填校验（内联字段错误，不通过不提交）----
+const REQUIRED_NUMERIC = [
+  'climate.pgHigh',
+  'climate.pgLow',
+  'traffic.esal',
+  'constraints.budget',
+  'constraints.schedule',
+]
+const errors = reactive<Record<string, string>>({})
+
+function validate(): boolean {
+  for (const key of Object.keys(errors)) delete errors[key]
+  let ok = true
+  for (const path of REQUIRED_NUMERIC) {
+    if (values[path] == null || values[path] === '') {
+      errors[path] = '必填'
+      ok = false
+    }
+  }
+  if ((values.distresses as string[]).length === 0) {
+    errors.distresses = '至少选择 1 个病害'
+    ok = false
+  }
+  return ok
+}
+
 function onSubmit(): void {
+  if (!validate()) return
   emit('submit', buildScene())
 }
 
@@ -105,7 +145,13 @@ function onFormKeydown(event: KeyboardEvent): void {
       v-for="{ path, def } in fields"
       :key="path"
       :data-testid="`field-${path}`"
-      :label="def.unit ? `${def.label}（${def.unit}）` : def.label"
+      :label="
+        path === 'traffic.esal'
+          ? '累计当量轴次（万次）'
+          : def.unit
+            ? `${def.label}（${def.unit}）`
+            : def.label
+      "
     >
       <el-select
         v-if="def.control === 'select'"
@@ -156,6 +202,11 @@ function onFormKeydown(event: KeyboardEvent): void {
         :placeholder="def.placeholder"
         class="scene-field-control"
       />
+
+      <!-- P1：内联必填错误（自实现，不依赖组件库校验状态） -->
+      <div v-if="errors[path]" data-testid="field-error" class="scene-field-error">
+        {{ errors[path] }}
+      </div>
     </el-form-item>
 
     <el-button type="primary" data-testid="scene-form-submit" @click="onSubmit">
@@ -167,5 +218,11 @@ function onFormKeydown(event: KeyboardEvent): void {
 <style scoped>
 .scene-field-control {
   width: 100%;
+}
+
+.scene-field-error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--el-color-danger);
 }
 </style>

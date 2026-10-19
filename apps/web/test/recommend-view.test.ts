@@ -56,11 +56,11 @@ const streamRecommendMock = vi.mocked(streamRecommend)
 
 const validScene: SceneInput = {
   schemaVersion: '1',
-  climate: { zone: '华南高温区', pgHigh: 76, pgLow: -22 },
+  climate: { zone: '1-4 华南湿热区', pgHigh: 76, pgLow: -22 },
   traffic: { level: 'heavy', esal: 20000000 },
-  pavement: { layer: '上面层', structure: '半刚性基层沥青路面' },
-  distresses: [{ type: '车辙', severity: '中' }],
-  constraints: { budget: 500, schedule: 30, env: '环保要求高', noise: '低噪' },
+  pavement: { layer: 'surface', structure: '半刚性基层沥青路面' },
+  distresses: [{ type: 'rutting', severity: '中' }],
+  constraints: { budget: 500, schedule: 30, env: 'normal', noise: 'none' },
   notes: '',
 }
 
@@ -799,6 +799,20 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.find('[data-testid="scene-form-submit"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="kpi-hero"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="back-to-input"]').exists()).toBe(false)
+
+    // P1：必填校验——填齐数值与病害后提交
+    for (const [path, value] of [
+      ['climate.pgHigh', '76'],
+      ['climate.pgLow', '-22'],
+      ['traffic.esal', '2000'],
+      ['constraints.budget', '500'],
+      ['constraints.schedule', '30'],
+    ] as const) {
+      await wrapper.find(`[data-testid="field-${path}"] input`).setValue(value)
+    }
+    await wrapper
+      .find('[data-testid="field-distresses"] input[type="checkbox"]')
+      .setValue(true)
 
     await wrapper.find('[data-testid="scene-form-submit"]').trigger('click')
     await flushPromises()

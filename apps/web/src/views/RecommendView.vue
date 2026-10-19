@@ -211,6 +211,8 @@ watch(
 
     <!-- ============ 第 1 页：参数 ============ -->
     <div v-if="store.step === 'input'" class="input-page">
+      <h1 class="page-title">推荐工作台</h1>
+      <p class="page-subtitle">① 参数 ② 结果</p>
       <el-card shadow="never" class="panel input-card">
         <template #header>典型案例一键填入</template>
         <el-select
@@ -485,6 +487,18 @@ watch(
 .input-page {
   max-width: 640px;
   margin: 0 auto;
+}
+
+.page-title {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
 }
 
 .input-card :deep(.el-card__body) {
