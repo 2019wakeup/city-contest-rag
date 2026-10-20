@@ -145,4 +145,23 @@ describe('B5 MMR 集成（fake store 注入，MMR on/off 对比）', () => {
     const setOff = new Set(off.candidates[0].evidenceIds);
     expect([...setOn].every((id) => setOff.has(id)) && setOn.size === setOff.size).toBe(false);
   });
+
+  it('MMR_LAMBDA 环境变量生效：λ=1 时退化为纯相关度（近重复重新入选）', async () => {
+    const hits = [
+      makeHit('x-1:0:v1', '高温车辙改性沥青混合料性能研究'),
+      makeHit('x-2:0:v1', '高温车辙改性沥青混合料性能研究'),
+      makeHit('y-1:0:v1', '低温抗裂橡胶沥青研究'),
+      makeHit('z-1:0:v1', '排水降噪路面技术'),
+      makeHit('lit-1:0:v1', '车辙处治文献综述', 'literature'),
+      makeHit('k-1:0:v1', '常规知识条目'),
+    ];
+    vi.stubEnv('MMR', 'on');
+    vi.stubEnv('MMR_LAMBDA', '1');
+    vi.stubEnv('RERANK', 'off');
+    const store = new FixedEvidenceStore(hits);
+    const report = await recommend(loadCaseScene('case-01'), { store, embedder: fakeEmbedder, relationDb });
+    // λ=1：多样性项归零 → 近重复 x-1/x-2 同时入选（与 λ=0.7 的行为相反）
+    expect(report.candidates[0].evidenceIds).toContain('x-1:0:v1');
+    expect(report.candidates[0].evidenceIds).toContain('x-2:0:v1');
+  });
 });

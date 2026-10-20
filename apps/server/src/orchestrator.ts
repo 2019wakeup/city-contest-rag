@@ -669,24 +669,37 @@ export function selectMmrHits(
   return chosen;
 }
 
-/** B5：MMR 池 = 重排 top-6（rel 用重排分，无重排按位置衰减）+ 场景第二查询命中 */
+/** B5：MMR_LAMBDA 环境变量（0–1，非法/缺省 0.7；供后续调参重测） */
+function resolveMmrLambda(): number {
+  const raw = Number(process.env.MMR_LAMBDA);
+  return Number.isFinite(raw) && raw >= 0 && raw <= 1 ? raw : 0.7;
+}
+
+/** B5：MMR_POOL 环境变量（池内重排命中条数，缺省 RERANK_TOP_K） */
+function resolveMmrPoolSize(): number {
+  const raw = Number(process.env.MMR_POOL);
+  return Number.isInteger(raw) && raw >= 1 && raw <= 20 ? raw : RERANK_TOP_K;
+}
+
+/** B5：MMR 池 = 重排 top-K（rel 用重排分，无重排按位置衰减）+ 场景第二查询命中 */
 function buildMmrPoolItems(
   reranked: RerankItem[] | undefined,
   primaryHits: SearchHit[],
   sceneHits: SearchHit[],
 ): Array<MmrPoolItem & { queryIndex: number }> {
+  const poolSize = resolveMmrPoolSize();
   const items: Array<MmrPoolItem & { queryIndex: number }> = [];
   if (reranked) {
-    reranked.slice(0, RERANK_TOP_K).forEach((r) =>
+    reranked.slice(0, poolSize).forEach((r) =>
       items.push({ hit: r.hit, rel: Math.max(r.score, 0), queryIndex: 0 }),
     );
   } else {
-    primaryHits.slice(0, RERANK_TOP_K).forEach((h, idx) =>
+    primaryHits.slice(0, poolSize).forEach((h, idx) =>
       items.push({ hit: h, rel: 1 / (idx + 1), queryIndex: 0 }),
     );
   }
   sceneHits.forEach((h, idx) =>
-    items.push({ hit: h, rel: 1 / (RERANK_TOP_K + idx + 1), queryIndex: 1 }),
+    items.push({ hit: h, rel: 1 / (poolSize + idx + 1), queryIndex: 1 }),
   );
   return items;
 }
@@ -952,12 +965,12 @@ async function retrieveEvidence(
       // 主选择（queryIndex 0/1）：MMR=on（默认）→ 池 = 重排 top-6 + 场景命中，按
       // MMR(d)=λ·rel−(1−λ)·max_sim 迭代选 3；MMR=off → 回退原 B2 配额四遍选择
       const rerankedHits = rerankMap.get(i);
-      const mmrOn = process.env.MMR !== 'off';
+      const mmrOn = process.env.MMR === 'on'; // 裁决：默认 off（数据驱动），显式 MMR=on 才启用
       if (mmrOn) {
         const sceneHits = await searchOne(sceneQueryText, EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
         pool.push(...sceneHits);
         const poolItems = buildMmrPoolItems(rerankedHits, primaryHitsAll[i], sceneHits);
-        for (const h of selectMmrHits(poolItems, globalChunkCount)) {
+        for (const h of selectMmrHits(poolItems, globalChunkCount, { lambda: resolveMmrLambda() })) {
           const queryIndex = poolItems.find((p) => p.hit.chunkId === h.chunkId)?.queryIndex ?? 0;
           take(h, queryIndex);
         }
