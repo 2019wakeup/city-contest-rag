@@ -26,7 +26,8 @@ async function main(): Promise<void> {
   }
 
   const dbDir = join(REPO_ROOT, 'data/db');
-  const indexDir = join(REPO_ROOT, 'data/index');
+  // P1·D5（data 实验）：INDEX_DIR 覆盖索引目录（如 data/index/lancedb-e5base 做公平对比）
+  const indexDir = process.env.INDEX_DIR ? resolve(process.env.INDEX_DIR) : join(REPO_ROOT, 'data/index');
   mkdirSync(dbDir, { recursive: true });
   mkdirSync(indexDir, { recursive: true });
 
