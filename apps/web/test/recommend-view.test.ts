@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getCases, postChat, postRecommend, streamRecommend } from '@/api/client'
 import { DOC_TYPE_LABELS, LAB_INDICATOR_LABELS, labelOf } from '@/utils/labels'
+import { buildWaterfallData } from '@/utils/breakdown'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
@@ -44,7 +45,7 @@ vi.mock('echarts/core', () => ({
     dispose: () => {},
   }),
 }))
-vi.mock('echarts/charts', () => ({ RadarChart: {}, BarChart: {} }))
+vi.mock('echarts/charts', () => ({ RadarChart: {}, BarChart: {}, PieChart: {}, CustomChart: {}, LineChart: {} }))
 vi.mock('echarts/components', () => ({
   RadarComponent: {},
   TooltipComponent: {},
@@ -1876,29 +1877,64 @@ describe('RecommendView 推荐工作台', () => {
     }
   })
 
-  it('UI8 瀑布图：贡献累加=score、penalty 负红柱（可视化）', async () => {
+  it('UI8 瀑布数据映射：[x,y0,y1] 序列/合计=score/penalty 插入（可视化）', () => {
+    const breakdown = [
+      { dimension: 'd1', label: '高温', weight: 0.4, normalized: 0.5, contribution: 0.199 },
+      { dimension: 'd2', label: '低温', weight: 0.2, normalized: 0.34, contribution: 0.068 },
+      { dimension: 'd3', label: '疲劳', weight: 0.3, normalized: 0.9, contribution: 0.27 },
+      { dimension: 'd4', label: '施工', weight: 0.1, normalized: 2.36, contribution: 0.236 },
+    ]
+    const data = buildWaterfallData(breakdown, 0.036, 0.737)
+
+    // ① 前端计算的 [y0, y1] 序列：累计 0.199/0.267/0.537/0.773
+    expect(data.bars.map((b) => [b.y0, b.y1])).toEqual([
+      [0, 0.199],
+      [0.199, 0.267],
+      [0.267, 0.537],
+      [0.537, 0.773],
+      [0.773, 0.737], // penalty 向下
+      [0, 0.737], // ② 合计柱 0→score
+    ])
+    // ③ penalty 插在维度后、合计前
+    expect(data.bars.map((b) => b.kind)).toEqual(['item', 'item', 'item', 'item', 'penalty', 'total'])
+    expect(data.totalValue).toBe(0.737)
+    expect(data.cumulativeLine.map((d) => Math.round(d.value * 1000) / 1000)).toEqual([
+      0.199, 0.267, 0.537, 0.773, 0.737, 0.737,
+    ])
+  })
+
+  it('UI8 瀑布图：custom 浮动柱 + line 累计连线 + 合计/惩罚样式（可视化）', async () => {
     chartOptions.length = 0
     const breakdown = [
-      { dimension: 'd1', label: '高温', weight: 0.4, normalized: 0.8, contribution: 0.32 },
-      { dimension: 'd2', label: '水稳', weight: 0.3, normalized: 0.9, contribution: 0.27 },
-      { dimension: 'd3', label: '低温', weight: 0.3, normalized: 0.8, contribution: 0.24 },
+      { dimension: 'd1', label: '高温', weight: 0.4, normalized: 0.5, contribution: 0.199 },
+      { dimension: 'd2', label: '低温', weight: 0.2, normalized: 0.34, contribution: 0.068 },
     ]
     const wrapper = mount(WaterfallChart, {
-      props: { score: 0.75, breakdown, penalty: 0.08 },
+      props: { score: 0.231, breakdown, penalty: 0.036 },
     })
     await flushPromises()
 
     const option = chartOptions.at(-1) as
-      | { series?: Array<Record<string, unknown>> }
+      | {
+          xAxis?: { data?: string[] }
+          series?: Array<Record<string, unknown>>
+        }
       | undefined
-    const base = (option?.series?.[0]?.data ?? []) as number[]
-    const contrib = (option?.series?.[1]?.data ?? []) as Array<{ value: number; itemStyle?: { color?: string } }>
-    expect(base.map((v) => Math.round(v * 100) / 100)).toEqual([0, 0.32, 0.59, 0.83])
-    expect(contrib.map((c) => c.value)).toEqual([0.32, 0.27, 0.24, -0.08])
-    // 累加 0.32+0.27+0.24-0.08 = 0.75 = score
-    expect(contrib.reduce((acc, c) => acc + c.value, 0)).toBeCloseTo(0.75, 10)
-    // penalty 红柱
-    expect(contrib[3].itemStyle?.color).toBe('#EF4444')
+    const types = option?.series?.map((sr) => sr.type)
+    expect(types).toContain('custom')
+    expect(types).toContain('line')
+    expect(option?.xAxis?.data).toEqual(['高温', '低温', '惩罚 −0.036', '合计'])
+
+    const custom = option?.series?.find((sr) => sr.type === 'custom')
+    const customData = (custom?.data ?? []) as Array<[string, number, number]>
+    // penalty 柱向下（y1 < y0）；合计柱 0→score
+    expect(customData[2]).toEqual(['惩罚 −0.036', 0.267, 0.231])
+    expect(customData[3]).toEqual(['合计', 0, 0.231])
+
+    const lineSeries = option?.series?.find((sr) => sr.type === 'line')
+    expect((lineSeries?.data as Array<[string, number]>).map((d) => d[1])).toEqual([
+      0.199, 0.267, 0.231, 0.231,
+    ])
     wrapper.unmount()
   })
 
@@ -1972,28 +2008,28 @@ describe('RecommendView 推荐工作台', () => {
 
     const waterfallCount = () =>
       chartOptions.filter(
-        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === 'waterfall-bar',
       ).length
     expect(waterfallCount()).toBe(1)
-    const firstContrib = (
+    const firstCustom = (
       chartOptions.find(
-        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === 'waterfall-bar',
       ) as { series?: Array<Record<string, unknown>> } | undefined
-    )?.series?.[1]?.data as Array<{ value: number }>
-    expect(firstContrib[0].value).toBe(0.4)
+    )?.series?.[0]?.data as Array<[string, number, number]>
+    expect(firstCustom[0][2]).toBe(0.4)
 
     // 切换到方案 2 → 重绘为 cand-2 贡献
     await wrapper.findAll('[data-testid="analysis-switch"] input')[1].setValue(true)
     await flushPromises()
     expect(waterfallCount()).toBe(2)
-    const secondContrib = (
+    const secondCustom = (
       chartOptions
         .filter(
-          (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+          (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === 'waterfall-bar',
         )
         .at(-1) as { series?: Array<Record<string, unknown>> } | undefined
-    )?.series?.[1]?.data as Array<{ value: number }>
-    expect(secondContrib[0].value).toBe(0.3)
+    )?.series?.[0]?.data as Array<[string, number, number]>
+    expect(secondCustom[0][2]).toBe(0.3)
   })
 
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {

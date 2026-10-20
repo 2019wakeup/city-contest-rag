@@ -27,7 +27,7 @@ vi.mock('echarts/core', () => ({
     dispose: () => {},
   }),
 }))
-vi.mock('echarts/charts', () => ({ PieChart: {}, RadarChart: {}, BarChart: {} }))
+vi.mock('echarts/charts', () => ({ PieChart: {}, RadarChart: {}, BarChart: {}, CustomChart: {}, LineChart: {} }))
 vi.mock('echarts/components', () => ({
   RadarComponent: {},
   TooltipComponent: {},

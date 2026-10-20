@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { BarChart } from 'echarts/charts'
+import { CustomChart, LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
 import type { EChartsType } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 
-import { penaltyLabel } from '@/utils/breakdown'
+import { buildWaterfallData } from '@/utils/breakdown'
 import type { ScoreBreakdownItem } from '@road-rec/contracts'
 
 /**
- * 得分构成瀑布图：从 0 起累加各维贡献到达 score；penalty 向下红柱。
- * tooltip 显示「维度 · 权重 · 归一化值 · 贡献」。
+ * 标准 ECharts 瀑布图：custom 浮动柱（起点累计 y0 → 终点 y0+contribution）
+ * + 累计连线（line，圆点虚线）+ 合计柱（cyan 实心，label 显示分数）。
+ * penalty 正数插向下红柱；reduced-motion 下关闭动画。
  */
-echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
+echarts.use([CustomChart, LineChart, GridComponent, TooltipComponent, CanvasRenderer])
 
 const props = defineProps<{
   score: number
@@ -24,79 +25,114 @@ const props = defineProps<{
 const chartEl = useTemplateRef<HTMLDivElement>('chart')
 const chart = shallowRef<EChartsType | null>(null)
 
-const items = computed(() => props.breakdown ?? [])
-const penalty = computed(() =>
-  props.penalty != null && props.penalty > 0
-    ? { label: penaltyLabel(props.penalty), contribution: props.penalty }
-    : null,
+const data = computed(() =>
+  buildWaterfallData(props.breakdown ?? [], props.penalty ?? null, props.score ?? 0),
 )
 
-function render(): void {
-  const list = items.value
-  const pen = penalty.value
-  // 累积底 + 贡献柱（stack）；penalty 负向
-  const baseData: number[] = []
-  const contribData: number[] = []
-  let cumulative = 0
-  for (const item of list) {
-    baseData.push(cumulative)
-    contribData.push(item.contribution)
-    cumulative += item.contribution
-  }
-  if (pen && pen.contribution > 0) {
-    baseData.push(cumulative)
-    contribData.push(-pen.contribution)
-    cumulative -= pen.contribution
-  }
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
-  const xLabels = [...list.map((item) => item.label), ...(pen ? [pen.label] : [])]
+function render(): void {
+  const { bars, cumulativeLine, totalValue } = data.value
+  if (bars.length === 0) return
+  const yValues = bars.flatMap((b) => [b.y0, b.y1])
+  const yMin = Math.min(0, ...yValues)
+  const yMax = Math.max(1, ...yValues)
+  const widthRatio = 0.55
 
   chart.value?.setOption({
+    animation: prefersReducedMotion() ? false : undefined,
     tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
+      trigger: 'item',
       formatter: (params: unknown) => {
-        const arr = params as Array<{ name?: string }>
-        const name = arr[0]?.name ?? ''
-        const item = list.find((x) => x.label === name)
-        if (item) {
-          return `${item.label} · 权重 ${item.weight} · 归一化 ${item.normalized} · 贡献 ${item.contribution}`
+        const p = params as { dataIndex?: number; seriesType?: string }
+        if (p.seriesType !== 'custom') return ''
+        const bar = bars[p.dataIndex ?? 0]
+        if (!bar) return ''
+        if (bar.kind === 'item') {
+          return `${bar.label} · 权重 ${bar.weight} · 归一化 ${bar.normalized} · 贡献 ${bar.contribution}`
         }
-        return `${pen?.label ?? name} · 贡献 -${pen?.contribution ?? 0}`
+        if (bar.kind === 'penalty') return `${bar.label} · 惩罚扣分 · 贡献 ${bar.contribution}`
+        return `合计 · 综合得分 ${totalValue.toFixed(3)}`
       },
     },
-    grid: { left: 48, right: 16, top: 20, bottom: 44 },
+    grid: { left: 48, right: 24, top: 28, bottom: 44 },
     xAxis: {
       type: 'category',
-      data: xLabels,
-      axisLabel: { rotate: 30, color: '#8B93A7', fontSize: 11 },
+      data: bars.map((b) => b.label),
+      axisLabel: {
+        rotate: 30,
+        color: '#8B93A7',
+        fontSize: 11,
+        fontFamily: 'ui-monospace, monospace',
+      },
+      axisLine: { lineStyle: { color: 'rgba(148,163,184,0.24)' } },
     },
     yAxis: {
       type: 'value',
-      axisLabel: { color: '#8B93A7' },
+      min: yMin,
+      max: yMax,
+      axisLabel: { color: '#8B93A7', fontFamily: 'ui-monospace, monospace' },
       splitLine: { lineStyle: { color: 'rgba(148,163,184,0.14)' } },
     },
     series: [
       {
-        name: '底座',
-        type: 'bar',
-        stack: 'waterfall',
-        data: baseData,
-        itemStyle: { color: 'transparent' },
-        emphasis: { itemStyle: { color: 'transparent' } },
-        tooltip: { show: false },
+        type: 'custom',
+        name: 'waterfall-bar',
+        data: bars.map((b) => [b.label, b.y0, b.y1]),
+        renderItem: (params: unknown, api: unknown) => {
+          const p = params as { dataIndex: number }
+          const a = api as {
+            coord: (v: [string | number, number]) => [number, number]
+            size: (v: [number, number]) => [number, number]
+            style: (s: Record<string, unknown>) => Record<string, unknown>
+          }
+          const bar = bars[p.dataIndex]
+          if (!bar) return null
+          const start = a.coord([bar.label, Math.min(bar.y0, bar.y1)])
+          const end = a.coord([bar.label, Math.max(bar.y0, bar.y1)])
+          const barWidth = a.size([widthRatio, 0])[0] ?? 24
+          const color = bar.kind === 'total' ? '#22D3EE' : bar.y1 < bar.y0 ? '#EF4444' : '#6E7BF2'
+          const labelText =
+            bar.kind === 'total'
+              ? totalValue.toFixed(3)
+              : bar.kind === 'penalty'
+                ? `−${Math.abs(bar.contribution ?? 0).toFixed(3)}`
+                : ''
+          return {
+            type: 'rect',
+            shape: {
+              x: start[0] - barWidth / 2,
+              y: end[1],
+              width: barWidth,
+              height: Math.max(1, start[1] - end[1]),
+            },
+            style: a.style({
+              fill: color,
+              text: labelText || undefined,
+              textPosition: 'top',
+              textFill: '#94A3B8',
+              fontFamily: 'ui-monospace, monospace',
+              fontSize: 11,
+            }),
+          }
+        },
+        z: 2,
       },
       {
-        name: '贡献',
-        type: 'bar',
-        stack: 'waterfall',
-        data: contribData.map((value) => ({
-          value,
-          itemStyle: {
-            color: value < 0 ? '#EF4444' : '#6E7BF2',
-            borderRadius: value < 0 ? [0, 0, 4, 4] : [4, 4, 0, 0],
-          },
-        })),
+        type: 'line',
+        name: 'waterfall-line',
+        data: cumulativeLine.map((d) => [d.label, d.value]),
+        symbol: 'circle',
+        symbolSize: 6,
+        lineStyle: { type: 'dashed', color: 'rgba(148,163,184,0.5)', width: 1 },
+        itemStyle: { color: '#8B93A7', borderColor: '#0E121A', borderWidth: 1 },
+        silent: true,
+        z: 3,
       },
     ],
   })
@@ -122,7 +158,7 @@ onBeforeUnmount(() => {
   chart.value?.dispose()
 })
 
-watch(() => [props.score, props.breakdown], render)
+watch(() => [props.score, props.breakdown, props.penalty], render)
 </script>
 
 <template>
@@ -130,13 +166,13 @@ watch(() => [props.score, props.breakdown], render)
     ref="chart"
     class="waterfall-chart"
     role="img"
-    aria-label="得分构成瀑布图（各维贡献累加至综合得分）"
+    aria-label="得分构成瀑布图（浮动柱累加至综合得分，含累计连线与合计柱）"
   ></div>
 </template>
 
 <style scoped>
 .waterfall-chart {
   width: 100%;
-  height: 260px;
+  height: 280px;
 }
 </style>
