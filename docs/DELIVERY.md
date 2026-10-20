@@ -67,7 +67,7 @@
 ```
 literature_md/
 ├── INDEX.md                总索引
-├── reference/{背景知识(67),推荐算法(9),评估方法(7),材料-性能关系(7),规范标准(6),开源代码(2),数据集(1)}/
+├── reference/{背景知识(67),推荐算法(9),评估方法(7),材料-性能关系(7),规范标准(6),开源代码(2),数据集(1)}/  # 其中 40 篇全文精选入库
 └── city_contest_ref/       按调研序号命名的 26 个文档目录
     每个文档目录/
     ├── markdown.md             正文（图片相对路径引用）
@@ -130,6 +130,8 @@ open http://localhost:3010/openapi
 ## 7. 代码与测试交接
 
 - 全仓测试：`pnpm test`（contracts 5 / retrieval 14 / embedding 9 / server 37 / web 40 / scripts 28+skip）
-- 金标准：`data/golden/golden.json` 20 条（5 案例 × 4 语料类），双后端 recall@5 = 20/20
+- 金标准：`data/golden/golden.json` **38 条**（8 维度 × 4 语料类），评估口径为**混合检索**（text + query 向量，与生产一致；`--bm25` 回退纯关键词离线模式），doc 级期望（topK×3 命中按 sourceDocId 去重取前 5 文档）→ recall@5 = **38/38**（lancedb）
+- 引用支撑率（faithfulness）：`scripts/faithfulness-eval.ts`（LLM 裁判：报告段落主张是否被「证据 + 完整确定性数据」支撑；`--calibrate` 人造幻觉自检必须判不支撑）→ 5 案例 **49/49 段 = 100%**，阈值 85%
+- 证据多样性：每候选 3 条、15 槽位去重 13–15 条、任意两候选集合互异、文献/规范/表格/章节类参与 25/25
 - 端到端：`pnpm e2e`（5 案例 + 三档降级）
 - 评审记录：`docs/reviews/`（R1–R4 通过；R5 见文件）
