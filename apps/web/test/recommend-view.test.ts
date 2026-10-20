@@ -1975,8 +1975,10 @@ describe('RecommendView 推荐工作台', () => {
         (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
       ).length
     expect(waterfallCount()).toBe(1)
-    const firstContrib = chartOptions.find(
-      (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+    const firstContrib = (
+      chartOptions.find(
+        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+      ) as { series?: Array<Record<string, unknown>> } | undefined
     )?.series?.[1]?.data as Array<{ value: number }>
     expect(firstContrib[0].value).toBe(0.4)
 
@@ -1984,11 +1986,13 @@ describe('RecommendView 推荐工作台', () => {
     await wrapper.findAll('[data-testid="analysis-switch"] input')[1].setValue(true)
     await flushPromises()
     expect(waterfallCount()).toBe(2)
-    const secondContrib = chartOptions
-      .filter(
-        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
-      )
-      .at(-1)?.series?.[1]?.data as Array<{ value: number }>
+    const secondContrib = (
+      chartOptions
+        .filter(
+          (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+        )
+        .at(-1) as { series?: Array<Record<string, unknown>> } | undefined
+    )?.series?.[1]?.data as Array<{ value: number }>
     expect(secondContrib[0].value).toBe(0.3)
   })
 
