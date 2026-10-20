@@ -14,6 +14,8 @@ import {
   KnowledgeEntrySchema,
   CorpusChunkSchema,
   SearchHitSchema,
+  LabIndicatorSchema,
+  BenchmarkRowSchema,
   FIELD_REGISTRY,
   toJsonSchema,
 } from '../src/index';
@@ -148,6 +150,56 @@ describe('contracts 契约包', () => {
     expect((noise.options ?? []).map((o) => o.value)).toEqual(['none', 'low', 'high']);
   });
 
+  it('C1 LabIndicator：11 项实测指标解析（阈值判定/样本量/置信区间）', () => {
+    const labs = [
+      { key: 'vv', label: '空隙率', group: 'volume', unit: '%', value: 4.2, threshold: { min: 3, max: 6 }, pass: true, sampleSize: 116, ciLow: 4.0, ciHigh: 4.4 },
+      { key: 'vma', label: '矿料间隙率', group: 'volume', unit: '%', value: 15.5, threshold: { min: 14 }, pass: true, sampleSize: 116 },
+      { key: 'vfa', label: '沥青饱和度', group: 'volume', unit: '%', value: 71, threshold: { min: 65, max: 75 }, pass: true, sampleSize: 116 },
+      { key: 'ms', label: '马歇尔稳定度', group: 'marshall', unit: 'kN', value: 9.2, threshold: { min: 8 }, pass: true, sampleSize: 116 },
+      { key: 'fl', label: '流值', group: 'marshall', unit: 'mm', value: 3.1, threshold: { min: 2, max: 4 }, pass: true, sampleSize: 116 },
+      { key: 'tsr', label: '冻融劈裂强度比', group: 'water', unit: '%', value: 84.5, threshold: { min: 75 }, pass: true, sampleSize: 85 },
+      { key: 'retainedStability', label: '浸水残留稳定度', group: 'water', unit: '%', value: 88, threshold: { min: 85 }, pass: true, sampleSize: 83 },
+      { key: 'ds', label: '动稳定度', group: 'highTemp', unit: '次/mm', value: 2600, threshold: { min: 800 }, pass: true, sampleSize: 83 },
+      { key: 'bendingStrain', label: '低温弯曲破坏应变', group: 'lowTemp', unit: 'με', value: 3200, threshold: { min: 2000 }, pass: true, sampleSize: 75 },
+      { key: 'tensileStrength', label: '低温抗拉强度', group: 'lowTemp', unit: 'MPa', value: 6.2, sampleSize: 75 },
+      { key: 'bendingModulus', label: '低温弯曲劲度模量', group: 'lowTemp', unit: 'MPa', value: 2900, sampleSize: 75 },
+    ];
+    for (const lab of labs) {
+      expect(LabIndicatorSchema.safeParse(lab).success, `lab ${lab.key}`).toBe(true);
+    }
+    // 无阈值时 pass 缺省合法
+    expect(LabIndicatorSchema.safeParse({ key: 'vv', label: '空隙率', group: 'volume', unit: '%', value: 4.2 }).success).toBe(true);
+    // 阈值判定字段可选
+    expect(LabIndicatorSchema.safeParse({ key: 'vv', label: '空隙率', group: 'volume', unit: '%', value: 4.2, threshold: { min: 3, max: 6 }, pass: false, sampleSize: 116 }).success).toBe(true);
+  });
+
+  it('C1/C4：Candidate.labIndicators 与 BenchmarkRow.acceptance 解析', () => {
+    const labs = [{ key: 'vv', label: '空隙率', group: 'volume', unit: '%', value: 4.2, threshold: { min: 3, max: 6 }, pass: true, sampleSize: 116 }];
+    expect(
+      CandidateSchema.safeParse({
+        id: 'cand-1',
+        formula: validFormula,
+        predictions: [],
+        radar: { highTemp: 88, lowTemp: 70, fatigue: 75, waterStability: 85, lcc: 60, carbon: 55, expectedLife: 80, constructability: 90 },
+        lcc: 120,
+        carbon: 15,
+        expectedLife: 12,
+        score: 0.8,
+        evidenceIds: [],
+        labIndicators: labs,
+      }).success,
+    ).toBe(true);
+    expect(
+      BenchmarkRowSchema.safeParse({
+        label: '空隙率',
+        unit: '%',
+        baseline: 4.5,
+        candidates: { 'cand-1': 4.2 },
+        acceptance: { min: 3, max: 6 },
+      }).success,
+    ).toBe(true);
+  });
+
   it('RecommendationReport 解析成功且保留未知字段（Review Focus #1）', () => {
     const report = {
       scene: validScene,
@@ -170,6 +222,9 @@ describe('contracts 契约包', () => {
             expectedLife: 80,
             constructability: 90,
           },
+          labIndicators: [
+            { key: 'ds', label: '动稳定度', group: 'highTemp', unit: '次/mm', value: 2600, threshold: { min: 800 }, pass: true, sampleSize: 83 },
+          ],
           lcc: 120,
           carbon: 15,
           expectedLife: 12,

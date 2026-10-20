@@ -247,6 +247,30 @@ export const RadarSchema = z
   .passthrough();
 export type Radar = z.infer<typeof RadarSchema>;
 
+/** C1：企业实测指标（实验室/现场检测 11 项）。
+ * key：vv|vma|vfa|ms|fl|tsr|retainedStability|ds|bendingStrain|tensileStrength|bendingModulus
+ * group：volume|marshall|water|highTemp|lowTemp；unit：%|kN|mm|次/mm|με|MPa。
+ * threshold 为验收阈值（VV 3-6、FL 2-4、DS>800、弯拉应变>2000、MS>8、TSR>75、残留稳定度>85、VMA/VFA 按规范）；
+ * pass 为阈值判定（无阈值时缺省）；sampleSize 为组级样本量。 */
+export const LabIndicatorSchema = z
+  .object({
+    key: z.string(),
+    label: z.string(),
+    group: z.enum(['volume', 'marshall', 'water', 'highTemp', 'lowTemp']),
+    unit: z.enum(['%', 'kN', 'mm', '次/mm', 'με', 'MPa']),
+    value: z.number(),
+    threshold: z
+      .object({ min: z.number().optional(), max: z.number().optional() })
+      .passthrough()
+      .optional(),
+    pass: z.boolean().optional(),
+    sampleSize: z.number().int().positive().optional(),
+    ciLow: z.number().optional(),
+    ciHigh: z.number().optional(),
+  })
+  .passthrough();
+export type LabIndicator = z.infer<typeof LabIndicatorSchema>;
+
 export const CandidateSchema = z
   .object({
     schemaVersion: schemaVersionField(),
@@ -260,6 +284,7 @@ export const CandidateSchema = z
     expectedLife: z.number(),
     score: z.number(),
     evidenceIds: z.array(z.string()),
+    labIndicators: z.array(LabIndicatorSchema).optional(),
   })
   .passthrough();
 export type Candidate = z.infer<typeof CandidateSchema>;
@@ -274,13 +299,18 @@ export const ReportSectionSchema = z
   .passthrough();
 export type ReportSection = z.infer<typeof ReportSectionSchema>;
 
-/** 与规范查表基线对比行（G6）：baseline 为基线值，candidates 为 candidateId→值。 */
+/** 与规范查表基线对比行（G6）：baseline 为基线值，candidates 为 candidateId→值；
+ * C4：acceptance 为企业验收阈值（min/max，前端据此画达标带）。 */
 export const BenchmarkRowSchema = z
   .object({
     label: z.string(),
     unit: z.string(),
     baseline: z.number(),
     candidates: z.record(z.string(), z.number()),
+    acceptance: z
+      .object({ min: z.number().optional(), max: z.number().optional() })
+      .passthrough()
+      .optional(),
   })
   .passthrough();
 export type BenchmarkRow = z.infer<typeof BenchmarkRowSchema>;
