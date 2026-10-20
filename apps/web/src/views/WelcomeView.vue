@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, shallowRef } from 'vue'
+import { computed, onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { ripple } from '@/composables/ripple'
@@ -24,6 +24,26 @@ function onCtaClick(event: MouseEvent, path: string): void {
   void router.push(path)
 }
 const stats = shallowRef<KbStats | null>(null)
+
+// 02 能力旅程：纵向流程式三步
+const JOURNEY = [
+  { step: '场景输入', desc: '气候分区、交通荷载、结构层位与病害一键填入，或从典型案例载入。' },
+  { step: '智能推荐', desc: '规则硬过滤 + 混合检索 + LLM 重排，输出 Top-5 配方方案与规范基线对比。' },
+  { step: '证据溯源', desc: '每个结论标注规范条文/文献/企业实测证据链，点击即可定位原文。' },
+] as const
+
+// 04 数据底座：企业实测指标 chip
+const LAB_CHIPS = ['空隙率 VV', 'VMA', 'VFA', '稳定度 MS', '流值 FL', '劲度模量', 'TSR', '残留稳定度', '动稳定度 DS', '弯拉应变'] as const
+
+// hero 关键数字：kb/stats 实时取，失败静态兜底
+const heroNumbers = computed(() => {
+  const count = stats.value?.count ?? 11143
+  return [
+    { value: `${count.toLocaleString()}`, label: '知识块' },
+    { value: '38/38', label: '金标准' },
+    { value: '85%', label: '引用支撑率' },
+  ]
+})
 
 const highlights = [
   {
@@ -54,97 +74,116 @@ onMounted(async () => {
 
 <template>
   <div class="welcome">
-    <section class="welcome-hero">
-      <div class="welcome-mark" aria-hidden="true">材</div>
-      <h1 class="welcome-title">数智选材</h1>
-      <p class="welcome-tagline">AI 驱动的道路养护决策与沥青材料方案智能推荐</p>
-      <div class="welcome-ctas">
+    <!-- 01 Hero -->
+    <section class="narrative-sec" data-testid="narrative-section">
+      <div class="welcome-hero">
+        <div class="welcome-mark" aria-hidden="true">材</div>
+        <h1 class="welcome-title">数智选材</h1>
+        <p class="welcome-tagline">AI 驱动的道路养护决策与沥青材料方案智能推荐</p>
+        <div class="welcome-ctas">
+          <el-button
+            type="primary"
+            size="large"
+            class="pressable ripple-host magnetic"
+            data-testid="cta-recommend"
+            @click="onCtaClick($event, '/recommend')"
+            @pointermove="magnetic.onPointerMove"
+            @pointerleave="magnetic.onPointerLeave"
+          >
+            开始推荐
+          </el-button>
+          <el-button
+            size="large"
+            class="pressable ripple-host magnetic"
+            data-testid="cta-cases"
+            @click="onCtaClick($event, '/cases')"
+            @pointermove="magnetic.onPointerMove"
+            @pointerleave="magnetic.onPointerLeave"
+          >
+            查看典型案例
+          </el-button>
+        </div>
+        <div class="hero-numbers" data-testid="hero-numbers">
+          <div v-for="n in heroNumbers" :key="n.label" class="hero-number">
+            <span class="hero-number-value tabular">{{ n.value }}</span>
+            <span class="hero-number-label">{{ n.label }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 能力旅程（纵向流程式） -->
+    <section class="narrative-sec" data-testid="narrative-section">
+      <div class="sec-eyebrow mono tabular" data-testid="eyebrow">02</div>
+      <h2 class="sec-title">能力旅程</h2>
+      <p class="sec-subtitle">从场景到方案到证据，三步闭环</p>
+      <div class="journey" data-testid="journey">
+        <template v-for="(item, i) in JOURNEY" :key="item.step">
+          <div class="journey-row">
+            <div class="journey-rail">
+              <span class="journey-dot" :data-step="i + 1">{{ i + 1 }}</span>
+              <span v-if="i < JOURNEY.length - 1" class="journey-connector" data-testid="journey-connector"></span>
+            </div>
+            <div class="journey-card elevated-card">
+              <h3 class="journey-title">{{ item.step }}</h3>
+              <p class="journey-desc">{{ item.desc }}</p>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- 03 如何工作（六步流水线） -->
+    <section class="narrative-sec" data-testid="narrative-section">
+      <div class="sec-eyebrow mono tabular" data-testid="eyebrow">03</div>
+      <h2 class="sec-title">如何工作</h2>
+      <p class="sec-subtitle">六步流水线：从场景解析到报告生成</p>
+      <HomePipeline />
+    </section>
+
+    <!-- 04 数据底座 -->
+    <section class="narrative-sec" data-testid="narrative-section">
+      <div class="sec-eyebrow mono tabular" data-testid="eyebrow">04</div>
+      <h2 class="sec-title">数据底座</h2>
+      <p class="sec-subtitle">知识库构成与关键指标</p>
+      <div class="data-base" data-testid="data-base">
+        <div class="data-base-card elevated-card">
+          <HomeStats :stats="stats" />
+        </div>
+        <div class="data-base-card elevated-card">
+          <HomeMiniCharts />
+        </div>
+      </div>
+      <div class="lab-chips" data-testid="lab-chips">
+        <span v-for="chip in LAB_CHIPS" :key="chip" class="lab-chip" data-testid="lab-chip">{{ chip }}</span>
+      </div>
+    </section>
+
+    <!-- 05 案例与行动 -->
+    <section class="narrative-sec" data-testid="narrative-section">
+      <div class="sec-eyebrow mono tabular" data-testid="eyebrow">05</div>
+      <h2 class="sec-title">案例与行动</h2>
+      <p class="sec-subtitle">从典型案例出发，或直接开始一次推荐</p>
+      <HomeCaseGallery />
+      <div class="closing-cta" data-testid="closing-cta">
         <el-button
           type="primary"
           size="large"
-          class="pressable ripple-host magnetic"
-          data-testid="cta-recommend"
+          class="pressable"
+          data-testid="cta-recommend-bottom"
           @click="onCtaClick($event, '/recommend')"
-          @pointermove="magnetic.onPointerMove"
-          @pointerleave="magnetic.onPointerLeave"
         >
           开始推荐
         </el-button>
-        <el-button
-          size="large"
-          class="pressable ripple-host magnetic"
-          data-testid="cta-cases"
-          @click="onCtaClick($event, '/cases')"
-          @pointermove="magnetic.onPointerMove"
-          @pointerleave="magnetic.onPointerLeave"
-        >
+        <el-button size="large" class="pressable" data-testid="cta-cases-bottom" @click="onCtaClick($event, '/cases')">
           查看典型案例
         </el-button>
       </div>
     </section>
 
-    <section class="welcome-highlights">
-      <el-card
-        v-for="h in highlights"
-        :key="h.title"
-        shadow="hover"
-        class="welcome-highlight"
-      >
-        <div class="welcome-highlight-icon" aria-hidden="true">
-          <svg
-            v-if="h.icon === 'target'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="8" />
-            <circle cx="12" cy="12" r="4" />
-            <circle cx="12" cy="12" r="1" />
-          </svg>
-          <svg
-            v-else-if="h.icon === 'flask'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M9 3h6" />
-            <path d="M10 3v6l-5.2 9a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 9V3" />
-            <path d="M7.5 15h9" />
-          </svg>
-          <svg
-            v-else
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z" />
-            <path d="M9 12l2 2 4-4" />
-          </svg>
-        </div>
-        <h3 class="welcome-highlight-title">{{ h.title }}</h3>
-        <p class="welcome-highlight-desc">{{ h.desc }}</p>
-      </el-card>
-    </section>
-
-    <HomePipeline />
-
-    <div class="welcome-data-row">
-      <HomeStats :stats="stats" />
-      <HomeMiniCharts />
-    </div>
-
-    <HomeCaseGallery />
-
-    <HomeTechBar />
+    <footer class="welcome-footer">
+      <span>LanceDB</span> · <span>混合检索 + LLM 重排</span> · <span>DeepSeek</span> · <span>38 条金标准</span>
+    </footer>
   </div>
 </template>
 
@@ -155,12 +194,39 @@ onMounted(async () => {
   padding: 24px 0 48px;
 }
 
-.welcome-data-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+/* 叙事段：统一间距 96px */
+.narrative-sec {
+  margin-bottom: 96px;
 }
 
+.sec-eyebrow {
+  font-size: 12px;
+  color: var(--el-color-primary);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.sec-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sec-subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+/* 统一卡片体系：elevated + hairline + 12px */
+.elevated-card {
+  background: var(--color-elevated);
+  border: 1px solid var(--app-hairline);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* 01 Hero */
 .welcome-hero {
   display: flex;
   flex-direction: column;
@@ -176,7 +242,7 @@ onMounted(async () => {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--el-color-primary);
+  background: linear-gradient(135deg, var(--app-primary-from), var(--app-primary-to));
   color: #fff;
   font-size: 28px;
   font-weight: 600;
@@ -215,55 +281,136 @@ html:not(.dark) .welcome-title {
 .welcome-ctas {
   display: flex;
   gap: 12px;
-}
-
-.welcome-highlights {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
   margin-bottom: 32px;
 }
 
-.welcome-highlight {
-  text-align: center;
+.hero-numbers {
+  display: flex;
+  gap: 40px;
 }
 
-.welcome-highlight-icon {
+.hero-number {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  margin: 0 auto 12px;
-  border-radius: 12px;
-  background: var(--el-color-primary-light-9);
+  gap: 4px;
+}
+
+.hero-number-value {
+  font-size: 20px;
+  font-weight: 700;
   color: var(--el-color-primary);
 }
 
-.welcome-highlight-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.welcome-highlight-title {
-  margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.welcome-highlight-desc {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.7;
+.hero-number-label {
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
 
-.welcome-stat-badge {
-  padding: 6px 14px;
-  border: 1px solid var(--app-border);
-  border-radius: 999px;
+/* 02 纵向流程：左 rail 连接线 */
+.journey {
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-row {
+  display: flex;
+  gap: 16px;
+}
+
+.journey-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.journey-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--app-primary-from), var(--app-primary-to));
+  color: #fff;
   font-size: 13px;
+  font-weight: 600;
+}
+
+.journey-connector {
+  width: 2px;
+  height: 72px;
+  background: linear-gradient(180deg, var(--el-color-primary), transparent);
+}
+
+.journey-card {
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.journey-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.journey-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
   color: var(--el-text-color-regular);
-  background: var(--app-panel-bg);
+}
+
+/* 04 数据底座：同高双卡 + lab chips */
+.data-base {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .data-base {
+    grid-template-columns: 1fr;
+  }
+}
+
+.data-base-card :deep(.home-stats),
+.data-base-card :deep(.home-mini) {
+  margin-bottom: 0;
+}
+
+.lab-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lab-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+}
+
+/* 05 收尾 CTA */
+.closing-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* 页脚技术小字 */
+.welcome-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--app-hairline);
+  text-align: center;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 </style>

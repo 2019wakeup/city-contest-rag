@@ -133,7 +133,7 @@ describe('WelcomeView 欢迎页', () => {
       ],
     })
 
-  it('渲染标题/定位/三亮点卡/双 CTA（欢迎页）', async () => {
+  it('渲染标题/定位/能力旅程/双 CTA（欢迎页，UI8 叙事流）', async () => {
     const router = makeWelcomeRouter()
     await router.push('/')
     await router.isReady()
@@ -143,11 +143,44 @@ describe('WelcomeView 欢迎页', () => {
 
     expect(wrapper.text()).toContain('数智选材')
     expect(wrapper.text()).toContain('AI 驱动的道路养护决策与沥青材料方案智能推荐')
-    expect(wrapper.text()).toContain('场景→性能量化映射')
-    expect(wrapper.text()).toContain('配方反向设计推荐')
-    expect(wrapper.text()).toContain('可解释证据溯源')
+    expect(wrapper.text()).toContain('场景输入')
+    expect(wrapper.text()).toContain('智能推荐')
+    expect(wrapper.text()).toContain('证据溯源')
     expect(wrapper.find('[data-testid="cta-recommend"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="cta-cases"]').exists()).toBe(true)
+  })
+
+  it('UI8 五段编号叙事：eyebrow 01-05/流程连线/同高容器/指标 chip/页脚技术词', async () => {
+    kbStatsMock.mockResolvedValue({
+      count: 11143,
+      docTypes: { knowledge: 8000 },
+      backend: 'lancedb',
+    })
+    getCasesMock.mockResolvedValue(fiveCases)
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    // 01 Hero 无 eyebrow（叙事从 02 开始编号展示），段落共 5 个
+    expect(wrapper.findAll('[data-testid="narrative-section"]').length).toBe(5)
+    const eyebrows = wrapper.findAll('[data-testid="eyebrow"]')
+    expect(eyebrows.map((e) => e.text())).toEqual(['02', '03', '04', '05'])
+
+    expect(wrapper.find('[data-testid="journey-connector"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="data-base"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="lab-chip"]').length).toBe(10)
+    expect(wrapper.find('[data-testid="hero-numbers"]').text()).toContain('11,143')
+    expect(wrapper.find('[data-testid="hero-numbers"]').text()).toContain('38/38')
+    expect(wrapper.find('[data-testid="hero-numbers"]').text()).toContain('85%')
+
+    const footer = wrapper.find('.welcome-footer')
+    expect(footer.text()).toContain('LanceDB')
+    expect(footer.text()).toContain('混合检索 + LLM 重排')
+    expect(footer.text()).toContain('DeepSeek')
+    expect(footer.text()).toContain('38 条金标准')
   })
 
   it('CTA 跳转：开始推荐→/recommend、查看案例→/cases（欢迎页）', async () => {
@@ -185,8 +218,8 @@ describe('WelcomeView 欢迎页', () => {
     expect(wrapper.find('[data-testid="home-pipeline"]').exists()).toBe(true)
     expect(wrapper.findAll('[data-testid="pipeline-node"]').length).toBe(6)
     expect(wrapper.find('[data-testid="home-mini-charts"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="home-techbar"]').exists()).toBe(true)
-    expect(wrapper.findAll('[data-testid="techbar-chip"]').length).toBe(4)
+    // UI8：技术信息移入页脚一行
+    expect(wrapper.find('.welcome-footer').text()).toContain('LanceDB')
     expect(wrapper.findAll('[data-testid="gallery-card"]').length).toBe(5)
     expect(wrapper.text()).toContain('演示示意')
   })
