@@ -53,6 +53,35 @@ export const STEP_LABELS: Record<string, string> = {
   report: '报告',
 }
 
+/** F4：企业实测指标 11 项中文名（Candidate.labIndicators）。 */
+export const LAB_INDICATOR_LABELS: Record<string, string> = {
+  vv: '空隙率 VV',
+  vma: 'VMA',
+  vfa: 'VFA',
+  asphaltContent: '沥青含量',
+  ms: '稳定度 MS',
+  fl: '流值 FL',
+  bendingModulus: '劲度模量',
+  tsr: 'TSR',
+  retainedStability: '残留稳定度',
+  ds: '动稳定度 DS',
+  bendingStrain: '弯拉应变',
+}
+
+export const LAB_INDICATOR_UNITS: Record<string, string> = {
+  vv: '%',
+  vma: '%',
+  vfa: '%',
+  asphaltContent: '%',
+  ms: 'kN',
+  fl: 'mm',
+  bendingModulus: 'MPa',
+  tsr: '%',
+  retainedStability: '%',
+  ds: '次/mm',
+  bendingStrain: 'με',
+}
+
 /** 未知键回退原文（前向兼容）。 */
 export function labelOf(map: Record<string, string>, key: string): string {
   return map[key] ?? key

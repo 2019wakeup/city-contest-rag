@@ -7,7 +7,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getCases, postChat, postRecommend, streamRecommend } from '@/api/client'
-import { DOC_TYPE_LABELS, labelOf } from '@/utils/labels'
+import { DOC_TYPE_LABELS, LAB_INDICATOR_LABELS, labelOf } from '@/utils/labels'
 import { useRecommendStore } from '@/stores/recommend'
 import type { Candidate, CaseSeed, RecommendationReport, SceneInput } from '@road-rec/contracts'
 import RecommendView from '@/views/RecommendView.vue'
@@ -1528,6 +1528,109 @@ describe('RecommendView 推荐工作台', () => {
 
     wrapper.unmount()
     holder.remove()
+  })
+
+  it('F4：企业实测指标 11 项中文名（labels）', () => {
+    expect(labelOf(LAB_INDICATOR_LABELS, 'ds')).toBe('动稳定度 DS')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'bendingStrain')).toBe('弯拉应变')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'tsr')).toBe('TSR')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'retainedStability')).toBe('残留稳定度')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'vv')).toBe('空隙率 VV')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'ms')).toBe('稳定度 MS')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'fl')).toBe('流值 FL')
+    expect(labelOf(LAB_INDICATOR_LABELS, 'bendingModulus')).toBe('劲度模量')
+  })
+
+  it('F2：候选卡企业实测指标表 11 行按 5 组展示、默认展开第一张卡', async () => {
+    const cand = makeCandidate('cand-1')
+    ;(cand as unknown as { labIndicators: unknown[] }).labIndicators = [
+      { key: 'vv', label: '空隙率 VV', group: 'volume', unit: '%', value: 4.5, threshold: { min: 3, max: 6 }, pass: true, sampleSize: 116 },
+      { key: 'vma', label: 'VMA', group: 'volume', unit: '%', value: 15.2, threshold: { min: 14 }, pass: true, sampleSize: 116 },
+      { key: 'vfa', label: 'VFA', group: 'volume', unit: '%', value: 71, threshold: { min: 65, max: 75 }, pass: true, sampleSize: 116 },
+      { key: 'asphaltContent', label: '沥青含量', group: 'volume', unit: '%', value: 4.8, sampleSize: 116 },
+      { key: 'ms', label: '稳定度 MS', group: 'marshall', unit: 'kN', value: 9.2, threshold: { min: 8 }, pass: true, sampleSize: 116 },
+      { key: 'fl', label: '流值 FL', group: 'marshall', unit: 'mm', value: 3.1, threshold: { min: 2, max: 4 }, pass: true, sampleSize: 116 },
+      { key: 'bendingModulus', label: '劲度模量', group: 'marshall', unit: 'MPa', value: 3200, sampleSize: 116 },
+      { key: 'tsr', label: 'TSR', group: 'water', unit: '%', value: 82, threshold: { min: 75 }, pass: true, sampleSize: 116 },
+      { key: 'retainedStability', label: '残留稳定度', group: 'water', unit: '%', value: 88, threshold: { min: 85 }, pass: true, sampleSize: 116 },
+      { key: 'ds', label: '动稳定度 DS', group: 'highTemp', unit: '次/mm', value: 6530, threshold: { min: 800 }, pass: true, sampleSize: 116 },
+      { key: 'bendingStrain', label: '弯拉应变', group: 'lowTemp', unit: 'με', value: 2600, threshold: { min: 2000 }, pass: true, sampleSize: 116 },
+    ]
+
+    // index 0：默认展开
+    const first = mount(CandidateCard, {
+      props: { candidate: cand, index: 0, adapterMode: { a: 'mock', c: 'mock' }, evidence: [], expanded: true },
+    })
+    expect(first.find('[data-testid="lab-toggle"]').attributes('aria-expanded')).toBe('true')
+    const rows = first.findAll('[data-testid="lab-row"]')
+    expect(rows.length).toBe(11)
+    const text = first.text()
+    for (const group of ['体积性能', '马歇尔力学', '水稳', '高温', '低温']) {
+      expect(text).toContain(group)
+    }
+
+    // index 1：默认收起
+    const second = mount(CandidateCard, {
+      props: { candidate: cand, index: 1, adapterMode: { a: 'mock', c: 'mock' }, evidence: [], expanded: true },
+    })
+    expect(second.find('[data-testid="lab-toggle"]').attributes('aria-expanded')).toBe('false')
+    const bodyStyle = (second.find('[data-testid="lab-body"]').element as HTMLElement).getAttribute('style') ?? ''
+    expect(bodyStyle).toContain('display: none')
+    await second.find('[data-testid="lab-toggle"]').trigger('click')
+    expect(
+      ((second.find('[data-testid="lab-body"]').element as HTMLElement).getAttribute('style') ?? '').includes('display: none'),
+    ).toBe(false)
+  })
+
+  it('F2：达标徽标三态（达标✓/不达标✗/无阈值—）与 TSR 显示 %', async () => {
+    const cand = makeCandidate('cand-1')
+    ;(cand as unknown as { labIndicators: unknown[] }).labIndicators = [
+      { key: 'vv', label: '空隙率 VV', group: 'volume', unit: '%', value: 4.5, threshold: { min: 3, max: 6 }, pass: true, sampleSize: 116 },
+      { key: 'bendingModulus', label: '劲度模量', group: 'marshall', unit: 'MPa', value: 3200, sampleSize: 116 }, // 无阈值 → —
+      { key: 'tsr', label: 'TSR', group: 'water', unit: '%', value: 82, threshold: { min: 75 }, pass: true, sampleSize: 116 }, // TSR 显示 %
+      { key: 'ds', label: '动稳定度 DS', group: 'highTemp', unit: '次/mm', value: 600, threshold: { min: 800 }, pass: false, sampleSize: 116 }, // <800 → 不达标
+    ]
+    const wrapper = mount(CandidateCard, {
+      props: { candidate: cand, index: 0, adapterMode: { a: 'mock', c: 'mock' }, evidence: [], expanded: true },
+    })
+
+    // 渲染顺序按分组：体积(vv) → 马歇尔(bendingModulus) → 水稳(tsr) → 高温(ds)
+    const passes = wrapper.findAll('[data-testid="lab-pass"]')
+    expect(passes[0].text()).toBe('✓')
+    expect(passes[0].classes()).toContain('is-pass')
+    expect(passes[1].text()).toBe('—')
+    expect(passes[1].classes()).toContain('is-none')
+    expect(passes[2].text()).toBe('✓')
+    expect(passes[3].text()).toBe('✗')
+    expect(passes[3].classes()).toContain('is-fail')
+
+    // TSR 行实测值显示为 82%（无空格）
+    const tsrRow = wrapper.findAll('[data-testid="lab-row"]').find((r) => r.text().includes('TSR'))
+    expect(tsrRow?.text()).toContain('82%')
+    expect(tsrRow?.text()).toContain('>75')
+  })
+
+  it('F3：基准表验收阈值列与达标标记（acceptance min/max）', async () => {
+    const rows = [
+      { label: '动稳定度', unit: '次/mm', baseline: 5000, candidates: { 'cand-1': 6530 }, acceptance: { min: 800 } },
+      { label: '空隙率', unit: '%', baseline: 5, candidates: { 'cand-1': 7 }, acceptance: { min: 3, max: 6 } },
+      { label: '弯拉应变', unit: 'με', baseline: 2000, candidates: { 'cand-1': 2600 } },
+    ]
+    const wrapper = mount(BenchmarkTable, {
+      props: { rows, candidates: [makeCandidate('cand-1')] },
+    })
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('验收阈值')
+    expect(text).toContain('>800')
+    expect(text).toContain('3–6')
+
+    const marks = wrapper.findAll('[data-testid="bench-accept-mark"]')
+    expect(marks.length).toBe(2)
+    expect(marks[0].text()).toBe('✓') // 6530 ≥ 800
+    expect(marks[1].text()).toBe('✗') // 7 > 6
+    expect(wrapper.findAll('.is-accept-fail').length).toBe(1)
   })
 
   it('RAG P0：新 docType 标签映射与配色 class（表格/全文章节）', () => {

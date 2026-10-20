@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import type { AdapterMode, Candidate, EvidenceRef } from '@road-rec/contracts'
 import { formatNumber } from '@/utils/format'
 import { useSpotlight } from '@/composables/useSpotlight'
 import { PERF_LABELS, labelOf } from '@/utils/labels'
+import { LAB_GROUP_NAMES, labLabelOf, labPassOf, labUnitOf, thresholdTextOf } from '@/utils/lab'
+import type { LabIndicator } from '@road-rec/contracts'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
@@ -56,6 +58,24 @@ const strengths = computed(() => {
     .map((d) => `${d.label} ${d.value} 分`)
     .join(' · ')
 })
+
+// F2：企业实测指标折叠区（默认展开第一张卡）
+const openLab = ref(props.index === 0)
+
+const labIndicators = computed<LabIndicator[]>(() => props.candidate?.labIndicators ?? [])
+
+const labGroupOrder: Array<{ key: string; name: string }> = ['volume', 'marshall', 'water', 'highTemp', 'lowTemp'].map((key) => ({
+  key,
+  name: LAB_GROUP_NAMES[key] ?? key,
+}))
+
+const labRowsOf = (groupKey: string): LabIndicator[] =>
+  labIndicators.value.filter((i) => i.group === groupKey)
+
+const labPassClass = (pass: boolean | null): string =>
+  pass === true ? 'is-pass' : pass === false ? 'is-fail' : 'is-none'
+const labPassText = (pass: boolean | null): string =>
+  pass === true ? '✓' : pass === false ? '✗' : '—'
 
 const strengthSummary = computed(() =>
   strengths.value ? `优势项：${strengths.value}` : '',
@@ -147,6 +167,65 @@ const spotlight = useSpotlight()
           {{ formula?.oilStoneRatio ?? '—' }}% / {{ formula?.airVoids ?? '—' }}%
         </el-descriptions-item>
       </el-descriptions>
+
+      <!-- F2：企业实测指标（折叠，默认展开第一张卡） -->
+      <div v-if="labIndicators.length > 0" class="lab-section">
+        <button
+          type="button"
+          class="lab-toggle"
+          data-testid="lab-toggle"
+          :aria-expanded="openLab"
+          @click="openLab = !openLab"
+        >
+          企业实测指标
+          <span class="lab-toggle-hint">{{ openLab ? '收起' : '展开' }}</span>
+        </button>
+        <div v-show="openLab" class="lab-body" data-testid="lab-body">
+          <template v-for="group in labGroupOrder" :key="group.key">
+            <div v-if="labRowsOf(group.key).length > 0" class="lab-group">
+              <div class="lab-group-title">{{ group.name }}</div>
+              <table class="lab-table" data-testid="lab-table">
+                <thead>
+                  <tr>
+                    <th>指标</th>
+                    <th>单位</th>
+                    <th class="lab-col-num">实测值</th>
+                    <th class="lab-col-num">阈值</th>
+                    <th>达标</th>
+                    <th class="lab-col-num">样本量</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in labRowsOf(group.key)"
+                    :key="row.key"
+                    data-testid="lab-row"
+                  >
+                    <td>{{ labLabelOf(row) }}</td>
+                    <td>{{ labUnitOf(row) }}</td>
+                    <td class="lab-col-num tabular">
+                      {{ formatNumber(row.value) }}{{ labUnitOf(row) }}
+                    </td>
+                    <td class="lab-col-num tabular">{{ thresholdTextOf(row.threshold) }}</td>
+                    <td>
+                      <span
+                        class="lab-pass"
+                        :class="labPassClass(labPassOf(row))"
+                        data-testid="lab-pass"
+                      >
+                        {{ labPassText(labPassOf(row)) }}
+                      </span>
+                    </td>
+                    <td class="lab-col-num tabular">
+                      {{ row.sampleSize != null ? `n=${row.sampleSize}` : '—' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+        </div>
+      </div>
 
       <ul class="candidate-predictions">
         <li v-for="(p, i) in candidate?.predictions ?? []" :key="`${p.perf}-${i}`" class="tabular">
@@ -240,6 +319,79 @@ const spotlight = useSpotlight()
 
 .additive-tag {
   margin-right: 4px;
+}
+
+/* F2：企业实测指标折叠表 */
+.lab-section {
+  margin: 0 0 12px;
+}
+
+.lab-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  color: var(--el-text-color-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lab-toggle-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
+}
+
+.lab-group {
+  margin-bottom: 8px;
+}
+
+.lab-group-title {
+  margin: 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+}
+
+.lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.lab-table th,
+.lab-table td {
+  padding: 4px 8px;
+  border: 1px solid var(--app-border);
+  text-align: left;
+}
+
+.lab-table th {
+  background: var(--el-fill-color-light);
+  font-weight: 600;
+}
+
+.lab-col-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-pass {
+  font-weight: 600;
+}
+
+.lab-pass.is-pass {
+  color: #10b981;
+}
+
+.lab-pass.is-fail {
+  color: #ef4444;
+}
+
+.lab-pass.is-none {
+  color: var(--el-text-color-placeholder);
 }
 
 /* 灵动层：弹性展开（grid-template-rows 0fr↔1fr，可打断） */
