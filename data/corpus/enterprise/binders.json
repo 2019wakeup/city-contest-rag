@@ -1,0 +1,102 @@
+[
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-001",
+    "category": "binder",
+    "type": "胶结料（沥青）",
+    "name": "70# 直馏沥青",
+    "specs": { "类型": "直馏沥青", "针入度": "72 (0.1mm)", "软化点": "47.6℃", "60℃动力粘度": "258 Pa·s", "老化": "整套 TFOT 老化指标齐全" },
+    "sourceRef": "企业数据：再生沥青混合料数据集-材料与指标（70# 直馏）",
+    "text": "70# 直馏沥青：针入度 72 (0.1mm)，软化点 47.6℃，60℃动力粘度 258 Pa·s，整套 TFOT 老化指标齐全。属企业数据集中最常用的直馏胶结料基准标号。",
+    "tags": ["enterprise", "binder"],
+    "relations": [
+      { "property": "高温PG", "effect": "低标号高粘度，高温等级相对高标号更优", "direction": "+", "magnitude": "针入度 72、软化点 47.6℃、60℃粘度 258 Pa·s，为数据集直馏沥青中粘度最高者", "applicableScene": ["t-heavy"], "sourceRef": "企业数据：70# 直馏实测指标" },
+      { "property": "成本", "effect": "直馏基准胶结料", "direction": "+", "magnitude": "直馏工艺，作为企业再生体系的新沥青基准组分", "applicableScene": ["k-budget"], "sourceRef": "企业数据：材料体系说明" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-002",
+    "category": "binder",
+    "type": "胶结料（沥青）",
+    "name": "90# 再生专用沥青",
+    "specs": { "类型": "再生专用", "针入度": "91", "软化点": "44℃", "粘度": "161 Pa·s", "对照": "另有直馏90# 对照" },
+    "sourceRef": "企业数据：再生沥青混合料数据集-材料与指标（90# 再生专用）",
+    "text": "90# 再生专用沥青：针入度 91，软化点 44℃，粘度 161 Pa·s；企业数据另设直馏90# 作为对照。再生专用沥青用于高 RAP 掺量再生体系的胶结料匹配。",
+    "tags": ["enterprise", "binder", "k-rap"],
+    "relations": [
+      { "property": "低温PG", "effect": "标号升高针入度增大，低温延展优于 70#", "direction": "+", "magnitude": "针入度 91（vs 70# 的 72），软化点 44℃、粘度 161 Pa·s 均低于 70#", "applicableScene": ["c-cold", "k-rap"], "sourceRef": "企业数据：90# 再生专用实测指标" },
+      { "property": "高温PG", "effect": "粘度/软化点低于 70#，高温等级相对降低", "direction": "-", "magnitude": "软化点 44℃（70# 为 47.6℃）、粘度 161 Pa·s（70# 为 258 Pa·s）", "applicableScene": ["c-hot-humid", "k-rap"], "sourceRef": "企业数据：90# 再生专用实测指标" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-003",
+    "category": "binder",
+    "type": "胶结料（沥青）",
+    "name": "110# 再生专用沥青",
+    "specs": { "类型": "再生专用", "针入度": "107.8", "软化点": "43.95℃", "粘度": "144 Pa·s" },
+    "sourceRef": "企业数据：再生沥青混合料数据集-材料与指标（110# 再生专用）",
+    "text": "110# 再生专用沥青：针入度 107.8，软化点 43.95℃，粘度 144 Pa·s。用于更高旧料比例或低温优先的再生方案。",
+    "tags": ["enterprise", "binder", "k-rap"],
+    "relations": [
+      { "property": "低温PG", "effect": "高标号低粘度，低温性能更优", "direction": "+", "magnitude": "针入度 107.8，软化点 43.95℃，粘度 144 Pa·s", "applicableScene": ["c-cold", "k-rap"], "sourceRef": "企业数据：110# 再生专用实测指标" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-004",
+    "category": "binder",
+    "type": "胶结料（沥青）",
+    "name": "130# 再生专用沥青",
+    "specs": { "类型": "再生专用", "针入度": "124", "软化点": "41.5℃", "粘度": "111 Pa·s" },
+    "sourceRef": "企业数据：再生沥青混合料数据集-材料与指标（130# 再生专用）",
+    "text": "130# 再生专用沥青：针入度 124，软化点 41.5℃，粘度 111 Pa·s。数据集中标号最高、粘度最低的再生专用胶结料。",
+    "tags": ["enterprise", "binder", "k-rap"],
+    "relations": [
+      { "property": "低温PG", "effect": "最高标号，低温延展最佳", "direction": "+", "magnitude": "针入度 124、软化点 41.5℃、粘度 111 Pa·s，为数据集再生专用沥青中标号最高者", "applicableScene": ["c-cold", "k-rap"], "sourceRef": "企业数据：130# 再生专用实测指标" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-005",
+    "category": "binder",
+    "type": "胶结料（特殊母体）",
+    "name": "直馏90#改性I-C 母体",
+    "specs": { "类型": "直馏90# 改性 I-C", "对照组": "E 拌合站" },
+    "sourceRef": "企业数据：对照试验特殊沥青母体（E 拌合站对照组）",
+    "text": "对照试验特殊沥青母体：直馏90#改性I-C（E 拌合站对照组）。用于再生体系对照试验的改性胶结料母体。",
+    "tags": ["enterprise", "binder"],
+    "relations": [
+      { "property": "高温PG", "effect": "I-C 改性母体高温等级高于基质沥青", "direction": "+", "magnitude": "改性 I-C 体系，作为 E 拌合站对照组胶结料", "applicableScene": ["t-heavy"], "sourceRef": "企业数据：特殊母体对照体系" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-006",
+    "category": "binder",
+    "type": "胶结料（特殊母体）",
+    "name": "调和I改性I-C 母体",
+    "specs": { "类型": "调和 I 改性 I-C", "对照组": "E 拌合站" },
+    "sourceRef": "企业数据：对照试验特殊沥青母体（E 拌合站对照组）",
+    "text": "对照试验特殊沥青母体：调和I改性I-C（E 拌合站对照组）。调和工艺制备的改性胶结料母体。",
+    "tags": ["enterprise", "binder"],
+    "relations": [
+      { "property": "高温PG", "effect": "调和改性提升高温等级", "direction": "+", "magnitude": "调和 I 改性 I-C，E 拌合站对照组", "applicableScene": ["t-heavy"], "sourceRef": "企业数据：特殊母体对照体系" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-binder-007",
+    "category": "binder",
+    "type": "胶结料（特殊母体）",
+    "name": "调和II改性I-C 母体",
+    "specs": { "类型": "调和 II 改性 I-C", "对照组": "E 拌合站" },
+    "sourceRef": "企业数据：对照试验特殊沥青母体（E 拌合站对照组）",
+    "text": "对照试验特殊沥青母体：调和II改性I-C（E 拌合站对照组）。调和工艺制备的改性胶结料母体。",
+    "tags": ["enterprise", "binder"],
+    "relations": [
+      { "property": "高温PG", "effect": "调和改性提升高温等级", "direction": "+", "magnitude": "调和 II 改性 I-C，E 拌合站对照组", "applicableScene": ["t-heavy"], "sourceRef": "企业数据：特殊母体对照体系" }
+    ]
+  }
+]

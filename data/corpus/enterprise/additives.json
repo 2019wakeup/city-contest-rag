@@ -1,0 +1,58 @@
+[
+  {
+    "schemaVersion": "1",
+    "id": "ent-additive-001",
+    "category": "additive",
+    "type": "再生添加剂",
+    "name": "90（基准）",
+    "specs": { "供应商体系": "90（基准）", "对照": "I-1 拌合站对照" },
+    "sourceRef": "企业数据：4 种再生添加剂供应商体系（I-1 站对照）",
+    "text": "再生添加剂「90（基准）」：企业再生试验的基准添加剂体系，I-1 拌合站对照。用于恢复 RAP 老化沥青性能的再生添加剂方案之一。",
+    "tags": ["enterprise", "additive", "k-rap"],
+    "relations": [
+      { "property": "疲劳", "effect": "基准再生添加剂恢复老化沥青性能", "direction": "+", "magnitude": "供应商体系「90」为基准方案，I-1 站对照评价再生效果", "applicableScene": ["k-rap"], "sourceRef": "企业数据：再生添加剂供应商体系" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-additive-002",
+    "category": "additive",
+    "type": "再生添加剂",
+    "name": "恒泰锦",
+    "specs": { "供应商体系": "恒泰锦", "对照": "I-1 拌合站对照" },
+    "sourceRef": "企业数据：4 种再生添加剂供应商体系（I-1 站对照）",
+    "text": "再生添加剂「恒泰锦」：企业再生试验供应商体系之一，I-1 拌合站对照。与基准方案对比评价再生效果。",
+    "tags": ["enterprise", "additive", "k-rap"],
+    "relations": [
+      { "property": "疲劳", "effect": "供应商体系再生效果对比", "direction": "+", "magnitude": "恒泰锦体系，I-1 站对照（具体增益以企业试验数据为准）", "applicableScene": ["k-rap"], "sourceRef": "企业数据：再生添加剂供应商体系" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-additive-003",
+    "category": "additive",
+    "type": "再生添加剂",
+    "name": "路宝",
+    "specs": { "供应商体系": "路宝", "对照": "I-1 拌合站对照" },
+    "sourceRef": "企业数据：4 种再生添加剂供应商体系（I-1 站对照）",
+    "text": "再生添加剂「路宝」：企业再生试验供应商体系之一，I-1 拌合站对照。与基准方案对比评价再生效果。",
+    "tags": ["enterprise", "additive", "k-rap"],
+    "relations": [
+      { "property": "疲劳", "effect": "供应商体系再生效果对比", "direction": "+", "magnitude": "路宝体系，I-1 站对照（具体增益以企业试验数据为准）", "applicableScene": ["k-rap"], "sourceRef": "企业数据：再生添加剂供应商体系" }
+    ]
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-additive-004",
+    "category": "additive",
+    "type": "再生添加剂",
+    "name": "英杰维特（Ingevity）",
+    "specs": { "供应商体系": "英杰维特（Ingevity）", "对照": "I-1 拌合站对照" },
+    "sourceRef": "企业数据：4 种再生添加剂供应商体系（I-1 站对照）",
+    "text": "再生添加剂「英杰维特（Ingevity）」：企业再生试验供应商体系之一，I-1 拌合站对照。与基准方案对比评价再生效果。",
+    "tags": ["enterprise", "additive", "k-rap"],
+    "relations": [
+      { "property": "疲劳", "effect": "供应商体系再生效果对比", "direction": "+", "magnitude": "英杰维特（Ingevity）体系，I-1 站对照（具体增益以企业试验数据为准）", "applicableScene": ["k-rap"], "sourceRef": "企业数据：再生添加剂供应商体系" }
+    ]
+  }
+]

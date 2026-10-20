@@ -1,0 +1,785 @@
+[
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-001",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 A",
+    "specs": {
+      "代号": "A"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 A。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-002",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 B",
+    "specs": {
+      "代号": "B"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 B。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-003",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 C",
+    "specs": {
+      "代号": "C"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 C。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-004",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 D",
+    "specs": {
+      "代号": "D"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 D。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-005",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 E",
+    "specs": {
+      "代号": "E"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 E。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-006",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 F",
+    "specs": {
+      "代号": "F"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 F。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-007",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 G",
+    "specs": {
+      "代号": "G"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 G。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-008",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 H",
+    "specs": {
+      "代号": "H"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 H。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-009",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 I",
+    "specs": {
+      "代号": "I"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 I。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-010",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 J",
+    "specs": {
+      "代号": "J"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 J。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-011",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 K",
+    "specs": {
+      "代号": "K"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 K。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-012",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 L",
+    "specs": {
+      "代号": "L"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 L。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-013",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 M",
+    "specs": {
+      "代号": "M"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 M。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-014",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 N",
+    "specs": {
+      "代号": "N"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 N。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-015",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 O",
+    "specs": {
+      "代号": "O"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 O。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-016",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 P",
+    "specs": {
+      "代号": "P"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 P。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-017",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 Q",
+    "specs": {
+      "代号": "Q"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 Q。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-018",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 R",
+    "specs": {
+      "代号": "R"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 R。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-019",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 S",
+    "specs": {
+      "代号": "S"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 S。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-020",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 T",
+    "specs": {
+      "代号": "T"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 T。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-021",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 U",
+    "specs": {
+      "代号": "U"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 U。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-022",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 V",
+    "specs": {
+      "代号": "V"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 V。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-023",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 W",
+    "specs": {
+      "代号": "W"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 W。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-024",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 X",
+    "specs": {
+      "代号": "X"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 X。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-025",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 Y",
+    "specs": {
+      "代号": "Y"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 Y。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-026",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 Z",
+    "specs": {
+      "代号": "Z"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 Z。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-027",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1A",
+    "specs": {
+      "代号": "1A"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1A。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-028",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1B",
+    "specs": {
+      "代号": "1B"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1B。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-029",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1C",
+    "specs": {
+      "代号": "1C"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1C。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-030",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1D",
+    "specs": {
+      "代号": "1D"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1D。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-031",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1E",
+    "specs": {
+      "代号": "1E"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1E。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-032",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1F",
+    "specs": {
+      "代号": "1F"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1F。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-033",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1G",
+    "specs": {
+      "代号": "1G"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1G。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-034",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1H",
+    "specs": {
+      "代号": "1H"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1H。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-035",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1I",
+    "specs": {
+      "代号": "1I"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1I。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-036",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1J",
+    "specs": {
+      "代号": "1J"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1J。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-037",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1K",
+    "specs": {
+      "代号": "1K"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1K。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-038",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1L",
+    "specs": {
+      "代号": "1L"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1L。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-039",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1M",
+    "specs": {
+      "代号": "1M"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1M。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-040",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1N",
+    "specs": {
+      "代号": "1N"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1N。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-041",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 1O",
+    "specs": {
+      "代号": "1O"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 1O。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-042",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 B-2",
+    "specs": {
+      "代号": "B-2"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 B-2。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-043",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 I-1",
+    "specs": {
+      "代号": "I-1"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 I-1。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-044",
+    "category": "catalog",
+    "type": "料源",
+    "name": "拌合站/料源 M-1",
+    "specs": {
+      "代号": "M-1"
+    },
+    "sourceRef": "企业数据：44 个拌合站/料源代号",
+    "text": "企业数据料源代号 M-1。再生沥青混合料试验数据的拌合站/料源来源标识。",
+    "tags": [
+      "enterprise",
+      "catalog"
+    ],
+    "relations": []
+  },
+  {
+    "schemaVersion": "1",
+    "id": "ent-catalog-gradation",
+    "category": "catalog",
+    "type": "级配",
+    "name": "矿料级配目录（AC-10/13/20/25 及 -1/-2/-3 变体）",
+    "specs": {
+      "级配": [
+        "AC-10",
+        "AC-13",
+        "AC-20",
+        "AC-25",
+        "AC-10-1",
+        "AC-10-2",
+        "AC-10-3",
+        "AC-13-1",
+        "AC-13-2",
+        "AC-13-3",
+        "AC-20-1",
+        "AC-20-2",
+        "AC-20-3",
+        "AC-25-1",
+        "AC-25-2",
+        "AC-25-3"
+      ]
+    },
+    "sourceRef": "企业数据：24 种矿料级配（附件可解析集合为 4 基础 + 12 变体，其余为级配后缀标记沥青标号）",
+    "text": "企业数据矿料级配目录：AC-10、AC-13、AC-20、AC-25 及其 -1/-2/-3 变体，部分级配后缀标记沥青标号。再生混合料合成级配的料源特征。",
+    "tags": [
+      "enterprise",
+      "catalog",
+      "gradation"
+    ],
+    "relations": []
+  }
+]
