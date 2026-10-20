@@ -58,8 +58,23 @@ async function recommend(scene: unknown): Promise<{ status: number; report: Repo
 }
 
 function canonicalize(report: Report): string {
-  // 确定性校验：只比较数值/结构（LLM 接入后 sections 文案每次不同，steps 耗时每次不同，均剔除）
-  const { steps: _steps, sections: _sections, ...rest } = report as Report & { sections?: unknown };
+  // 确定性校验：只比较数值管线（候选/目标/基准/告警/模式）。
+  // 剔除 LLM 影响面：sections 文案、steps 耗时、evidence（LLM 重排会改变排序与分数）、
+  // evidence* 调试透传字段（rerankMs/queries/slotSources）。
+  const {
+    steps: _steps,
+    sections: _sections,
+    evidence: _evidence,
+    evidenceRerankMs: _rerankMs,
+    evidenceQueries: _queries,
+    evidenceSlotSources: _slotSources,
+    ...rest
+  } = report as Report & {
+    sections?: unknown;
+    evidenceRerankMs?: unknown;
+    evidenceQueries?: unknown;
+    evidenceSlotSources?: unknown;
+  };
   return JSON.stringify(rest);
 }
 

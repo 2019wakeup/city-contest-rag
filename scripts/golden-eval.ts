@@ -5,11 +5,12 @@
  *   tsx scripts/golden-eval.ts <backend> [--json] [--db-path=...]
  *   backend: sqlite | lancedb（默认取 RETRIEVAL_BACKEND，再默认 sqlite）
  *
- * 评估口径：query 只传 text（纯 BM25，vector 省略，不依赖模型下载，评估器不 import embedder）；
- * 对每个用例取 top-5 命中，按 hit.provenance.sourceDocId ∈ expectedDocIds 计算 recall@5；
+ * 评估口径：默认混合检索（text + query 向量，与生产一致；`--bm25` 可回退纯关键词离线模式）；
+ * 期望为 doc 级：取 topK×3 命中按 sourceDocId 去重后截前 5 个文档，按 ∈ expectedDocIds 计算 recall@5；
  * 任一用例 recall@5 低于 minRecallAt5 → exit 1（spec：不通过不允许切换引擎/模型/切块策略）。
  */
 import fs from 'node:fs';
+import { createEmbedder } from '../packages/embedding/src/index';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SqliteVectorStore } from '../packages/retrieval/src/sqlite';
@@ -48,14 +49,24 @@ export async function runGoldenEval(
   store: VectorStore,
   cases: GoldenCase[],
   k = 5,
+  embedder?: { embed(texts: string[], opts?: { mode?: 'query' | 'passage' }): Promise<number[][]> } | null,
 ): Promise<GoldenEvalResult> {
   const results: CaseResult[] = [];
   for (const c of cases) {
-    // vector 省略 = 纯 BM25 检索（接口契约，金标准评估不依赖模型）
+    // 混合检索（与生产一致）：有 embedder 时带 query 向量；无则纯 BM25（离线兜底）。
     // 金标准是 doc 级期望：取 topK 的 3 倍 chunk 后按 sourceDocId 去重、截前 k 个文档，
     // 避免同一 doc 的多个 chunk（维度拆分后）挤占 top-k 名额造成假性失分
+    let vector: number[] | undefined;
+    if (embedder) {
+      try {
+        vector = (await embedder.embed([c.query], { mode: 'query' }))[0];
+      } catch {
+        vector = undefined;
+      }
+    }
     const hits = await store.search({
       text: c.query,
+      vector,
       topK: Math.max(k * 3, k),
       filter: c.docTypes ? { docTypes: c.docTypes } : undefined,
     });
@@ -105,7 +116,7 @@ export function renderReport(result: GoldenEvalResult, opts: { json?: boolean } 
     );
   }
   const lines: string[] = [];
-  lines.push('金标准检索回归（recall@5，纯 BM25）');
+  lines.push('金标准检索回归（recall@5，默认混合检索；--bm25 纯关键词）');
   lines.push('─'.repeat(84));
   for (const r of result.results) {
     const mark = r.passed ? '✓' : '✗';
@@ -144,8 +155,20 @@ async function main(): Promise<void> {
     throw new Error(`不支持的 backend: ${backend}（可选 sqlite|lancedb）`);
   }
 
+  // 默认混合检索（与生产一致）；--bm25 强制纯关键词模式（离线/无模型时）
+  let embedder: { embed(texts: string[], opts?: { mode?: 'query' | 'passage' }): Promise<number[][]> } | null = null;
+  if (!args.includes('--bm25')) {
+    try {
+      embedder = await createEmbedder({
+        model: 'multilingual-e5-small',
+        cacheDir: path.resolve(indexDir, 'hf-cache'),
+      });
+    } catch {
+      embedder = null;
+    }
+  }
   const cases = loadGoldenCases(path.resolve(here, '../data/golden/golden.json'));
-  const result = await runGoldenEval(store, cases);
+  const result = await runGoldenEval(store, cases, 5, embedder);
   console.log(renderReport(result, { json }));
   if (result.failedCount > 0) {
     console.error(`金标准未通过：${result.failedCount} 条用例 recall@5 低于门槛`);
