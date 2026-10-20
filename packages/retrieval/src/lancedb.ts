@@ -9,7 +9,7 @@
 import * as lancedb from '@lancedb/lancedb';
 import { CorpusChunkSchema, SearchHitSchema } from '@road-rec/contracts';
 import type { CorpusChunk, SearchHit } from '@road-rec/contracts';
-import { rrf } from './fusion';
+import { rrf, parseHybridWeights } from './fusion';
 import type { RankedItem } from './fusion';
 import type { VectorSearchQuery, VectorStore } from './types';
 
@@ -128,7 +128,7 @@ export class LanceDBVectorStore implements VectorStore {
       rankings.push(vecRows.map((r) => ({ id: r.chunkId, score: r._distance ?? 0 })));
     }
 
-    const fused = rrf(rankings);
+    const fused = rrf(rankings, undefined, parseHybridWeights());
     if (fused.length === 0) return [];
 
     const fetched = (await table.query().toArray()) as Row[];
