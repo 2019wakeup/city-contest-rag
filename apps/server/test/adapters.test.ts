@@ -183,6 +183,52 @@ describe('模块 A/C 适配器（T7）', () => {
         ['carbon', 'constructability', 'expectedLife', 'fatigue', 'highTemp', 'lcc', 'lowTemp', 'waterStability'].sort(),
       );
     });
+
+    it('V2：mock C 特征贡献（模拟阶段确定性生成）：3-6 条、正负都有、两次一致、合计≈偏离候选均值', async () => {
+      vi.stubEnv('MODULE_C_ENDPOINT', '');
+      const formulas: Formula[] = [
+        formula,
+        { ...formula, binder: { ...formula.binder, type: '环氧沥青' } },
+        { ...formula, binder: { ...formula.binder, type: '橡胶粉改性沥青' } },
+        { ...formula, binder: { ...formula.binder, type: 'SBR改性沥青' } },
+        { ...formula, binder: { ...formula.binder, type: '硬质沥青' } },
+      ];
+      const p1 = await predictFormulas(formulas);
+      const p2 = await predictFormulas(formulas);
+
+      // 候选得分：8 维归一化均值（lower-better 反向），与实现同口径
+      const LOWER_BETTER = new Set(['lcc', 'carbon']);
+      const compositeOf = (lists: Array<typeof p1[number]['predictions']>, idx: number): number => {
+        const dims = ['highTemp', 'lowTemp', 'fatigue', 'waterStability', 'lcc', 'carbon', 'expectedLife', 'constructability'];
+        let sum = 0;
+        for (const dim of dims) {
+          const vals = lists.map((l) => l.find((p) => p.perf === dim)?.value ?? 0);
+          const min = Math.min(...vals);
+          const max = Math.max(...vals);
+          const v = lists[idx].find((p) => p.perf === dim)!.value;
+          const span = max - min || 1;
+          sum += LOWER_BETTER.has(dim) ? (max - v) / span : (v - min) / span;
+        }
+        return sum / dims.length;
+      };
+      const lists = p1.map((fp) => fp.predictions);
+      const comps = lists.map((_, i) => compositeOf(lists, i));
+      const mean = comps.reduce((a, b) => a + b, 0) / comps.length;
+
+      for (let i = 0; i < p1.length; i++) {
+        const exps = p1[i].explanations ?? [];
+        expect(exps.length, `候选 ${i} explanations 条数`).toBeGreaterThanOrEqual(3);
+        expect(exps.length, `候选 ${i} explanations 条数`).toBeLessThanOrEqual(6);
+        expect(exps.some((e) => e.contribution > 0), `候选 ${i} 需有正贡献`).toBe(true);
+        expect(exps.some((e) => e.contribution < 0), `候选 ${i} 需有负贡献`).toBe(true);
+        expect(exps, `候选 ${i} 两次调用一致`).toEqual(p2[i].explanations);
+        const total = exps.reduce((a, e) => a + e.contribution, 0);
+        const target = comps[i] - mean;
+        expect(Math.abs(total - target), `候选 ${i} 合计≈偏离均值`).toBeLessThan(0.05);
+        // 特征名来自配方字段，无"真实 SHAP"字样
+        expect(exps.every((e) => !/SHAP|shap/i.test(e.feature))).toBe(true);
+      }
+    });
   });
 
   describe('真实端点（fake HTTP server）', () => {

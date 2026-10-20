@@ -216,6 +216,29 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     }
   });
 
+  it('V1 得分分解：Σcontribution − penalty ≈ score（<1e-6），权重归一化/贡献一致', async () => {
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    for (const cand of report.candidates) {
+      expect(cand.scoreBreakdown, `${cand.id} breakdown`).toBeDefined();
+      const sum = cand.scoreBreakdown!.reduce((a, b) => a + b.contribution, 0);
+      const penalty = cand.penalty ?? 0;
+      expect(Math.abs(sum - penalty - cand.score), `${cand.id} 合计=得分`).toBeLessThan(1e-6);
+      expect(penalty).toBeGreaterThanOrEqual(0);
+      const weightSum = cand.scoreBreakdown!.reduce((a, b) => a + b.weight, 0);
+      expect(Math.abs(weightSum - 1), `${cand.id} 权重归一化`).toBeLessThan(1e-6);
+      for (const item of cand.scoreBreakdown!) {
+        expect(item.weight).toBeGreaterThan(0);
+        expect(item.normalized).toBeGreaterThanOrEqual(0);
+        expect(item.normalized).toBeLessThanOrEqual(1);
+        expect(Math.abs(item.contribution - item.weight * item.normalized), `${cand.id} ${item.dimension} 贡献=权重×归一化`).toBeLessThan(1e-9);
+      }
+    }
+  });
+
   it('B4 步骤耗时增量为与上一步差值：ms 非负且总和 ≈ 总时长（累计语义会显著超）', async () => {
     const t0 = performance.now();
     const report = await recommend(loadCaseScene('case-01'), {

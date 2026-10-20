@@ -1,5 +1,5 @@
-import { FormulaPredictionSchema, LabIndicatorSchema } from '@road-rec/contracts';
-import type { Formula, FormulaPrediction, LabIndicator } from '@road-rec/contracts';
+import { ExplanationSchema, FormulaPredictionSchema, LabIndicatorSchema } from '@road-rec/contracts';
+import type { Explanation, Formula, FormulaPrediction, LabIndicator, Prediction } from '@road-rec/contracts';
 
 /**
  * ===== 模拟数据（模块 C mock）=====
@@ -123,7 +123,7 @@ function composeBaseline(f: Formula): CBaseline {
 
 export function mockPredictFormulas(formulas: Formula[]): FormulaPrediction[] {
   const rand = mulberry32(42);
-  return formulas.map((f) => {
+  const built = formulas.map((f) => {
     const base = composeBaseline(f);
     const predictions = C_DIMS.map((dim) => {
       // 固定 seed 扰动 ±3%；置信区间 ±5%|value|（B2：负值维度如低温 -28 → -29.4 ~ -26.6，保证 low ≤ high）
@@ -139,12 +139,74 @@ export function mockPredictFormulas(formulas: Formula[]): FormulaPrediction[] {
     });
     // C2：11 项实测指标（与决策维同一 seed 流、同一扰动序列，保持相关性）
     const labIndicators = generateLabIndicators(base, f, rand);
+    return { f, predictions, labIndicators };
+  });
+
+  // V2：特征贡献（模拟阶段确定性生成）——合计 ≈ 该候选得分偏离候选均值的量
+  const lists = built.map((b) => b.predictions);
+  const comps = lists.map((list) => compositeOfLists(lists, list));
+  const meanComp = comps.length ? comps.reduce((a, b) => a + b, 0) / comps.length : 0;
+
+  return built.map((b, i) => {
+    const features = extractFormulaFeatures(b.f);
+    const explanations = generateExplanations(features, comps[i] - meanComp, rand);
     return FormulaPredictionSchema.parse({
-      formula: f,
-      predictions,
-      labIndicators: labIndicators.map((l) => LabIndicatorSchema.parse(l)),
+      formula: b.f,
+      predictions: b.predictions,
+      labIndicators: b.labIndicators.map((l) => LabIndicatorSchema.parse(l)),
+      explanations,
     });
   });
+}
+
+/** V2：候选得分 = 8 维归一化均值（lower-better 反向），与特征贡献合计同口径 */
+const LOWER_BETTER_DIMS: ReadonlySet<string> = new Set(['lcc', 'carbon']);
+
+function compositeOfLists(lists: Prediction[][], list: Prediction[]): number {
+  let sum = 0;
+  let count = 0;
+  for (const dim of C_DIMS) {
+    const vals = lists.map((l) => l.find((p) => p.perf === dim)?.value ?? 0);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    const v = list.find((p) => p.perf === dim)?.value ?? 0;
+    const span = max - min || 1;
+    sum += LOWER_BETTER_DIMS.has(dim) ? (max - v) / span : (v - min) / span;
+    count += 1;
+  }
+  return count ? sum / count : 0;
+}
+
+/** V2：配方特征（沥青类型/改性剂/掺剂/级配/油石比/空隙率），最多 6 条 */
+function extractFormulaFeatures(f: Formula): string[] {
+  const features: string[] = [];
+  features.push(`沥青类型：${f.binder.type}`);
+  if (f.modifier.type) features.push(`改性剂：${f.modifier.type}`);
+  features.push(`级配：${f.gradation.type}`);
+  for (const a of f.additives) features.push(`掺剂：${a.type}`);
+  features.push(`油石比：${f.oilStoneRatio}%`);
+  features.push(`空隙率：${f.airVoids}%`);
+  return features;
+}
+
+/**
+ * V2：特征贡献分配——前 k-2 项按 seed 权重分摊 target，末两项 ±δ 保证正负并存；
+ * 合计 ≈ target（rounding ≤ 0.001）。明确为模拟阶段确定性生成（非真实 SHAP）。
+ */
+function generateExplanations(
+  features: string[],
+  target: number,
+  rand: () => number,
+): Explanation[] {
+  const k = Math.min(features.length, 6);
+  const chosen = features.slice(0, k);
+  const shares: number[] = [];
+  for (let i = 0; i < k - 2; i++) shares.push(rand());
+  const wsum = shares.reduce((a, b) => a + b, 0) || 1;
+  const delta = 0.02 * Math.max(Math.abs(target), 0.05);
+  const contributions: number[] = shares.map((s) => Number(((target * s) / wsum).toFixed(4)));
+  contributions.push(Number(delta.toFixed(4)), Number((-delta).toFixed(4)));
+  return chosen.map((feature, i) => ExplanationSchema.parse({ feature, contribution: contributions[i] }));
 }
 
 // ---------------------------------------------------------------------------

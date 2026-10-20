@@ -15,6 +15,7 @@ import type {
   RecommendationReport,
   ReportSection,
   SceneInput,
+  ScoreBreakdownItem,
   SearchHit,
   StepRecord,
   TargetProfile,
@@ -540,7 +541,22 @@ function rankCandidates(
       penalty += carbon > avgCarbon ? 0.05 : 0;
     }
 
-    const score = Number((weightedScore - penalty).toFixed(4));
+    // V1：得分分解（真实计算）——权重归一化（Σweight=1），contribution = weight × normalized；
+    // score = Σcontribution − penalty（全精度，保证 <1e-6 恒等）
+    const breakdown: ScoreBreakdownItem[] = [];
+    for (const [dim, w] of Object.entries(weights)) {
+      const n = nm.get(dim);
+      if (n === undefined || weightUsed === 0) continue;
+      const weight = w / weightUsed;
+      breakdown.push({
+        dimension: dim,
+        label: DIM_META.find((m) => m.dim === dim)?.label ?? dim,
+        weight,
+        normalized: n,
+        contribution: weight * n,
+      });
+    }
+    const score = weightedScore - penalty;
     return CandidateSchema.parse({
       id: a.id,
       formula: a.formula,
@@ -563,6 +579,8 @@ function rankCandidates(
       score,
       evidenceIds: [],
       ...(predictions[i].labIndicators ? { labIndicators: predictions[i].labIndicators } : {}),
+      scoreBreakdown: breakdown,
+      penalty,
     });
   });
   candidates.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
