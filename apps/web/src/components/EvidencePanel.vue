@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { DOC_TYPE_LABELS } from '@/utils/labels'
+import EvidenceContent from '@/components/EvidenceContent.vue'
 import { scoreDisplayText } from '@/utils/score'
 import type { EvidenceRef } from '@road-rec/contracts'
 
@@ -45,42 +46,11 @@ const scorePercentOf = (hit: EvidenceRef): number => {
   return Math.round((hit.score / top) * 100)
 }
 
-// ---- RAG P0：markdown 表格证据（简单按行/列解析，不做完整 markdown） ----
-const TABLE_ROW_LIMIT = 8
-const TABLE_COL_LIMIT = 6
-
+// ---- 折叠态摘要：表格证据只显示 caption 首句 ----
 const isSeparatorLine = (line: string): boolean =>
   /^\s*\|[\s:|-]+\|\s*$/.test(line) && line.includes('-')
 
 const isTableText = (text: string): boolean => (text ?? '').split('\n').some(isSeparatorLine)
-
-function splitCells(line: string): string[] {
-  return line
-    .replace(/^\s*\|/, '')
-    .replace(/\|\s*$/, '')
-    .split('|')
-    .map((c) => c.trim())
-    .slice(0, TABLE_COL_LIMIT)
-}
-
-interface ParsedTable {
-  header: string[]
-  rows: string[][]
-  totalRows: number
-}
-
-function parseTable(text: string): ParsedTable {
-  const lines = (text ?? '').split('\n')
-  const sepIndex = lines.findIndex(isSeparatorLine)
-  const header = sepIndex > 0 ? splitCells(lines[sepIndex - 1]) : []
-  const rows: string[][] = []
-  for (let i = sepIndex + 1; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (!line.startsWith('|')) break
-    rows.push(splitCells(line))
-  }
-  return { header, rows, totalRows: rows.length }
-}
 
 const summaryOf = (text: string): string => {
   const source = text ?? ''
@@ -177,36 +147,7 @@ function toggle(id: string): void {
             </div>
             <div class="evidence-item-detail">
               <div class="evidence-detail-inner">
-              <template v-if="isTableText(hit.text ?? '')">
-                <div class="evidence-table-wrap">
-                  <table class="evidence-table" data-testid="evidence-table">
-                    <thead>
-                      <tr>
-                        <th v-for="(cell, ci) in parseTable(hit.text ?? '').header" :key="ci">
-                          {{ cell }}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="(row, ri) in parseTable(hit.text ?? '').rows.slice(0, TABLE_ROW_LIMIT)"
-                        :key="ri"
-                      >
-                        <td v-for="(cell, ci) in row" :key="ci">{{ cell }}</td>
-                      </tr>
-                      <tr v-if="parseTable(hit.text ?? '').totalRows > TABLE_ROW_LIMIT">
-                        <td
-                          :colspan="parseTable(hit.text ?? '').header.length || 1"
-                          class="evidence-table-more"
-                        >
-                          …（共 {{ parseTable(hit.text ?? '').totalRows }} 行）
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </template>
-              <p v-else class="evidence-text">{{ hit.text }}</p>
+              <EvidenceContent :text="hit.text ?? ''" />
               <p class="evidence-provenance">
                 来源：{{ hit.provenance?.sourceDocId ?? '未知' }}
                 · 模型 {{ hit.provenance?.embeddingModel ?? '-' }}
