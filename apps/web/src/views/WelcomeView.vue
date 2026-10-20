@@ -188,6 +188,17 @@ onMounted(async () => {
   font-size: 34px;
   font-weight: 700;
   letter-spacing: 2px;
+  background: linear-gradient(180deg, #ffffff 20%, #94a3b8 90%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+html:not(.dark) .welcome-title {
+  background: linear-gradient(180deg, #0f172a 20%, #64748b 90%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .welcome-tagline {

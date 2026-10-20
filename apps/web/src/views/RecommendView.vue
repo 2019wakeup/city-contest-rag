@@ -756,8 +756,10 @@ watch(
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--app-panel-bg) 82%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--color-elevated) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid var(--app-hairline);
 }
 
 /* P3：重跑进度条 + 旧内容变淡 */

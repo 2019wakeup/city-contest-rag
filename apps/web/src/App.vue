@@ -40,6 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="app-aurora" data-testid="app-aurora" aria-hidden="true"></div>
   <el-container class="app-shell">
     <el-aside :width="collapsed ? '64px' : '200px'" data-testid="app-aside" class="app-aside">
       <div class="app-brand" :class="{ 'app-brand-collapsed': collapsed }">
@@ -200,7 +201,28 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.app-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -8%, rgba(110, 123, 242, 0.16), transparent 60%),
+    radial-gradient(760px 520px at 88% 8%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(700px 700px at 55% 110%, rgba(139, 92, 246, 0.14), transparent 65%);
+}
+
+.app-aurora::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.03;
+}
+
 .app-shell {
+  position: relative;
+  z-index: 1;
   height: 100vh;
 }
 

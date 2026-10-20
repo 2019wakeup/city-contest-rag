@@ -201,8 +201,10 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background: var(--app-panel-bg);
-  border-left: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--color-elevated) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-left: 1px solid var(--app-hairline);
   box-shadow: -8px 0 24px rgba(0, 0, 0, 0.25);
 }
 

@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { ElMenu } from 'element-plus'
+import { readFileSync } from 'node:fs'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -408,6 +409,21 @@ describe('App 主题切换与侧栏折叠（UI二轮）', () => {
 
     expect(document.documentElement.classList.contains('dark')).toBe(false)
     expect(localStorage.getItem('theme')).toBe('light')
+  })
+
+  it('UI7 Aurora：token 存在断言与极光背景元素（主题）', async () => {
+    const theme = readFileSync('src/styles/theme.css', 'utf8')
+    expect(theme).toContain('#080b11')
+    expect(theme).toContain('#0e121a')
+    expect(theme).toContain('#141a26')
+    expect(theme).toContain('rgba(255, 255, 255, 0.06)')
+    expect(theme).toContain('#6e7bf2')
+    expect(theme).toContain('#8b5cf6')
+    expect(theme).toContain('#22d3ee')
+    expect(theme).toContain('blur(14px) saturate(140%)')
+
+    const wrapper = await mountApp()
+    expect(wrapper.find('[data-testid="app-aurora"]').exists()).toBe(true)
   })
 
   it('灵动层：主题切换单 SVG 形变（不换两套图标资源）（微动效）', async () => {
