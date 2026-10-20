@@ -4,7 +4,7 @@ import { LegendComponent, TooltipComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
 import type { EChartsType } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { DOC_TYPE_LABELS } from '@/utils/labels'
 import type { KbStats } from '@/api/client'
@@ -84,14 +84,19 @@ function render(): void {
 
 let resizeObserver: ResizeObserver | null = null
 
-onMounted(() => {
-  if (!chartEl.value) return
+/** 容器出现后再初始化（异步 stats 到达时 v-if 才渲染 chart 容器）。 */
+function ensureChart(): void {
+  if (!chartEl.value || chart.value) return
   chart.value = echarts.init(chartEl.value)
-  render()
   if (typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(() => chart.value?.resize())
     resizeObserver.observe(chartEl.value)
   }
+}
+
+onMounted(() => {
+  ensureChart()
+  render()
 })
 
 onBeforeUnmount(() => {
@@ -99,7 +104,16 @@ onBeforeUnmount(() => {
   chart.value?.dispose()
 })
 
-watch(() => props.stats, render)
+// 修复：stats 异步到达 → 容器出现后再 init 并渲染（flush post 保证 DOM 就绪）
+watch(
+  () => props.stats,
+  async () => {
+    await nextTick()
+    ensureChart()
+    render()
+  },
+  { flush: 'post' },
+)
 </script>
 
 <template>

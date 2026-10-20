@@ -13,19 +13,23 @@ import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
 
-const { chartOptions } = vi.hoisted(() => ({
+const { chartOptions, initSpy, disposeSpy } = vi.hoisted(() => ({
   chartOptions: [] as Array<Record<string, unknown>>,
-}))
-
-vi.mock('echarts/core', () => ({
-  use: () => {},
-  init: () => ({
+  initSpy: vi.fn(() => ({
     setOption: (opt: Record<string, unknown>) => {
       chartOptions.push(opt)
     },
     resize: () => {},
-    dispose: () => {},
-  }),
+    dispose: () => {
+      disposeSpy()
+    },
+  })),
+  disposeSpy: vi.fn(),
+}))
+
+vi.mock('echarts/core', () => ({
+  use: () => {},
+  init: initSpy,
 }))
 vi.mock('echarts/charts', () => ({ PieChart: {}, RadarChart: {}, BarChart: {}, CustomChart: {}, LineChart: {} }))
 vi.mock('echarts/components', () => ({
@@ -242,6 +246,41 @@ describe('WelcomeView 欢迎页', () => {
     await flushPromises()
     expect(router.currentRoute.value.path).toBe('/recommend')
     expect(router.currentRoute.value.query.case).toBe(fiveCases[0].id)
+  })
+
+  it('UI7 修复：HomeStats stats=null 挂载不 init，异步到达后 init+pie 渲染+卸载 dispose（回归）', async () => {
+    initSpy.mockClear()
+    disposeSpy.mockClear()
+    chartOptions.length = 0
+
+    const wrapper = mount(HomeStats, { props: { stats: null } })
+    await flushPromises()
+    // ① stats=null：容器 v-if 假 → 不 init
+    expect(initSpy).not.toHaveBeenCalled()
+
+    // ② 异步 stats 到达 → nextTick 后 init + setOption pie
+    await wrapper.setProps({
+      stats: {
+        count: 200,
+        docTypes: { knowledge: 100, standard: 60, literature: 40 },
+        backend: 'lancedb',
+      },
+    })
+    await flushPromises()
+    expect(initSpy).toHaveBeenCalledTimes(1)
+    const option = chartOptions.at(-1) as
+      | { series?: Array<{ type?: string; data?: Array<{ name: string; value: number }> }> }
+      | undefined
+    expect(option?.series?.[0]?.type).toBe('pie')
+    expect(option?.series?.[0]?.data?.map((d) => d.name)).toEqual([
+      '知识条目',
+      '规范',
+      '文献',
+    ])
+
+    // ③ 卸载 dispose
+    wrapper.unmount()
+    expect(disposeSpy).toHaveBeenCalled()
   })
 
   it('UI7 HomeStats donut：docTypes 映射为六类数据与中心总数（欢迎页）', async () => {

@@ -1877,6 +1877,37 @@ describe('RecommendView 推荐工作台', () => {
     }
   })
 
+  it('UI7 修复审计：RadarChart/WaterfallChart/ShapBar 数据后到仍渲染（回归）', async () => {
+    chartOptions.length = 0
+
+    const radarWrapper = mount(RadarChart, {
+      props: { radar: {} as never, predictions: [] },
+    })
+    const beforeRadar = chartOptions.length
+    await radarWrapper.setProps({ radar: makeCandidate('cand-1').radar as never })
+    await flushPromises()
+    expect(chartOptions.length).toBeGreaterThan(beforeRadar)
+
+    const shapWrapper = mount(ShapBar, { props: { explanations: [] } })
+    const beforeShap = chartOptions.length
+    await shapWrapper.setProps({ explanations: [{ feature: 'A', contribution: 1 }] })
+    await flushPromises()
+    expect(chartOptions.length).toBeGreaterThan(beforeShap)
+
+    const wfWrapper = mount(WaterfallChart, { props: { score: 0.5, breakdown: [] } })
+    const beforeWf = chartOptions.length
+    await wfWrapper.setProps({
+      score: 0.7,
+      breakdown: [{ dimension: 'd', label: '高温', weight: 1, normalized: 0.7, contribution: 0.7 }],
+    })
+    await flushPromises()
+    expect(chartOptions.length).toBeGreaterThan(beforeWf)
+
+    radarWrapper.unmount()
+    shapWrapper.unmount()
+    wfWrapper.unmount()
+  })
+
   it('UI8 瀑布数据映射：[x,y0,y1] 序列/合计=score/penalty 插入（可视化）', () => {
     const breakdown = [
       { dimension: 'd1', label: '高温', weight: 0.4, normalized: 0.5, contribution: 0.199 },
