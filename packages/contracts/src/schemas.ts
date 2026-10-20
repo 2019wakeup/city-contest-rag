@@ -271,6 +271,18 @@ export const LabIndicatorSchema = z
   .passthrough();
 export type LabIndicator = z.infer<typeof LabIndicatorSchema>;
 
+/** V1：得分构成分解（瀑布图用，真实计算）——维度归一化值×权重=贡献；Σ贡献 − penalty ≈ score。 */
+export const ScoreBreakdownItemSchema = z
+  .object({
+    dimension: z.string(),
+    label: z.string(),
+    weight: z.number(),
+    normalized: z.number().min(0).max(1),
+    contribution: z.number(),
+  })
+  .passthrough();
+export type ScoreBreakdownItem = z.infer<typeof ScoreBreakdownItemSchema>;
+
 export const CandidateSchema = z
   .object({
     schemaVersion: schemaVersionField(),
@@ -285,6 +297,8 @@ export const CandidateSchema = z
     score: z.number(),
     evidenceIds: z.array(z.string()),
     labIndicators: z.array(LabIndicatorSchema).optional(),
+    scoreBreakdown: z.array(ScoreBreakdownItemSchema).optional(),
+    penalty: z.number().optional(),
   })
   .passthrough();
 export type Candidate = z.infer<typeof CandidateSchema>;

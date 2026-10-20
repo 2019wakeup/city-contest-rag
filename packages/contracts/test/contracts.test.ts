@@ -200,6 +200,41 @@ describe('contracts 契约包', () => {
     ).toBe(true);
   });
 
+  it('V1：Candidate.scoreBreakdown（维度/标签/权重/归一化/贡献）与 penalty 解析', () => {
+    const base = {
+      id: 'cand-1',
+      formula: validFormula,
+      predictions: [],
+      radar: { highTemp: 88, lowTemp: 70, fatigue: 75, waterStability: 85, lcc: 60, carbon: 55, expectedLife: 80, constructability: 90 },
+      lcc: 120,
+      carbon: 15,
+      expectedLife: 12,
+      score: 0.82,
+      evidenceIds: [],
+    };
+    const parsed = CandidateSchema.safeParse({
+      ...base,
+      scoreBreakdown: [
+        { dimension: 'highTemp', label: '高温性能', weight: 0.5, normalized: 0.9, contribution: 0.45 },
+        { dimension: 'waterStability', label: '水稳定性', weight: 0.3, normalized: 0.6, contribution: 0.18 },
+      ],
+      penalty: 0.05,
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.scoreBreakdown).toHaveLength(2);
+      expect(parsed.data.scoreBreakdown![0].dimension).toBe('highTemp');
+      expect(parsed.data.penalty).toBe(0.05);
+    }
+    // 非法归一化（>1）拒绝
+    expect(
+      CandidateSchema.safeParse({
+        ...base,
+        scoreBreakdown: [{ dimension: 'x', label: 'X', weight: 1, normalized: 1.5, contribution: 1.5 }],
+      }).success,
+    ).toBe(false);
+  });
+
   it('RecommendationReport 解析成功且保留未知字段（Review Focus #1）', () => {
     const report = {
       scene: validScene,
