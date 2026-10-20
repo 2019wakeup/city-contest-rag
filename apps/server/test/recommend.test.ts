@@ -183,6 +183,39 @@ describe('T8 orchestrator + /api/v1 路由', () => {
     }
   });
 
+  it('C4 企业验收阈值行：label/unit/baseline=阈值 + acceptance min/max + 候选值为实测指标', async () => {
+    const report = await recommend(loadCaseScene('case-01'), {
+      store,
+      embedder: fakeEmbedder,
+      relationDb,
+    });
+    const rows = report.benchmark.filter((r) => r.acceptance !== undefined);
+    expect(rows.length).toBeGreaterThanOrEqual(9); // vv/vma/vfa/ms/fl/tsr/retainedStability/ds/bendingStrain
+    const vv = rows.find((r) => r.label === '空隙率');
+    expect(vv).toBeDefined();
+    expect(vv!.unit).toBe('%');
+    expect(vv!.baseline).toBe(3); // baseline=阈值（min）
+    expect(vv!.acceptance).toEqual({ min: 3, max: 6 });
+    const ds = rows.find((r) => r.label === '动稳定度');
+    expect(ds!.unit).toBe('次/mm');
+    expect(ds!.baseline).toBe(800);
+    expect(ds!.acceptance).toEqual({ min: 800 });
+    // 候选值来自 labIndicators：cand-1 的 ds 与报告候选一致
+    const cand1 = report.candidates[0];
+    const labDs = cand1.labIndicators?.find((l) => l.key === 'ds');
+    expect(labDs).toBeDefined();
+    expect(ds!.candidates[cand1.id]).toBe(labDs!.value);
+    // pass 与阈值判定一致
+    for (const l of cand1.labIndicators ?? []) {
+      if (l.threshold) {
+        const expectPass =
+          (l.threshold.min === undefined || l.value > l.threshold.min) &&
+          (l.threshold.max === undefined || l.value < l.threshold.max);
+        expect(l.pass, `lab ${l.key} pass`).toBe(expectPass);
+      }
+    }
+  });
+
   it('B4 步骤耗时增量为与上一步差值：ms 非负且总和 ≈ 总时长（累计语义会显著超）', async () => {
     const t0 = performance.now();
     const report = await recommend(loadCaseScene('case-01'), {

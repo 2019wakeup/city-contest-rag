@@ -10,6 +10,7 @@ import type {
   Candidate,
   EvidenceRef,
   Formula,
+  LabIndicator,
   PerfTarget,
   RecommendationReport,
   ReportSection,
@@ -23,6 +24,7 @@ import { filterByScene } from './relation/db';
 import type { RelationDb } from './relation/db';
 import { mapSceneToTargets } from './adapters/a';
 import { predictFormulas } from './adapters/c';
+import { LAB_INDICATOR_SPECS } from './adapters/mock-c-baseline';
 import type { AdapterMode } from './adapters/a';
 import { generateStructured, readPrompt } from './llm/client';
 import { rerankHits } from './rag/rerank';
@@ -482,6 +484,7 @@ function rankCandidates(
   predictions: Array<{
     predictions: Array<{ perf: string; value: number; ciLow?: number; ciHigh?: number; unit: string }>;
     explanations?: Array<{ feature: string; contribution: number }>;
+    labIndicators?: LabIndicator[];
   }>,
   targets: TargetProfile,
 ): Candidate[] {
@@ -559,6 +562,7 @@ function rankCandidates(
       expectedLife: vm.get('expectedLife') ?? 0,
       score,
       evidenceIds: [],
+      ...(predictions[i].labIndicators ? { labIndicators: predictions[i].labIndicators } : {}),
     });
   });
   candidates.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
@@ -1136,7 +1140,7 @@ async function retrieveEvidence(
 
 function buildBenchmark(candidates: Candidate[], targets: TargetProfile): BenchmarkRow[] {
   // R3-C1：基准行只覆盖 mock A 输出的目标子集（baseline 来自 targets，缺失维度无对比意义）
-  return DIM_META.filter(({ dim }) =>
+  const decisionRows = DIM_META.filter(({ dim }) =>
     targets.targets.some((t) => PERF_ALIAS[t.perf] === dim || t.perf === dim),
   ).map(({ dim, label, unit }) => {
     const target = targets.targets.find((t) => PERF_ALIAS[t.perf] === dim || t.perf === dim);
@@ -1147,4 +1151,27 @@ function buildBenchmark(candidates: Candidate[], targets: TargetProfile): Benchm
     }
     return { label, unit, baseline: target?.value ?? 0, candidates: row };
   });
+
+  // C4：企业验收阈值行（baseline=阈值，acceptance 供前端画达标带；候选值为实测指标）
+  const enterpriseRows: BenchmarkRow[] = [];
+  for (const spec of LAB_INDICATOR_SPECS) {
+    if (!spec.threshold) continue;
+    const candVals: Record<string, number> = {};
+    for (const c of candidates) {
+      const lab = c.labIndicators?.find((l) => l.key === spec.key);
+      if (typeof lab?.value === 'number') candVals[c.id] = lab.value;
+    }
+    if (Object.keys(candVals).length === 0) continue;
+    enterpriseRows.push({
+      label: spec.label,
+      unit: spec.unit,
+      baseline: spec.threshold.min ?? spec.threshold.max ?? 0,
+      acceptance: {
+        ...(spec.threshold.min !== undefined ? { min: spec.threshold.min } : {}),
+        ...(spec.threshold.max !== undefined ? { max: spec.threshold.max } : {}),
+      },
+      candidates: candVals,
+    });
+  }
+  return [...decisionRows, ...enterpriseRows];
 }

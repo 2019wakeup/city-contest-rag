@@ -97,6 +97,92 @@ describe('模块 A/C 适配器（T7）', () => {
       expect(lowTemp!.ciLow!).toBeLessThan(lowTemp!.value);
       expect(lowTemp!.ciHigh!).toBeGreaterThan(lowTemp!.value);
     });
+
+    it('C2：mock C 输出 11 项实测指标（单位/阈值/pass 判定/样本量正确）', async () => {
+      vi.stubEnv('MODULE_C_ENDPOINT', '');
+      const predictions = await predictFormulas([formula]);
+      const fp = predictions[0] as unknown as { labIndicators?: Array<Record<string, unknown>> };
+      expect(fp.labIndicators).toBeDefined();
+      const labs = fp.labIndicators!;
+      expect(labs).toHaveLength(11);
+      const byKey = new Map(labs.map((l) => [l.key as string, l]));
+      const EXPECTED: Record<string, { unit: string; threshold?: { min?: number; max?: number }; sampleSize: number }> = {
+        vv: { unit: '%', threshold: { min: 3, max: 6 }, sampleSize: 116 },
+        vma: { unit: '%', threshold: { min: 14 }, sampleSize: 116 },
+        vfa: { unit: '%', threshold: { min: 65, max: 75 }, sampleSize: 116 },
+        ms: { unit: 'kN', threshold: { min: 8 }, sampleSize: 116 },
+        fl: { unit: 'mm', threshold: { min: 2, max: 4 }, sampleSize: 116 },
+        tsr: { unit: '%', threshold: { min: 75 }, sampleSize: 85 },
+        retainedStability: { unit: '%', threshold: { min: 85 }, sampleSize: 83 },
+        ds: { unit: '次/mm', threshold: { min: 800 }, sampleSize: 83 },
+        bendingStrain: { unit: 'με', threshold: { min: 2000 }, sampleSize:75 },
+        tensileStrength: { unit: 'MPa', sampleSize: 75 },
+        bendingModulus: { unit: 'MPa', sampleSize: 75 },
+      };
+      for (const [key, spec] of Object.entries(EXPECTED)) {
+        const lab = byKey.get(key);
+        expect(lab, `缺指标 ${key}`).toBeDefined();
+        expect(lab!.unit, `${key} 单位`).toBe(spec.unit);
+        expect(lab!.sampleSize, `${key} 样本量`).toBe(spec.sampleSize);
+        if (spec.threshold) {
+          const t = lab!.threshold as { min?: number; max?: number };
+          expect(t.min, `${key} 阈值 min`).toBe(spec.threshold.min);
+          expect(t.max, `${key} 阈值 max`).toBe(spec.threshold.max);
+          expect(typeof lab!.pass, `${key} pass`).toBe('boolean');
+          // pass 与 value 判定一致
+          const v = lab!.value as number;
+          const expectedPass = (spec.threshold.min === undefined || v > spec.threshold.min) && (spec.threshold.max === undefined || v < spec.threshold.max);
+          expect(lab!.pass, `${key} pass 判定`).toBe(expectedPass);
+        }
+      }
+      // 数值范围：VMA≥14、VFA 65-75、VV 3-6、FL 2-4、DS>800、弯拉应变>2000、MS>8、TSR>75、残留稳定度>85
+      const v = (key: string): number => byKey.get(key)!.value as number;
+      expect(v('vma')).toBeGreaterThanOrEqual(14);
+      expect(v('vfa')).toBeGreaterThanOrEqual(65);
+      expect(v('vfa')).toBeLessThanOrEqual(75);
+      expect(v('vv')).toBeGreaterThanOrEqual(3);
+      expect(v('vv')).toBeLessThanOrEqual(6);
+      expect(v('fl')).toBeGreaterThanOrEqual(2);
+      expect(v('fl')).toBeLessThanOrEqual(4);
+      expect(v('ds')).toBeGreaterThan(800);
+      expect(v('bendingStrain')).toBeGreaterThan(2000);
+      expect(v('ms')).toBeGreaterThan(8);
+      expect(v('tsr')).toBeGreaterThan(75);
+      expect(v('retainedStability')).toBeGreaterThan(85);
+    });
+
+    it('C2：实测指标与决策维同 seed 相关（映射单调性）', async () => {
+      vi.stubEnv('MODULE_C_ENDPOINT', '');
+      const formulas = [formula, { ...formula, binder: { ...formula.binder, type: '环氧沥青' } }];
+      const predictions = await predictFormulas(formulas);
+      const labsOf = (i: number) =>
+        new Map(
+          ((predictions[i] as unknown as { labIndicators?: Array<{ key: string; value: number }> }).labIndicators ?? []).map((l) => [l.key, l.value]),
+        );
+      // 环氧沥青 highTemp(90) > SBS(82) → DS 更大（DS↔highTemp 单调）
+      const dsBase = labsOf(0).get('ds')!;
+      const dsEpoxy = labsOf(1).get('ds')!;
+      expect(dsEpoxy).toBeGreaterThan(dsBase);
+      // 环氧 lowTemp(-25) > SBS(-28)（更不耐低温）→ bendingStrain 更小（bendingStrain↔lowTemp 单调）
+      expect(labsOf(1).get('bendingStrain')!).toBeLessThan(labsOf(0).get('bendingStrain')!);
+      // 环氧 waterStability(92+5=97?) 与 SBS(85+5=90)… 高粘配方比较用同 binder 不同 modifier 验证 tsr↔waterStability：
+      const f2 = { ...formula, binder: { ...formula.binder, type: '高粘高弹改性沥青' } };
+      const p2 = await predictFormulas([formula, f2]);
+      const l2 = (i: number) =>
+        new Map(
+          ((p2[i] as unknown as { labIndicators?: Array<{ key: string; value: number }> }).labIndicators ?? []).map((l) => [l.key, l.value]),
+        );
+      expect(l2(1).get('tsr')!).toBeGreaterThan(l2(0).get('tsr')!);
+    });
+
+    it('C2：决策维度预测保持原样（8 维、与实测指标同次调用）', async () => {
+      vi.stubEnv('MODULE_C_ENDPOINT', '');
+      const predictions = await predictFormulas([formula]);
+      expect(predictions[0].predictions).toHaveLength(8);
+      expect(predictions[0].predictions.map((p) => p.perf).sort()).toEqual(
+        ['carbon', 'constructability', 'expectedLife', 'fatigue', 'highTemp', 'lcc', 'lowTemp', 'waterStability'].sort(),
+      );
+    });
   });
 
   describe('真实端点（fake HTTP server）', () => {

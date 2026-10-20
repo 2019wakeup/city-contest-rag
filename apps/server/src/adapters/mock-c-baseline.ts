@@ -1,5 +1,5 @@
-import { FormulaPredictionSchema } from '@road-rec/contracts';
-import type { Formula, FormulaPrediction } from '@road-rec/contracts';
+import { FormulaPredictionSchema, LabIndicatorSchema } from '@road-rec/contracts';
+import type { Formula, FormulaPrediction, LabIndicator } from '@road-rec/contracts';
 
 /**
  * ===== 模拟数据（模块 C mock）=====
@@ -137,6 +137,138 @@ export function mockPredictFormulas(formulas: Formula[]): FormulaPrediction[] {
         unit: UNITS[dim],
       };
     });
-    return FormulaPredictionSchema.parse({ formula: f, predictions });
+    // C2：11 项实测指标（与决策维同一 seed 流、同一扰动序列，保持相关性）
+    const labIndicators = generateLabIndicators(base, f, rand);
+    return FormulaPredictionSchema.parse({
+      formula: f,
+      predictions,
+      labIndicators: labIndicators.map((l) => LabIndicatorSchema.parse(l)),
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// C2：11 项企业实测指标（确定性 seed；TSR 内部 0-1 比值 ×100 输出 %）
+// 映射（与决策维单调相关，供单测/反推）：DS↔highTemp、bendingStrain↔lowTemp、
+// tsr/retainedStability↔waterStability、ms↔constructability、bendingModulus/tensileStrength↔lowTemp。
+// ---------------------------------------------------------------------------
+
+export const LAB_INDICATOR_SPECS: Array<{
+  key: string;
+  label: string;
+  group: LabIndicator['group'];
+  unit: LabIndicator['unit'];
+  threshold?: { min?: number; max?: number };
+  sampleSize: number;
+}> = [  { key: 'vv', label: '空隙率', group: 'volume', unit: '%', threshold: { min: 3, max: 6 }, sampleSize: 116 },
+  { key: 'vma', label: '矿料间隙率', group: 'volume', unit: '%', threshold: { min: 14 }, sampleSize: 116 },
+  { key: 'vfa', label: '沥青饱和度', group: 'volume', unit: '%', threshold: { min: 65, max: 75 }, sampleSize: 116 },
+  { key: 'ms', label: '马歇尔稳定度', group: 'marshall', unit: 'kN', threshold: { min: 8 }, sampleSize: 116 },
+  { key: 'fl', label: '流值', group: 'marshall', unit: 'mm', threshold: { min: 2, max: 4 }, sampleSize: 116 },
+  { key: 'tsr', label: '冻融劈裂强度比', group: 'water', unit: '%', threshold: { min: 75 }, sampleSize: 85 },
+  { key: 'retainedStability', label: '浸水残留稳定度', group: 'water', unit: '%', threshold: { min: 85 }, sampleSize: 83 },
+  { key: 'ds', label: '动稳定度', group: 'highTemp', unit: '次/mm', threshold: { min: 800 }, sampleSize: 83 },
+  { key: 'bendingStrain', label: '低温弯曲破坏应变', group: 'lowTemp', unit: 'με', threshold: { min: 2000 }, sampleSize: 75 },
+  { key: 'tensileStrength', label: '低温抗拉强度', group: 'lowTemp', unit: 'MPa', sampleSize: 75 },
+  { key: 'bendingModulus', label: '低温弯曲劲度模量', group: 'lowTemp', unit: 'MPa', sampleSize: 75 },
+];
+
+export function clamp(v: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, v));
+}
+
+/** DS↔highTemp 单调：52→800、90→4000 线性（供反推/单测） */
+export function dsFromHighTemp(highTemp: number): number {
+  return clamp(Math.round(800 + ((highTemp - 52) / (90 - 52)) * 3200), 800, 4000);
+}
+
+/** bendingStrain↔lowTemp 单调：-10→2000、-40→4000（低温越低应变越高） */
+export function bendingStrainFromLowTemp(lowTemp: number): number {
+  return clamp(Math.round(2000 + ((-lowTemp - 10) / 30) * 2000), 2000, 4000);
+}
+
+/** tsr↔waterStability 单调：70→75、92→95（%） */
+export function tsrFromWaterStability(waterStability: number): number {
+  return clamp(Math.round(75 + ((waterStability - 70) / (92 - 70)) * 20), 75, 95);
+}
+
+/** retainedStability↔waterStability 单调：70→85、92→100（%） */
+export function retainedStabilityFromWaterStability(waterStability: number): number {
+  return clamp(Math.round(85 + ((waterStability - 70) / 22) * 15), 85, 100);
+}
+
+/** ms↔constructability 单调：55→8、90→12（kN） */
+export function msFromConstructability(constructability: number): number {
+  return clamp(Math.round(8 + ((constructability - 55) / (90 - 55)) * 4), 8, 12);
+}
+
+/** bendingModulus↔lowTemp 单调：-10→2000、-40→3500（MPa） */
+export function bendingModulusFromLowTemp(lowTemp: number): number {
+  return clamp(Math.round(2000 + ((-lowTemp - 10) / 30) * 1500), 2000, 3500);
+}
+
+/** tensileStrength↔lowTemp 单调：-10→4、-40→9（MPa） */
+export function tensileStrengthFromLowTemp(lowTemp: number): number {
+  return clamp(Math.round(4 + ((-lowTemp - 10) / 30) * 5), 4, 9);
+}
+
+/** 体积指标基线按级配查表（JTG F40 方向）：VV 3-6、FL 2-4、VMA≥14、VFA 65-75 */
+const VOLUME_BASELINE: Record<string, { vv: number; vma: number; vfa: number; fl: number }> = {
+  'SMA-13': { vv: 4.0, vma: 17, vfa: 72, fl: 3.0 },
+  'AC-13': { vv: 4.5, vma: 15, vfa: 70, fl: 2.8 },
+  'OGFC-13': { vv: 4.8, vma: 18, vfa: 68, fl: 3.2 },
+  中面层: { vv: 4.2, vma: 15.5, vfa: 69, fl: 3.0 },
+};
+const DEFAULT_VOLUME = { vv: 4.3, vma: 15.5, vfa: 70, fl: 3.0 };
+
+function generateLabIndicators(base: CBaseline, f: Formula, rand: () => number): LabIndicator[] {
+  const vol = VOLUME_BASELINE[norm(f.gradation.type)] ?? DEFAULT_VOLUME;
+  const vv = clamp(Number((vol.vv + (rand() - 0.5) * 0.8).toFixed(2)), 3, 6);
+  const vma = clamp(Number((vol.vma + (rand() - 0.5) * 1.0).toFixed(2)), 14, 20);
+  const vfa = clamp(Number((vol.vfa + (rand() - 0.5) * 3).toFixed(2)), 65, 75);
+  const fl = clamp(Number((vol.fl + (rand() - 0.5) * 0.5).toFixed(2)), 2, 4);
+  const ms = Number((msFromConstructability(base.constructability) + (rand() - 0.5) * 0.3).toFixed(2));
+  // TSR：0-1 内部比值 ×100 输出 %
+  const tsrRatio = clamp(tsrFromWaterStability(base.waterStability) / 100 + (rand() - 0.5) * 0.02, 0.75, 0.95);
+  const tsr = Math.round(tsrRatio * 100);
+  const retainedStability = Number(
+    (retainedStabilityFromWaterStability(base.waterStability) + (rand() - 0.5) * 2).toFixed(2),
+  );
+  const ds = Math.round(dsFromHighTemp(base.highTemp) + (rand() - 0.5) * 100);
+  const bendingStrain = Math.round(bendingStrainFromLowTemp(base.lowTemp) + (rand() - 0.5) * 150);
+  const tensileStrength = Number(
+    (tensileStrengthFromLowTemp(base.lowTemp) + (rand() - 0.5) * 0.3).toFixed(2),
+  );
+  const bendingModulus = Math.round(bendingModulusFromLowTemp(base.lowTemp) + (rand() - 0.5) * 100);
+
+  const values: Record<string, number> = {
+    vv,
+    vma,
+    vfa,
+    ms,
+    fl,
+    tsr,
+    retainedStability,
+    ds,
+    bendingStrain,
+    tensileStrength,
+    bendingModulus,
+  };
+  return LAB_INDICATOR_SPECS.map((spec) => {
+    const value = values[spec.key];
+    const pass = spec.threshold
+      ? (spec.threshold.min === undefined || value > spec.threshold.min) &&
+        (spec.threshold.max === undefined || value < spec.threshold.max)
+      : undefined;
+    return LabIndicatorSchema.parse({
+      key: spec.key,
+      label: spec.label,
+      group: spec.group,
+      unit: spec.unit,
+      value,
+      ...(spec.threshold ? { threshold: spec.threshold } : {}),
+      ...(pass === undefined ? {} : { pass }),
+      sampleSize: spec.sampleSize,
+    });
   });
 }
