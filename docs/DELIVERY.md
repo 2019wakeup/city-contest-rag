@@ -132,6 +132,7 @@ open http://localhost:3010/openapi
 - 全仓测试：`pnpm test`（contracts 5 / retrieval 14 / embedding 9 / server 37 / web 40 / scripts 28+skip）
 - 金标准：`data/golden/golden.json` **38 条**（8 维度 × 4 语料类），评估口径为**混合检索**（text + query 向量，与生产一致；`--bm25` 回退纯关键词离线模式），doc 级期望（topK×3 命中按 sourceDocId 去重取前 5 文档）→ recall@5 = **38/38**（lancedb）
 - 检索策略与可调项：混合检索（BM25+向量 RRF，融合权重默认 1:1，`HYBRID_WEIGHTS=bm25,vec` 可调）；**MMR 默认关闭**（实测在本语料下 MMR=on 去重 8–12/15、文献参与 17/25，劣于 off 的 13–14/15、22/25；`MMR=on` 可显式开启并配 `MMR_LAMBDA`/`MMR_POOL` 调参）；LLM 批量重排（5 查询×6 命中，~2.2–2.6s，超时/失败自动回退 RRF 原序）
+- P1 实验结论（均以数据否决，维持现配置）：① **embedding 不升级**——e5-base(768) 金标准 37/38（e5-small 38/38）、单查询 22.9ms vs 17.0ms、重建 1602s vs 729s、证据多样性更差（唯一 doc 9/8/9/10/12 vs 11/12/11/11/12）；② **查询扩展不接入**——bigram 持平（35/38）、同义词扩展严重退化（19/38，OR 语义稀释判别词）；③ **MMR 默认关闭**（见上）。实验脚本 `scripts/query-expansion-eval.ts` 与 e5-base 支持已入库备查。
 - 引用支撑率（faithfulness）：`scripts/faithfulness-eval.ts`（LLM 裁判：报告段落主张是否被「证据 + 完整确定性数据」支撑；`--calibrate` 人造幻觉自检必须判不支撑）→ 5 案例 **49/49 段 = 100%**，阈值 85%
 - 证据多样性：每候选 3 条、15 槽位去重 13–15 条、任意两候选集合互异、文献/规范/表格/章节类参与 25/25
 - 端到端：`pnpm e2e`（5 案例 + 三档降级）
