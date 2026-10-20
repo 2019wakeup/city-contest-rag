@@ -270,6 +270,22 @@ function onCite(id: string): void {
   emit('cite', id)
 }
 
+// UI7：侧栏 chip 类型色点（与证据卡类型色一致）
+const DOC_TYPE_COLORS: Record<string, string> = {
+  knowledge: '#6E7BF2',
+  standard: '#14B8A6',
+  literature: '#F59E0B',
+  enterprise: '#94A3B8',
+  table: '#0F766E',
+  'literature-full': '#64748B',
+}
+
+const docTypeColorOf = (id: string): string =>
+  DOC_TYPE_COLORS[evidenceById.value.get(id)?.docType ?? ''] ?? '#94A3B8'
+
+/** 对比节要点双列（UI7）。 */
+const isCompareSection = (title: string): boolean => /对比|比较/.test(title)
+
 // 排版重构：关联证据收拢（每节独立展开态，默认收起）
 const openRefs = ref<Set<number>>(new Set())
 
@@ -325,92 +341,107 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
       description="暂无报告文案"
       :image-size="48"
     />
-    <section
-      v-for="(s, i) in sections ?? []"
-      :key="`${s.title}-${i}`"
-      class="report-block report-stagger"
-      :style="{ '--i': i }"
-    >
-      <h4 class="report-title">
-        <span class="report-title-num mono tabular">{{ String(i + 1).padStart(2, '0') }}</span>
-        {{ s.title }}
-        <span v-if="typewriter && !sectionDone(i)" class="reveal-badge">生成中…</span>
-        <span v-else-if="typewriter" class="reveal-badge is-done">已完成</span>
-      </h4>
-
-      <template v-for="(run, r) in sectionRuns[i] ?? []" :key="r">
-        <ul v-if="run.kind === 'points'" class="report-points">
-          <li v-for="(item, li) in run.items" :key="li">
-            <template v-for="(seg, k) in parseSegments(item)" :key="k">
-              <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
-                <button
-                  type="button"
-                  class="report-cite"
-                  data-testid="evidence-cite"
-                  @click="onCite(seg.id)"
-                >
-                  {{ citeLabel(seg.id) }}
-                </button>
-              </el-tooltip>
-              <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
-              <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
-              <template v-else>{{ seg.text }}</template>
-            </template>
-          </li>
-        </ul>
-        <p
-          v-else
-          class="report-paragraph"
-          :class="{ 'report-lead': run.paraIndex === 0 }"
+    <div v-else class="report-grid">
+      <!-- 左列：阅读列 -->
+      <div class="report-main">
+        <section
+          v-for="(s, i) in sections ?? []"
+          :key="`${s.title}-${i}`"
+          class="report-block report-stagger"
+          :style="{ '--i': i }"
         >
-          <template v-for="(seg, k) in parseSegments(finalTextOf(i, run.paraIndex))" :key="k">
-            <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
-              <button
-                type="button"
-                class="report-cite"
-                data-testid="evidence-cite"
-                @click="onCite(seg.id)"
-              >
-                {{ citeLabel(seg.id) }}
-              </button>
-            </el-tooltip>
-            <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
-            <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
-            <template v-else>{{ seg.text }}</template>
-          </template>
-        </p>
-      </template>
+          <h4 class="report-title">
+            <span class="report-title-num mono tabular">{{ String(i + 1).padStart(2, '0') }}</span>
+            {{ s.title }}
+            <span v-if="typewriter && !sectionDone(i)" class="reveal-badge">生成中…</span>
+            <span v-else-if="typewriter" class="reveal-badge is-done">已完成</span>
+          </h4>
 
-      <div v-if="refsOf(i).length > 0" class="report-refs">
-        <button
-          type="button"
-          class="report-refs-toggle"
-          data-testid="refs-toggle"
-          :aria-expanded="refsOpen(i)"
-          @click="toggleRefs(i)"
-        >
-          {{ refsOpen(i) ? '收起' : `关联证据 · ${refsOf(i).length} 条` }}
-        </button>
-        <div v-if="refsOpen(i)" class="report-refs-row">
-          <template v-for="ref in refsOf(i)" :key="ref.id">
-            <el-tooltip
-              v-if="!ref.duplicate"
-              :content="citeTooltip(ref.id)"
-              placement="top"
+          <template v-for="(run, r) in sectionRuns[i] ?? []" :key="r">
+            <ul
+              v-if="run.kind === 'points'"
+              class="report-points"
+              :class="{ 'two-col': isCompareSection((sections ?? [])[i]?.title ?? '') }"
             >
-              <span class="report-ref-wrap" data-testid="evidence-cite" @click="onCite(ref.id)">
-                <el-tag size="small" type="info" class="report-ref-tag">
-                  {{ citeLabel(ref.id) }}
-                </el-tag>
-              </span>
-            </el-tooltip>
-            <span v-else class="report-ref-seen" data-testid="ref-seen">
-              见上文 · {{ citeLabel(ref.id) }}
-            </span>
+              <li v-for="(item, li) in run.items" :key="li">
+                <template v-for="(seg, k) in parseSegments(item)" :key="k">
+                  <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
+                    <button
+                      type="button"
+                      class="report-cite"
+                      data-testid="evidence-cite"
+                      @click="onCite(seg.id)"
+                    >
+                      {{ citeLabel(seg.id) }}
+                    </button>
+                  </el-tooltip>
+                  <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
+                  <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
+                  <template v-else>{{ seg.text }}</template>
+                </template>
+              </li>
+            </ul>
+            <p
+              v-else
+              class="report-paragraph"
+              :class="{ 'report-lead': run.paraIndex === 0 }"
+            >
+              <template v-for="(seg, k) in parseSegments(finalTextOf(i, run.paraIndex))" :key="k">
+                <el-tooltip v-if="seg.id" :content="citeTooltip(seg.id)" placement="top">
+                  <button
+                    type="button"
+                    class="report-cite"
+                    data-testid="evidence-cite"
+                    @click="onCite(seg.id)"
+                  >
+                    {{ citeLabel(seg.id) }}
+                  </button>
+                </el-tooltip>
+                <span v-else-if="seg.em === 'num'" class="num-strong">{{ seg.text }}</span>
+                <span v-else-if="seg.em === 'chip'" class="cand-chip">{{ seg.text }}</span>
+                <template v-else>{{ seg.text }}</template>
+              </template>
+            </p>
           </template>
-        </div>
+        </section>
       </div>
-    </section>
+
+      <!-- 右列：sticky 证据侧栏（UI7：报告各节 chips 常驻） -->
+      <aside class="report-sidebar" data-testid="evidence-sidebar">
+        <template v-for="(s, i) in sections ?? []" :key="`side-${s.title}-${i}`">
+          <div v-if="refsOf(i).length > 0" class="sidebar-sec">
+            <div class="sidebar-sec-title mono">
+              {{ String(i + 1).padStart(2, '0') }} · {{ s.title }}
+            </div>
+            <div class="sidebar-chips">
+              <template v-for="ref in refsOf(i)" :key="ref.id">
+                <el-tooltip
+                  v-if="!ref.duplicate"
+                  :content="citeTooltip(ref.id)"
+                  placement="left"
+                >
+                  <button
+                    type="button"
+                    class="sidebar-chip"
+                    data-testid="evidence-cite"
+                    @click="onCite(ref.id)"
+                  >
+                    <span
+                      class="chip-dot"
+                      :style="{ background: docTypeColorOf(ref.id) }"
+                    ></span>
+                    {{ citeLabel(ref.id) }}
+                  </button>
+                </el-tooltip>
+                <span v-else class="report-ref-seen" data-testid="ref-seen">
+                  见上文 · {{ citeLabel(ref.id) }}
+                </span>
+              </template>
+            </div>
+          </div>
+        </template>
+      </aside>
+    </div>
   </el-card>
 </template>
 
@@ -419,19 +450,63 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
   margin-bottom: 12px;
 }
 
+/* UI7：双栏 grid（≥1280px 右列 280px 侧栏；窄屏侧栏下移为横向 chips） */
+.report-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 1280px) {
+  .report-grid {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: start;
+  }
+
+  .report-sidebar {
+    position: sticky;
+    top: 96px;
+    max-height: calc(100vh - 120px);
+    overflow: auto;
+  }
+}
+
+@media (max-width: 1279px) {
+  .report-main {
+    order: 1;
+  }
+
+  .report-sidebar {
+    order: 2;
+  }
+
+  .sidebar-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
 /* 排版重构：节间 40px */
 .report-block + .report-block {
   margin-top: 40px;
 }
 
-/* 排版重构：节标题 = mono 两位编号 + 16px/600 标题，间距 8px */
+/* UI7：节标题 = mono 两位编号 + 16px/600 标题 + 横线分隔，间距 8px */
 .report-title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   margin: 0 0 8px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.report-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--app-border);
 }
 
 .report-title-num {
@@ -465,18 +540,18 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
   }
 }
 
-/* 排版重构：正文 px 常量（避免 em 随 font-size 漂移）；段距 20px */
+/* UI7：阅读列正文 640px；段距 20px */
 .report-paragraph {
-  max-width: 476px;
+  max-width: 640px;
   margin: 0 0 20px;
   font-size: 14px;
   line-height: 1.75;
   color: var(--el-text-color-regular);
 }
 
-/* 排版重构：结论先行块（每节第 1 段，15px × 34em = 510px） */
+/* 排版重构：结论先行块（每节第 1 段） */
 .report-paragraph.report-lead {
-  max-width: 510px;
+  max-width: 640px;
   padding: 10px 12px;
   border-left: 3px solid var(--el-color-primary);
   background: var(--el-fill-color-light);
@@ -486,9 +561,9 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
   line-height: 1.7;
 }
 
-/* 排版重构：要点列表（去前缀，条目间距 8px） */
+/* 排版重构：要点列表（去前缀，条目间距 8px）；对比节 ≥1280px 双列 */
 .report-points {
-  max-width: 476px;
+  max-width: 640px;
   margin: 0 0 20px;
   padding-left: 22px;
   font-size: 14px;
@@ -498,6 +573,15 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
 
 .report-points li {
   margin: 8px 0;
+}
+
+@media (min-width: 1280px) {
+  .report-points.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: row dense;
+    gap: 0 24px;
+  }
 }
 
 /* 排版重构：数字+单位强调 */
@@ -535,6 +619,52 @@ const refsOf = (secIndex: number): Array<{ id: string; duplicate: boolean }> => 
 
 .report-cite:hover {
   background: var(--el-color-primary-light-8);
+}
+
+/* UI7：证据侧栏 */
+.report-sidebar {
+  padding: 12px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-inner);
+  background: var(--app-panel-bg);
+}
+
+.sidebar-sec + .sidebar-sec {
+  margin-top: 12px;
+}
+
+.sidebar-sec-title {
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.sidebar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 6px 6px 0;
+  padding: 3px 10px;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 999px;
+  background: var(--el-fill-color-blank);
+  color: var(--el-text-color-regular);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.sidebar-chip:hover {
+  border-color: var(--el-color-primary);
+  color: var(--el-color-primary);
+}
+
+.chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 /* 排版重构：关联证据收拢胶囊 */

@@ -573,7 +573,7 @@ describe('RecommendView 推荐工作台', () => {
     expect(nums[0].classes()).toContain('mono')
 
     const source = readFileSync('src/components/ReportSection.vue', 'utf8')
-    expect(source).toContain('max-width: 476px')
+    expect(source).toContain('max-width: 640px')
   })
 
   it('排版重构：连续要点段落合并为一个 ul（微调）', () => {
@@ -671,27 +671,23 @@ describe('RecommendView 推荐工作台', () => {
       props: { sections, llmStatus: 'ok', evidence: [] },
     })
 
-    const toggles = wrapper.findAll('[data-testid="refs-toggle"]')
-    expect(toggles.length).toBe(2)
-    // 展开两节的证据行
-    await toggles[0].trigger('click')
-    await toggles[1].trigger('click')
-
-    const blocks = wrapper.findAll('.report-block')
+    // 双栏侧栏：两节 chips 常驻展示
+    const secs = wrapper.findAll('.sidebar-sec')
+    expect(secs.length).toBe(2)
     // 第一节：2 个 chip、无「见上文」
-    expect(blocks[0].findAll('[data-testid="evidence-cite"]').length).toBe(2)
-    expect(blocks[0].findAll('[data-testid="ref-seen"]').length).toBe(0)
+    expect(secs[0].findAll('[data-testid="evidence-cite"]').length).toBe(2)
+    expect(secs[0].findAll('[data-testid="ref-seen"]').length).toBe(0)
 
     // 第二节：chunk-2/chunk-1 已见于上文 → 不重复渲染 chip，出现「见上文」小标
-    expect(blocks[1].findAll('[data-testid="evidence-cite"]').length).toBe(1)
-    expect(blocks[1].find('[data-testid="evidence-cite"]').text()).toBe('证据 3')
-    const seen = blocks[1].findAll('[data-testid="ref-seen"]')
+    expect(secs[1].findAll('[data-testid="evidence-cite"]').length).toBe(1)
+    expect(secs[1].find('[data-testid="evidence-cite"]').text()).toBe('证据 3')
+    const seen = secs[1].findAll('[data-testid="ref-seen"]')
     expect(seen.length).toBe(2)
     expect(seen[0].text()).toContain('见上文')
     expect(seen[1].text()).toContain('见上文')
   })
 
-  it('排版重构：关联证据默认收起、点击展开显示收起（排版）', async () => {
+  it('双栏布局：证据侧栏常驻 chips、无旧折叠按钮、点击 cite（UI7）', async () => {
     const sections = [
       {
         title: '推荐理由',
@@ -703,22 +699,28 @@ describe('RecommendView 推荐工作台', () => {
       props: { sections, llmStatus: 'ok', evidence: [] },
     })
 
-    const toggle = wrapper.find('[data-testid="refs-toggle"]')
-    expect(toggle.exists()).toBe(true)
-    expect(toggle.text()).toContain('关联证据 · 1 条')
-    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(0) // 默认收起
+    expect(wrapper.find('[data-testid="refs-toggle"]').exists()).toBe(false) // 旧折叠移除
+    const sidebar = wrapper.find('[data-testid="evidence-sidebar"]')
+    expect(sidebar.exists()).toBe(true)
+    const chips = wrapper.findAll('[data-testid="evidence-cite"]')
+    expect(chips.length).toBe(1)
 
-    await toggle.trigger('click')
-    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(1)
-    expect(wrapper.find('[data-testid="refs-toggle"]').text()).toContain('收起')
+    await chips[0].trigger('click')
+    expect(wrapper.emitted('cite')?.[0]?.[0]).toBe('chunk-1')
+  })
 
-    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
-    expect(wrapper.findAll('[data-testid="evidence-cite"]').length).toBe(0)
+  it('双栏布局：grid 与阅读列规格（UI7）', () => {
+    const source = readFileSync('src/components/ReportSection.vue', 'utf8')
+    expect(source).toContain('minmax(0, 1fr) 280px')
+    expect(source).toContain('position: sticky')
+    expect(source).toContain('top: 96px')
+    expect(source).toContain('max-width: 640px')
+    expect(source).toContain('grid-template-columns: 1fr 1fr')
   })
 
   it('P5 报告正文排版规格 + 数字单位 &nbsp;（P5）', () => {
     const source = readFileSync('src/components/ReportSection.vue', 'utf8')
-    expect(source).toContain('max-width: 476px')
+    expect(source).toContain('max-width: 640px')
     expect(source).toContain('font-size: 16px')
 
     const sections = [
@@ -851,11 +853,8 @@ describe('RecommendView 推荐工作台', () => {
       props: { sections, llmStatus: 'ok', evidence: [] },
     })
 
-    // 排版重构：关联证据默认收起 → 先展开
-    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
-
     const cites = wrapper.findAll('[data-testid="evidence-cite"]')
-    expect(cites.length).toBe(2) // 段落内联 1 + 底部引用 1
+    expect(cites.length).toBe(2) // 段落内联 1 + 侧栏引用 1
     // 展示编号而非裸 id
     expect(wrapper.text()).not.toContain('k-modifier-002:0')
     for (const c of cites) {
@@ -880,9 +879,6 @@ describe('RecommendView 推荐工作台', () => {
     const wrapper = mount(ReportSection, {
       props: { sections, llmStatus: 'ok', evidence },
     })
-
-    // 排版重构：关联证据默认收起 → 先展开
-    await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
 
     const chips = wrapper.findAll('[data-testid="evidence-cite"]')
     expect(chips.length).toBe(3)
@@ -1849,9 +1845,6 @@ describe('RecommendView 推荐工作台', () => {
     vi.useFakeTimers()
     try {
       const wrapper = await mountView()
-      // 排版重构：关联证据默认收起 → 先展开再点角标
-      await wrapper.find('[data-testid="refs-toggle"]').trigger('click')
-      await flushPromises()
       await wrapper.findAll('[data-testid="evidence-cite"]')[0].trigger('click')
       await flushPromises()
 
