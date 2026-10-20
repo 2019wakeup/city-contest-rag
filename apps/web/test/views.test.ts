@@ -272,11 +272,24 @@ describe('WelcomeView 欢迎页', () => {
       | { series?: Array<{ type?: string; data?: Array<{ name: string; value: number }> }> }
       | undefined
     expect(option?.series?.[0]?.type).toBe('pie')
+    // 图例 label 带数量（toLocaleString）
     expect(option?.series?.[0]?.data?.map((d) => d.name)).toEqual([
-      '知识条目',
-      '规范',
-      '文献',
+      '知识条目 100',
+      '规范 60',
+      '文献 40',
     ])
+    // 中心浮层文本
+    const center = wrapper.find('[data-testid="stats-center"]')
+    expect(center.text()).toContain('200')
+    expect(center.text()).toContain('知识库条目')
+    expect(center.attributes('aria-hidden')).toBe('true')
+
+    // 数据更新后中心数字跟随变化
+    await wrapper.setProps({
+      stats: { count: 300, docTypes: { knowledge: 300 }, backend: 'lancedb' },
+    })
+    await flushPromises()
+    expect(wrapper.find('[data-testid="stats-center"]').text()).toContain('300')
 
     // ③ 卸载 dispose
     wrapper.unmount()
@@ -301,9 +314,15 @@ describe('WelcomeView 欢迎页', () => {
       | { series?: Array<{ data?: Array<{ name: string; value: number }> }>; graphic?: Array<{ style?: { text?: string } }> }
       | undefined
     const data = option?.series?.[0]?.data ?? []
-    expect(data.map((d) => d.name)).toEqual(['知识条目', '规范', '定量表格', '企业资料'])
-    const center = option?.graphic?.[0]?.style?.text
-    expect(center).toBe('11,143')
+    expect(data.map((d) => d.name)).toEqual([
+      '知识条目 8,000',
+      '规范 2,000',
+      '定量表格 143',
+      '企业资料 1,000',
+    ])
+    const center = wrapper.find('[data-testid="stats-center"]').text()
+    expect(center).toContain('11,143')
+    expect(center).toContain('知识库条目')
     wrapper.unmount()
   })
 

@@ -35,7 +35,7 @@ function render(): void {
   const docTypes = props.stats?.docTypes ?? {}
   total.value = props.stats?.count ?? 0
   const data = DOC_ORDER.map((d) => ({
-    name: d.label,
+    name: `${d.label} ${Number((docTypes as Record<string, unknown>)[d.key])?.toLocaleString?.() ?? 0}`,
     value: Number((docTypes as Record<string, unknown>)[d.key]) || 0,
     itemStyle: { color: d.color },
   })).filter((d) => d.value > 0)
@@ -51,32 +51,6 @@ function render(): void {
         data,
         label: { show: false },
         itemStyle: { borderColor: '#0E121A', borderWidth: 2 },
-      },
-    ],
-    graphic: [
-      {
-        type: 'text',
-        left: 'center',
-        top: '34%',
-        style: {
-          text: String(total.value.toLocaleString()),
-          fill: '#E5EAF3',
-          fontSize: 24,
-          fontWeight: 'bold',
-          fontFamily: 'ui-monospace, monospace',
-          textAlign: 'center',
-        },
-      },
-      {
-        type: 'text',
-        left: 'center',
-        top: '46%',
-        style: {
-          text: '知识库条目',
-          fill: '#8B93A7',
-          fontSize: 12,
-          textAlign: 'center',
-        },
       },
     ],
   })
@@ -129,7 +103,18 @@ watch(
       </span>
     </div>
     <h2 class="home-section-title">知识库构成</h2>
-    <div ref="chart" class="home-stats-chart" role="img" aria-label="知识库构成环形图"></div>
+    <div class="home-stats-chart-wrap">
+      <div
+        ref="chart"
+        class="home-stats-chart"
+        role="img"
+        aria-label="知识库构成环形图"
+      ></div>
+      <div class="home-stats-center" aria-hidden="true" data-testid="stats-center">
+        <span class="center-value mono tabular">{{ total.toLocaleString() }}</span>
+        <span class="center-label">知识库条目</span>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -162,8 +147,35 @@ watch(
   font-weight: 600;
 }
 
+.home-stats-chart-wrap {
+  position: relative;
+}
+
 .home-stats-chart {
   width: 100%;
   height: 300px;
+}
+
+.home-stats-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding-bottom: 56px;
+  pointer-events: none;
+}
+
+.center-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+.center-label {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 </style>
