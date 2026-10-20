@@ -26,7 +26,15 @@ describe('build-index CLI 参数解析（C4）', () => {
     expect(() => resolveCliOptions(['--backend=chroma'], {})).toThrow(/backend/);
   });
 
-  it('模型枚举只含两个约定模型', () => {
-    expect(EMBEDDING_MODELS).toEqual(['bge-m3', 'multilingual-e5-small']);
+  it('模型枚举含三个约定模型（D5：+ multilingual-e5-base）', () => {
+    expect(EMBEDDING_MODELS).toEqual(['bge-m3', 'multilingual-e5-small', 'multilingual-e5-base']);
+    expect(resolveCliOptions(['--model=multilingual-e5-base'], {}).model).toBe('multilingual-e5-base');
+  });
+
+  it('--db-path 解析（D5 双索引实验：建到独立目录）', () => {
+    const r = resolveCliOptions(['--backend=lancedb', '--model=multilingual-e5-base', '--db-path=data/index/lancedb-e5base'], {});
+    expect(r.backend).toBe('lancedb');
+    expect(r.model).toBe('multilingual-e5-base');
+    expect(r.dbPath).toBe('data/index/lancedb-e5base');
   });
 });

@@ -159,8 +159,10 @@ async function main(): Promise<void> {
   let embedder: { embed(texts: string[], opts?: { mode?: 'query' | 'passage' }): Promise<number[][]> } | null = null;
   if (!args.includes('--bm25')) {
     try {
+      const model = (process.env.EMBEDDING_MODEL ??
+        'multilingual-e5-small') as 'bge-m3' | 'multilingual-e5-small' | 'multilingual-e5-base';
       embedder = await createEmbedder({
-        model: 'multilingual-e5-small',
+        model,
         cacheDir: path.resolve(indexDir, 'hf-cache'),
       });
     } catch {

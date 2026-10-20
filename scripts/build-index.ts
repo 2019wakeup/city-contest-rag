@@ -20,12 +20,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const corpusDir = path.resolve(here, '../data/corpus');
 const indexDir = path.resolve(here, '../data/index');
 
-export const EMBEDDING_MODELS = ['bge-m3', 'multilingual-e5-small'] as const;
+export const EMBEDDING_MODELS = ['bge-m3', 'multilingual-e5-small', 'multilingual-e5-base'] as const;
 
 export interface CliOptions {
   rebuild: boolean;
   backend: 'sqlite' | 'lancedb';
   model: EmbedderModel;
+  /** 库目录覆盖（D5 双索引实验；默认 data/index/{lancedb|app.db}） */
+  dbPath?: string;
 }
 
 /** 纯参数解析（可测试）：非法 backend/model 抛明确错误（C4） */
@@ -35,6 +37,7 @@ export function resolveCliOptions(args: string[], env: NodeJS.ProcessEnv): CliOp
   const backend = backendArg?.split('=')[1] ?? env.RETRIEVAL_BACKEND ?? 'lancedb';
   const modelArg = args.find((a) => a.startsWith('--model='));
   const model = modelArg?.split('=')[1] ?? env.EMBEDDING_MODEL ?? 'bge-m3';
+  const dbPathArg = args.find((a) => a.startsWith('--db-path='));
 
   if (backend !== 'sqlite' && backend !== 'lancedb') {
     throw new Error(`不支持的 backend: ${backend}（可选 sqlite|lancedb）`);
@@ -42,11 +45,16 @@ export function resolveCliOptions(args: string[], env: NodeJS.ProcessEnv): CliOp
   if (!(EMBEDDING_MODELS as readonly string[]).includes(model)) {
     throw new Error(`不支持的 embedding 模型: ${model}（可选 ${EMBEDDING_MODELS.join('|')}）`);
   }
-  return { rebuild, backend: backend as CliOptions['backend'], model: model as EmbedderModel };
+  return {
+    rebuild,
+    backend: backend as CliOptions['backend'],
+    model: model as EmbedderModel,
+    dbPath: dbPathArg?.split('=')[1] || undefined,
+  };
 }
 
 async function main(): Promise<void> {
-  const { rebuild, backend, model } = resolveCliOptions(process.argv.slice(2), process.env);
+  const { rebuild, backend, model, dbPath } = resolveCliOptions(process.argv.slice(2), process.env);
 
   const embedder = await createEmbedder({
     model,
@@ -54,10 +62,10 @@ async function main(): Promise<void> {
   });
   let store: VectorStore;
   if (backend === 'sqlite') {
-    store = new SqliteVectorStore(path.join(indexDir, 'app.db'));
+    store = new SqliteVectorStore(dbPath ?? path.join(indexDir, 'app.db'));
   } else {
     const { LanceDBVectorStore } = await import('../packages/retrieval/src/lancedb');
-    store = new LanceDBVectorStore(path.join(indexDir, 'lancedb'), { dim: embedder.dim });
+    store = new LanceDBVectorStore(dbPath ?? path.join(indexDir, 'lancedb'), { dim: embedder.dim });
   }
 
   const startedAt = Date.now();

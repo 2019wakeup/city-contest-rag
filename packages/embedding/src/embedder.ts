@@ -9,11 +9,12 @@
  */
 import { env } from '@huggingface/transformers';
 
-export type EmbedderModel = 'bge-m3' | 'multilingual-e5-small';
+export type EmbedderModel = 'bge-m3' | 'multilingual-e5-small' | 'multilingual-e5-base';
 
 export const MODEL_REGISTRY: Record<EmbedderModel, { name: string; dim: number }> = {
   'bge-m3': { name: 'Xenova/bge-m3', dim: 1024 },
   'multilingual-e5-small': { name: 'Xenova/multilingual-e5-small', dim: 384 },
+  'multilingual-e5-base': { name: 'Xenova/multilingual-e5-base', dim: 768 },
 };
 
 /** 嵌入模式：query（检索侧）/ passage（文档侧）。e5 系列需要 query:/passage: 前缀，bge-m3 不加。 */
@@ -98,9 +99,9 @@ export async function createEmbedder(
     env.remoteHost = process.env.HF_ENDPOINT;
   }
 
-  // e5 系列 query/passage 前缀开关：auto（默认，e5 开 bge 关）| off
+  // e5 系列 query/passage 前缀开关：auto（默认，e5 家族开 bge 关）| off
   const prefixMode = process.env.EMBEDDING_PREFIX_MODE === 'off' ? 'off' : 'auto';
-  const usePrefix = prefixMode === 'auto' && model === 'multilingual-e5-small';
+  const usePrefix = prefixMode === 'auto' && model.startsWith('multilingual-e5');
 
   const pipe = await deps.createPipeline(modelName, opts.cacheDir);
   const modelVersion = deps.getLibraryVersion();
