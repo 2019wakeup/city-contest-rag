@@ -7,9 +7,33 @@ import { getCases, kbRebuild, kbSearch, kbStats, kbUpload, kbUploadFile } from '
 import type { CaseSeed, SceneInput, SearchHit } from '@road-rec/contracts'
 import App from '@/App.vue'
 import CaseCard from '@/components/CaseCard.vue'
+import HomeStats from '@/components/HomeStats.vue'
 import CasesView from '@/views/CasesView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
+
+const { chartOptions } = vi.hoisted(() => ({
+  chartOptions: [] as Array<Record<string, unknown>>,
+}))
+
+vi.mock('echarts/core', () => ({
+  use: () => {},
+  init: () => ({
+    setOption: (opt: Record<string, unknown>) => {
+      chartOptions.push(opt)
+    },
+    resize: () => {},
+    dispose: () => {},
+  }),
+}))
+vi.mock('echarts/charts', () => ({ PieChart: {}, RadarChart: {}, BarChart: {} }))
+vi.mock('echarts/components', () => ({
+  RadarComponent: {},
+  TooltipComponent: {},
+  LegendComponent: {},
+  GridComponent: {},
+}))
+vi.mock('echarts/renderers', () => ({ CanvasRenderer: {} }))
 
 vi.mock('@/api/client', () => ({
   getCases: vi.fn(),
@@ -143,6 +167,73 @@ describe('WelcomeView 欢迎页', () => {
     expect(router.currentRoute.value.path).toBe('/cases')
   })
 
+  it('UI7 首页模块渲染：流水线 6 节点/迷你图/技术条/画廊（欢迎页）', async () => {
+    kbStatsMock.mockResolvedValue({
+      count: 241,
+      docTypes: { knowledge: 42, standard: 57, literature: 142 },
+      backend: 'lancedb',
+    })
+    getCasesMock.mockResolvedValue(fiveCases)
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="home-pipeline"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="pipeline-node"]').length).toBe(6)
+    expect(wrapper.find('[data-testid="home-mini-charts"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="home-techbar"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="techbar-chip"]').length).toBe(4)
+    expect(wrapper.findAll('[data-testid="gallery-card"]').length).toBe(5)
+    expect(wrapper.text()).toContain('演示示意')
+  })
+
+  it('UI7 首页画廊点击案例 → /recommend?case=xxx（欢迎页）', async () => {
+    kbStatsMock.mockResolvedValue({
+      count: 241,
+      docTypes: { knowledge: 42 },
+      backend: 'lancedb',
+    })
+    getCasesMock.mockResolvedValue([fiveCases[0]])
+    const router = makeWelcomeRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="gallery-card"]').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/recommend')
+    expect(router.currentRoute.value.query.case).toBe(fiveCases[0].id)
+  })
+
+  it('UI7 HomeStats donut：docTypes 映射为六类数据与中心总数（欢迎页）', async () => {
+    chartOptions.length = 0
+    kbStatsMock.mockResolvedValue({
+      count: 11143,
+      docTypes: { knowledge: 8000, standard: 2000, table: 143, enterprise: 1000 },
+      backend: 'lancedb',
+    })
+    const wrapper = mount(HomeStats, {
+      props: {
+        stats: { count: 11143, docTypes: { knowledge: 8000, standard: 2000, table: 143, enterprise: 1000 }, backend: 'lancedb' },
+      },
+    })
+    await flushPromises()
+
+    const option = chartOptions.at(-1) as
+      | { series?: Array<{ data?: Array<{ name: string; value: number }> }>; graphic?: Array<{ style?: { text?: string } }> }
+      | undefined
+    const data = option?.series?.[0]?.data ?? []
+    expect(data.map((d) => d.name)).toEqual(['知识条目', '规范', '定量表格', '企业资料'])
+    const center = option?.graphic?.[0]?.style?.text
+    expect(center).toBe('11,143')
+    wrapper.unmount()
+  })
+
   it('stats 徽章：实时取 kb/stats 展示规模（欢迎页）', async () => {
     kbStatsMock.mockResolvedValue({
       count: 241,
@@ -160,7 +251,7 @@ describe('WelcomeView 欢迎页', () => {
     expect(badges.exists()).toBe(true)
     expect(badges.text()).toContain('241')
     expect(badges.text()).toContain('知识条目 42')
-    expect(badges.text()).toContain('规范条文 57')
+    expect(badges.text()).toContain('规范 57')
     expect(badges.text()).toContain('文献 142')
   })
 

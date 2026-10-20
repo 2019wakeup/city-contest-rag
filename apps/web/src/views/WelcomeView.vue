@@ -7,6 +7,11 @@ import { useMagnetic } from '@/composables/useMagnetic'
 
 import { kbStats } from '@/api/client'
 import type { KbStats } from '@/api/client'
+import HomeCaseGallery from '@/components/HomeCaseGallery.vue'
+import HomeMiniCharts from '@/components/HomeMiniCharts.vue'
+import HomePipeline from '@/components/HomePipeline.vue'
+import HomeStats from '@/components/HomeStats.vue'
+import HomeTechBar from '@/components/HomeTechBar.vue'
 
 // 欢迎页：系统定位 + 三亮点 + 双 CTA + 数据规模徽章（kb/stats 实时取，失败静默隐藏）。
 const router = useRouter()
@@ -37,13 +42,6 @@ const highlights = [
     icon: 'shield',
   },
 ] as const
-
-const DOC_TYPE_LABELS: Record<string, string> = {
-  knowledge: '知识条目',
-  standard: '规范条文',
-  literature: '文献',
-  enterprise: '企业资料',
-}
 
 onMounted(async () => {
   try {
@@ -137,24 +135,30 @@ onMounted(async () => {
       </el-card>
     </section>
 
-    <section v-if="stats" data-testid="stats-badges" class="welcome-stats">
-      <span class="welcome-stat-badge">知识块 {{ stats.count }}</span>
-      <span
-        v-for="(v, k) in stats.docTypes ?? {}"
-        :key="k"
-        class="welcome-stat-badge"
-      >
-        {{ DOC_TYPE_LABELS[k] ?? k }} {{ v }}
-      </span>
-    </section>
+    <HomePipeline />
+
+    <div class="welcome-data-row">
+      <HomeStats :stats="stats" />
+      <HomeMiniCharts />
+    </div>
+
+    <HomeCaseGallery />
+
+    <HomeTechBar />
   </div>
 </template>
 
 <style scoped>
 .welcome {
-  max-width: 880px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 24px 0 48px;
+}
+
+.welcome-data-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
 }
 
 .welcome-hero {
@@ -241,13 +245,6 @@ onMounted(async () => {
   font-size: 13px;
   line-height: 1.7;
   color: var(--el-text-color-secondary);
-}
-
-.welcome-stats {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
 }
 
 .welcome-stat-badge {
