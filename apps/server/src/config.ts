@@ -3,7 +3,9 @@ import { LanceDBVectorStore, SqliteVectorStore } from '@road-rec/retrieval';
 import type { VectorStore } from '@road-rec/retrieval';
 import type { EmbedderModel } from '@road-rec/embedding';
 
-const SUPPORTED: readonly EmbedderModel[] = ['bge-m3', 'multilingual-e5-small'];
+// P1·D5（data 实验）：multilingual-e5-base（768 维，e5 前缀规则同 small）；
+// 类型以 packages/embedding 的 EmbedderModel 为准（data 并行落地，此处用字符串列表保持先行兼容）
+const SUPPORTED: readonly string[] = ['bge-m3', 'multilingual-e5-small', 'multilingual-e5-base'];
 
 /**
  * EMBEDDING_MODEL 环境变量解析（bge-m3 默认 | multilingual-e5-small）。
@@ -14,7 +16,7 @@ export function resolveEmbeddingModel(
 ): EmbedderModel {
   const raw = env.EMBEDDING_MODEL;
   if (raw === undefined || raw === '') return 'bge-m3';
-  if ((SUPPORTED as readonly string[]).includes(raw)) return raw as EmbedderModel;
+  if (SUPPORTED.includes(raw)) return raw as EmbedderModel;
   throw new Error(
     `EMBEDDING_MODEL 非法值：${raw}（支持 ${SUPPORTED.join(' | ')}）`,
   );

@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { CorpusChunkSchema, SearchHitSchema } from '@road-rec/contracts';
 import type { CorpusChunk, SearchHit } from '@road-rec/contracts';
 import type { VectorSearchQuery, VectorStore } from './types';
-import { rrf } from './fusion';
+import { parseHybridWeights, rrf } from './fusion';
 import type { RankedItem } from './fusion';
 
 /**
@@ -77,7 +77,8 @@ export class SqliteVectorStore implements VectorStore {
   async search(q: VectorSearchQuery): Promise<SearchHit[]> {
     const bm25 = this.bm25Search(q.text, 40);
     const cosine = q.vector && q.vector.length > 0 ? this.cosineSearch(q.vector, 40) : [];
-    const fused = rrf([bm25, cosine]);
+    // B6：HYBRID_WEIGHTS=bm25,vec 可调（默认 [1,1] 不变）
+    const fused = rrf([bm25, cosine], undefined, parseHybridWeights());
     if (fused.length === 0) return [];
 
     const placeholders = fused.map(() => '?').join(', ');
