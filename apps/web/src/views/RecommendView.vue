@@ -10,6 +10,8 @@ import { DISTRESS_LABELS, TRAFFIC_LEVEL_LABELS, labelOf, STEP_LABELS } from '@/u
 import { formatNumber } from '@/utils/format'
 import type { Candidate, CaseSeed, SceneInput } from '@road-rec/contracts'
 import BenchmarkTable from '@/components/BenchmarkTable.vue'
+import ShapBar from '@/components/ShapBar.vue'
+import WaterfallChart from '@/components/WaterfallChart.vue'
 import CandidateCard from '@/components/CandidateCard.vue'
 import ChatDock from '@/components/ChatDock.vue'
 import ReportSection from '@/components/ReportSection.vue'
@@ -27,6 +29,34 @@ const initialScene = shallowRef<SceneInput | null>(null)
 
 const report = computed(() => store.report)
 const topCandidate = computed<Candidate | null>(() => report.value?.candidates?.[0] ?? null)
+
+// UI8：分析可视化候选选择（默认首选；候选卡展开联动切换）
+const analysisCandidateId = shallowRef<string | null>(null)
+
+watch(
+  () => report.value?.candidates ?? [],
+  (list) => {
+    const current = analysisCandidateId.value
+    if (!current || !list.some((c) => c.id === current)) {
+      analysisCandidateId.value = list[0]?.id ?? null
+    }
+  },
+  { immediate: true },
+)
+
+const analysisCandidate = computed(() => {
+  const id = analysisCandidateId.value
+  return (report.value?.candidates ?? []).find((c) => c.id === id) ?? null
+})
+
+// 候选卡展开/收起联动分析候选
+function toggleCandidate(id: string): void {
+  const next = new Set(expandedIds.value)
+  if (next.has(id)) next.delete(id)
+  else next.add(id)
+  expandedIds.value = next
+  analysisCandidateId.value = id
+}
 
 // 灵动层：hero 得分与三指标数字滚动（420ms rAF；reduced-motion 直显）
 const scoreCount = useCountUp(() => topCandidate.value?.score ?? 0)
@@ -196,16 +226,6 @@ watch(
   },
   { immediate: true },
 )
-
-function toggleCandidate(id: string): void {
-  const next = new Set(expandedIds.value)
-  if (next.has(id)) {
-    next.delete(id)
-  } else {
-    next.add(id)
-  }
-  expandedIds.value = next
-}
 
 // ---- 报告证据角标（UI二轮）：点击 → 高亮 + 展开所属候选 + 滚动定位 ----
 const highlightId = shallowRef<string | null>(null)
@@ -585,6 +605,51 @@ watch(
           class="panel"
           @cite="onCite"
         />
+
+        <!-- UI8：分析可视化（得分瀑布 + 特征贡献），插在报告卡与基准表之间 -->
+        <el-card
+          v-if="report"
+          shadow="hover"
+          data-testid="analysis-visuals"
+          class="panel analysis-card"
+        >
+          <template #header>分析可视化</template>
+          <div v-if="(report.candidates ?? []).length > 1" class="analysis-head">
+            <el-radio-group v-model="analysisCandidateId" size="small" data-testid="analysis-switch">
+              <el-radio-button
+                v-for="(c, i) in report.candidates ?? []"
+                :key="c.id"
+                :value="c.id"
+              >
+                方案 {{ i + 1 }}
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+          <template v-if="(analysisCandidate?.scoreBreakdown ?? []).length > 0">
+            <WaterfallChart
+              :score="analysisCandidate?.score ?? 0"
+              :breakdown="analysisCandidate?.scoreBreakdown ?? []"
+              :penalty="analysisCandidate?.penalty ?? null"
+              data-testid="analysis-waterfall"
+            />
+          </template>
+          <div
+            v-else
+            class="analysis-placeholder"
+            data-testid="waterfall-placeholder"
+          >
+            暂无得分分解数据（旧版报告或降级模式）
+          </div>
+          <template v-if="(analysisCandidate?.explanations ?? []).length > 0">
+            <ShapBar
+              :explanations="analysisCandidate?.explanations ?? []"
+              data-testid="analysis-shap"
+            />
+          </template>
+          <div v-else class="analysis-placeholder" data-testid="shap-placeholder">
+            暂无特征贡献数据
+          </div>
+        </el-card>
 
         <!-- 目标性能/基准对比：默认折叠为可展开区块（重构） -->
         <el-collapse class="panel detail-collapse">

@@ -9,7 +9,7 @@ import { LAB_GROUP_NAMES, labLabelOf, labPassOf, labUnitOf, thresholdTextOf } fr
 import type { LabIndicator } from '@road-rec/contracts'
 import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
-import WaterfallChart from '@/components/WaterfallChart.vue'
+import ShapBar from '@/components/ShapBar.vue'
 
 const props = defineProps<{
   candidate: Candidate
@@ -245,7 +245,7 @@ const spotlight = useSpotlight()
         :predictions="candidate?.predictions ?? []"
       />
 
-      <WaterfallChart
+      <ShapBar
         v-if="explanations.length > 0"
         :explanations="explanations"
         class="candidate-waterfall"

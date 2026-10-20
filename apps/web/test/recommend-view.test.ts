@@ -18,6 +18,7 @@ import EvidencePanel from '@/components/EvidencePanel.vue'
 import RadarChart from '@/components/RadarChart.vue'
 import ReportSection from '@/components/ReportSection.vue'
 import StepStepper from '@/components/StepStepper.vue'
+import ShapBar from '@/components/ShapBar.vue'
 import WaterfallChart from '@/components/WaterfallChart.vue'
 import { formatRadarTooltip } from '@/utils/radar'
 
@@ -269,12 +270,13 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.text()).toContain('知识库为空')
   })
 
-  it('WaterfallChart 仅在候选带 explanations 时渲染', async () => {
+  it('ShapBar 仅在候选带 explanations 时渲染（UI8 替换瀑布为特征贡献）', async () => {
     const wrapper = await mountView()
     // fixture：cand-1 无 explanations、cand-2 有；cand-2 默认折叠 → 先展开再断言
+    // UI8：切换后分析可视化卡片同步切到 cand-2 → 候选卡内 + 分析卡内共 2 个
     await wrapper.findAll('[data-testid="candidate-toggle"]')[1].trigger('click')
     await flushPromises()
-    expect(wrapper.findAllComponents(WaterfallChart)).toHaveLength(1)
+    expect(wrapper.findAllComponents(ShapBar)).toHaveLength(2)
   })
 
   it('P3 场景 chips：气候/交通/病害/预算/工期与案例名（P3）', async () => {
@@ -1872,6 +1874,122 @@ describe('RecommendView 推荐工作台', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('UI8 瀑布图：贡献累加=score、penalty 负红柱（可视化）', async () => {
+    chartOptions.length = 0
+    const breakdown = [
+      { dimension: 'd1', label: '高温', weight: 0.4, normalized: 0.8, contribution: 0.32 },
+      { dimension: 'd2', label: '水稳', weight: 0.3, normalized: 0.9, contribution: 0.27 },
+      { dimension: 'd3', label: '低温', weight: 0.3, normalized: 0.8, contribution: 0.24 },
+    ]
+    const wrapper = mount(WaterfallChart, {
+      props: { score: 0.75, breakdown, penalty: 0.08 },
+    })
+    await flushPromises()
+
+    const option = chartOptions.at(-1) as
+      | { series?: Array<Record<string, unknown>> }
+      | undefined
+    const base = (option?.series?.[0]?.data ?? []) as number[]
+    const contrib = (option?.series?.[1]?.data ?? []) as Array<{ value: number; itemStyle?: { color?: string } }>
+    expect(base.map((v) => Math.round(v * 100) / 100)).toEqual([0, 0.32, 0.59, 0.83])
+    expect(contrib.map((c) => c.value)).toEqual([0.32, 0.27, 0.24, -0.08])
+    // 累加 0.32+0.27+0.24-0.08 = 0.75 = score
+    expect(contrib.reduce((acc, c) => acc + c.value, 0)).toBeCloseTo(0.75, 10)
+    // penalty 红柱
+    expect(contrib[3].itemStyle?.color).toBe('#EF4444')
+    wrapper.unmount()
+  })
+
+  it('UI8 SHAP：按 |contribution| 排序、正向主色负向红、标注文案（可视化）', async () => {
+    chartOptions.length = 0
+    const wrapper = mount(ShapBar, {
+      props: {
+        explanations: [
+          { feature: 'A', contribution: 1 },
+          { feature: 'B', contribution: -3 },
+          { feature: 'C', contribution: 2 },
+        ],
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="shap-note"]').text()).toContain(
+      '特征贡献（模拟阶段确定性生成，真实模块 C 接入后自动替换）',
+    )
+
+    const option = chartOptions.at(-1) as
+      | {
+          yAxis?: Array<{ data?: string[] }> | { data?: string[] }
+          series?: Array<{ data?: Array<{ value: number; itemStyle?: { color?: string } }> }>
+        }
+      | undefined
+    const yData = Array.isArray(option?.yAxis) ? option?.yAxis?.[0]?.data : option?.yAxis?.data
+    expect(yData).toEqual(['B', 'C', 'A']) // |−3| > |2| > |1|
+    const colors = option?.series?.[0]?.data?.map((d) => d.itemStyle?.color)
+    expect(colors).toEqual(['#EF4444', '#6E7BF2', '#6E7BF2'])
+    wrapper.unmount()
+  })
+
+  it('UI8 分析可视化卡：无数据占位、候选切换重绘、与候选卡联动（可视化）', async () => {
+    chartOptions.length = 0
+    const wrapper = await mountView()
+    const card = wrapper.find('[data-testid="analysis-visuals"]')
+    expect(card.exists()).toBe(true)
+    // fixture 无 scoreBreakdown → 占位文案
+    expect(wrapper.find('[data-testid="waterfall-placeholder"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="shap-placeholder"]').exists()).toBe(true)
+    expect(card.text()).toContain('暂无得分分解数据')
+    expect(card.text()).toContain('暂无特征贡献数据')
+  })
+
+  it('UI8 分析可视化：注入 scoreBreakdown 后渲染瀑布并随候选切换重绘（可视化）', async () => {
+    chartOptions.length = 0
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    const rep = makeReport()
+    rep.candidates[0].scoreBreakdown = [
+      { dimension: 'd1', label: '高温', weight: 0.5, normalized: 0.8, contribution: 0.4 },
+    ]
+    rep.candidates[1].scoreBreakdown = [
+      { dimension: 'd1', label: '水稳', weight: 0.5, normalized: 0.6, contribution: 0.3 },
+    ]
+    store.report = rep
+    store.status = 'done'
+    store.step = 'result'
+    store.scene = validScene
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/recommend', component: RecommendView }],
+    })
+    await router.push('/recommend')
+    await router.isReady()
+    const wrapper = mount(RecommendView, { global: { plugins: [pinia, router] } })
+    await flushPromises()
+
+    const waterfallCount = () =>
+      chartOptions.filter(
+        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+      ).length
+    expect(waterfallCount()).toBe(1)
+    const firstContrib = chartOptions.find(
+      (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+    )?.series?.[1]?.data as Array<{ value: number }>
+    expect(firstContrib[0].value).toBe(0.4)
+
+    // 切换到方案 2 → 重绘为 cand-2 贡献
+    await wrapper.findAll('[data-testid="analysis-switch"] input')[1].setValue(true)
+    await flushPromises()
+    expect(waterfallCount()).toBe(2)
+    const secondContrib = chartOptions
+      .filter(
+        (o) => ((o as { series?: Array<Record<string, unknown>> }).series?.[0]?.name) === '底座',
+      )
+      .at(-1)?.series?.[1]?.data as Array<{ value: number }>
+    expect(secondContrib[0].value).toBe(0.3)
   })
 
   it('running 分阶段文案 1.5s 轮换（流式加载动效）', async () => {
