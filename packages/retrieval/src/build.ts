@@ -181,7 +181,61 @@ function collectPlanned(corpusDir: string): PlannedChunk[] {
     }
   }
 
+  // 5. 表格块（RAG P0·D1：extract-tables.ts 产出的含数值表格，每条一 chunk，结构化定量证据）
+  const tablesFile = path.join(corpusDir, 'tables/tables.json');
+  if (fs.existsSync(tablesFile)) {
+    const tables = JSON.parse(fs.readFileSync(tablesFile, 'utf-8')) as Array<{
+      id?: string;
+      docTitle?: string;
+      caption?: string;
+      markdown?: string;
+    }>;
+    tables.forEach((t, i) => {
+      if (!t.id || !t.markdown) throw new Error(`tables.json 第 ${i} 条缺 id/markdown`);
+      // id = table-<docSeq>-<idx> → docId = table-<docSeq>（同文档多表共属一 doc）
+      const docId = t.id.replace(/-\d+$/, '');
+      const caption = t.caption ?? `${t.docTitle ?? docId} 表 ${i + 1}`;
+      const text = `${caption}｜来源：${t.docTitle ?? ''}｜${t.markdown.slice(0, 1200)}`;
+      const tags = mapTableTags(`${caption} ${t.docTitle ?? ''}`);
+      planned.push(makeChunk(`${t.id}`, docId, text, 'table', tags));
+    });
+  }
+
   return planned;
+}
+
+/** 表格块标签：从 caption + docTitle 关键词映射（P0·D1 设计口径） */
+const TABLE_TAG_KEYWORDS: Array<[string, string]> = [
+  ['车辙', '车辙'],
+  ['低温', '低温'],
+  ['疲劳', '疲劳'],
+  ['水稳', '水稳'],
+  ['TSR', '水稳'],
+  ['掺量', '掺量'],
+  ['RAP', 'RAP'],
+  ['再生', '再生'],
+  ['级配', '级配'],
+  ['模量', '模量'],
+  ['裂缝', '裂缝'],
+  ['温度', '温度'],
+  ['规范', '规范'],
+  ['马歇尔', '马歇尔'],
+  ['针入度', '针入度'],
+  ['软化点', '软化点'],
+  ['延度', '延度'],
+  ['黏度', '黏度'],
+  ['粘度', '黏度'],
+  ['空隙率', '空隙率'],
+  ['碳排', '碳排'],
+  ['排放', '碳排'],
+];
+
+function mapTableTags(text: string): string[] {
+  const tags = new Set<string>();
+  for (const [kw, tag] of TABLE_TAG_KEYWORDS) {
+    if (text.includes(kw)) tags.add(tag);
+  }
+  return [...tags];
 }
 
 /** 文献全文切块：按 `## ` 分节；节内正文超长时按段落聚合（目标 ~500 字，硬上限 600） */
@@ -216,7 +270,7 @@ function chunkLiteratureFull(docId: string, content: string): PlannedChunk[] {
     for (const part of packParagraphs(s.body, LITFULL_CHUNK_TARGET, LITFULL_CHUNK_MAX)) {
       const text = (prefix + part).trim();
       if (text.length < 10) continue;
-      chunks.push(makeChunk(`${docId}:${idx++}`, docId, text, 'literature', []));
+      chunks.push(makeChunk(`${docId}:${idx++}`, docId, text, 'literature-full', []));
     }
   }
   return chunks;

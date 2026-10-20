@@ -113,18 +113,28 @@ export async function createEmbedder(
       if (texts.length === 0) return [];
       const mode: EmbedMode = embedOpts?.mode ?? 'passage';
       const inputs = usePrefix ? texts.map((t) => `${E5_PREFIX[mode]}${t}`) : texts;
-      // 文档侧嵌入：mean 池化 + L2 归一化
-      const outputs = await pipe(inputs, { pooling: 'mean', normalize: true });
-      const vectors = flattenVectors(outputs);
-      if (vectors.length !== texts.length) {
-        throw new Error(`embedding 输出行数与输入不一致：期望 ${texts.length}，实际 ${vectors.length}`);
-      }
-      for (const [i, vec] of vectors.entries()) {
-        if (vec.length !== dim) {
+      // 分批嵌入：单次超大 batch 会让 onnxruntime 按最长序列整体分配（曾实测 130GB OOM），
+      // 每批 ≤32 条既控内存又不显著损失吞吐
+      const EMBED_BATCH = 32;
+      const vectors: number[][] = [];
+      for (let i = 0; i < inputs.length; i += EMBED_BATCH) {
+        const batch = inputs.slice(i, i + EMBED_BATCH);
+        // 文档侧嵌入：mean 池化 + L2 归一化
+        const outputs = await pipe(batch, { pooling: 'mean', normalize: true });
+        const rows = flattenVectors(outputs);
+        if (rows.length !== batch.length) {
           throw new Error(
-            `embedding 维度不匹配：模型 ${modelName} 声明 dim=${dim}，实际 ${vec.length}（第 ${i} 条）`,
+            `embedding 输出行数与输入不一致：期望 ${batch.length}，实际 ${rows.length}（第 ${i} 批）`,
           );
         }
+        for (const [j, vec] of rows.entries()) {
+          if (vec.length !== dim) {
+            throw new Error(
+              `embedding 维度不匹配：模型 ${modelName} 声明 dim=${dim}，实际 ${vec.length}（第 ${i + j} 条）`,
+            );
+          }
+        }
+        vectors.push(...rows);
       }
       return vectors;
     },

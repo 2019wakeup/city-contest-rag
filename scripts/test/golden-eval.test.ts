@@ -88,22 +88,23 @@ describe('golden-eval 评估器判定逻辑（fake store）', () => {
     expect(parsed).toHaveProperty('failed');
   });
 
-  it('golden.json 结构合法：20 条、id 唯一、门槛在 [0,1]、expected 非空', () => {
+  it('golden.json 结构合法：≥20 条、id 唯一、门槛在 [0,1]、expected 非空', () => {
     const cases = loadGoldenCases(path.resolve(__dirname, '../../data/golden/golden.json'));
-    expect(cases).toHaveLength(20);
+    // 基础 20 条（5 案例×4 语料类）+ P0 扩展用例（c06-c10 系列，backend 维护）
+    expect(cases.length).toBeGreaterThanOrEqual(20);
     const ids = new Set(cases.map((c) => c.id));
-    expect(ids.size).toBe(20);
+    expect(ids.size).toBe(cases.length);
     for (const c of cases) {
       expect(c.query.length).toBeGreaterThan(0);
       expect(c.expectedDocIds.length).toBeGreaterThan(0);
       expect(c.minRecallAt5).toBeGreaterThanOrEqual(0);
       expect(c.minRecallAt5).toBeLessThanOrEqual(1);
     }
-    // 5 案例 × 4 语料类覆盖
-    const kinds = new Set(cases.map((c) => c.id.split('-')[1]));
-    expect(kinds).toEqual(new Set(['knowledge', 'standard', 'literature', 'enterprise']));
-    const caseIds = new Set(cases.map((c) => c.id.split('-')[0]));
-    expect(caseIds.size).toBe(5);
+    // 基础 5 案例 × 4 语料类覆盖
+    const baseKinds = new Set(cases.filter((c) => /^c0[1-5]-/.test(c.id)).map((c) => c.id.split('-')[1]));
+    expect(baseKinds).toEqual(new Set(['knowledge', 'standard', 'literature', 'enterprise']));
+    const baseCaseIds = new Set(cases.filter((c) => /^c0[1-5]-/.test(c.id)).map((c) => c.id.split('-')[0]));
+    expect(baseCaseIds.size).toBe(5);
   });
 
   it('golden.json 引用的 expectedDocIds 全部存在于真实语料', () => {

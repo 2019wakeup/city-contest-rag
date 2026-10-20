@@ -420,7 +420,7 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
     const chunks = all.filter((h) => h.provenance.sourceDocId === 'litfull-001');
     expect(chunks.length).toBe(r.total);
     for (const c of chunks) {
-      expect(c.docType).toBe('literature');
+      expect(c.docType).toBe('literature-full'); // P0：全文块独立 docType
       expect(c.chunkId).toMatch(/^litfull-001:\d+$/);
       expect(c.text).not.toContain('![图]');
     }
@@ -431,6 +431,59 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
     const longParts = chunks.filter((c) => c.text.includes('长节正文'));
     expect(longParts.length).toBeGreaterThanOrEqual(2);
     for (const c of longParts) expect(c.text.length).toBeLessThanOrEqual(700);
+    store.close();
+  });
+
+  it('tables 源：每条表格一个 chunk（docType=table，text=caption+来源+markdown，关键词 tags）', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-tables-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'idx-tables-'));
+    fs.mkdirSync(path.join(dir, 'tables'), { recursive: true });
+    const longMd = '| A | B |\n' + Array.from({ length: 200 }, (_, i) => `| ${i} | ${i * 2} |`).join('\n');
+    fs.writeFileSync(
+      path.join(dir, 'tables/tables.json'),
+      JSON.stringify([
+        {
+          id: 'table-000-0',
+          docTitle: '车辙与疲劳性能研究',
+          caption: 'Table 1. Rutting and fatigue results.',
+          markdown: longMd,
+          sourcePath: 'reference/x.pdf',
+          page: 3,
+        },
+        {
+          id: 'table-000-1',
+          docTitle: '水稳性试验',
+          caption: 'Table 2. TSR results.',
+          markdown: '| TSR | 80 |',
+          sourcePath: 'reference/x.pdf',
+          page: 5,
+        },
+      ]),
+    );
+
+    const store = new SqliteVectorStore(path.join(tmp, 'test.db'));
+    const r = await buildIndex({
+      corpusDir: dir,
+      store: store as unknown as VectorStore,
+      embedder: makeFakeEmbedder(),
+      manifestPath: path.join(tmp, 'manifest.json'),
+      pipelineRev: 'testrev1',
+    });
+    expect(r.total).toBe(2);
+    const hits = await store.search({ text: 'Table 1', topK: 5 });
+    const t = hits.find((h) => h.provenance.sourceDocId === 'table-000');
+    expect(t).toBeDefined();
+    expect(t!.docType).toBe('table');
+    expect(t!.chunkId).toBe('table-000-0'); // chunkId 直用 tables.json 的 id（table-<docSeq>-<idx>）
+    expect(t!.text).toContain('Table 1. Rutting and fatigue results.'); // caption
+    expect(t!.text).toContain('来源：车辙与疲劳性能研究'); // docTitle
+    expect(t!.text).toContain('| 50 | 100 |'); // markdown 内容（1200 字截断内）
+    expect(t!.text.length).toBeLessThanOrEqual(1300); // 截断 1200 + 前缀
+    expect(t!.tags).toContain('车辙'); // caption/docTitle 关键词映射
+    expect(t!.tags).toContain('疲劳');
+    const t2 = hits.find((h) => h.chunkId === 'table-000-1');
+    expect(t2).toBeDefined();
+    expect(t2!.tags).toContain('水稳');
     store.close();
   });
 });

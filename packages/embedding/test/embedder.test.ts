@@ -126,6 +126,25 @@ describe('createEmbedder（stub pipeline，不下载真实模型）', () => {
     expect(await e.embed([])).toEqual([]);
   });
 
+  it('embed 分批处理长输入（每批 ≤32，防单次超大 tensor OOM）', async () => {
+    const dim = MODEL_REGISTRY['bge-m3'].dim;
+    const batches: number[] = [];
+    const createPipeline = async (): Promise<TransformerPipeline> =>
+      ((texts: string | string[]) => {
+        const arr = Array.isArray(texts) ? texts : [texts];
+        batches.push(arr.length);
+        return Promise.resolve(arr.map((_, i) => Array.from({ length: dim }, () => i)));
+      }) as TransformerPipeline;
+    const e = await createEmbedder({}, makeDeps({ createPipeline }));
+    const out = await e.embed(Array.from({ length: 100 }, (_, i) => `文本${i}`));
+    expect(out).toHaveLength(100);
+    // 100 条 → 4 批（32+32+32+4），每批 ≤32
+    expect(batches).toEqual([32, 32, 32, 4]);
+    expect(batches.every((b) => b <= 32)).toBe(true);
+    // 行序保持（第 4 批的第 3 行）
+    expect(out[99]).toEqual(Array.from({ length: dim }, () => 3));
+  });
+
   it('R3 前缀：multilingual-e5-small query/passage 前缀（EMBEDDING_PREFIX_MODE=auto 默认）', async () => {
     delete process.env.EMBEDDING_PREFIX_MODE;
     const dim = MODEL_REGISTRY['multilingual-e5-small'].dim;
