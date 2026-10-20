@@ -7,10 +7,10 @@
     { "key": "ms", "label": "马歇尔稳定度 MS", "group": "马歇尔力学", "unit": "kN", "threshold": "> 8 kN", "sampleSize": 116, "testMethod": "T 0709 沥青混合料马歇尔稳定度试验", "note": "全部样本均达标；回归任务" },
     { "key": "fl", "label": "流值 FL", "group": "马歇尔力学", "unit": "mm", "threshold": "2.0–4.0 mm", "sampleSize": 116, "testMethod": "T 0709 沥青混合料马歇尔稳定度试验", "note": "实测部分超出区间；回归任务" },
     { "key": "tsr", "label": "冻融劈裂强度比 TSR", "group": "水稳定性能", "unit": "比值（需 ×100 转为 %）", "threshold": "> 0.75（75%）", "sampleSize": 85, "testMethod": "T 0729 沥青混合料劈裂强度比试验", "note": "原始数据是 0–1 比值，不是百分数；回归/二分类（达标/不达标）" },
-    { "key": "residualStability", "label": "浸水残留稳定度", "group": "水稳定性能", "unit": "%", "threshold": "> 85%", "sampleSize": 83, "testMethod": "T 0709 沥青混合料马歇尔稳定度试验（浸水马歇尔）", "note": "本身已是百分数；回归/分类" },
+    { "key": "retainedStability", "label": "浸水残留稳定度", "group": "水稳定性能", "unit": "%", "threshold": "> 85%", "sampleSize": 83, "testMethod": "T 0709 沥青混合料马歇尔稳定度试验（浸水马歇尔）", "note": "本身已是百分数；回归/分类" },
     { "key": "ds", "label": "动稳定度 DS（车辙）", "group": "高温性能", "unit": "次/mm", "threshold": "> 800 次/mm", "sampleSize": 83, "testMethod": "T 0719 沥青混合料车辙试验", "note": "全部样本达标；回归，表征高温抗车辙" },
-    { "key": "flexuralStrain", "label": "最大弯拉应变", "group": "低温抗裂性能", "unit": "με", "threshold": "> 2000 με", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "核心低温指标；回归/分类" },
-    { "key": "flexuralStrength", "label": "抗弯拉强度", "group": "低温抗裂性能", "unit": "MPa", "threshold": "无硬性阈值", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "回归任务" },
-    { "key": "flexuralModulus", "label": "弯曲劲度模量", "group": "低温抗裂性能", "unit": "MPa", "threshold": "无硬性阈值", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "回归任务" }
+    { "key": "bendingStrain", "label": "最大弯拉应变", "group": "低温抗裂性能", "unit": "με", "threshold": "> 2000 με", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "核心低温指标；回归/分类" },
+    { "key": "tensileStrength", "label": "抗弯拉强度", "group": "低温抗裂性能", "unit": "MPa", "threshold": "无硬性阈值", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "回归任务" },
+    { "key": "bendingModulus", "label": "弯曲劲度模量", "group": "低温抗裂性能", "unit": "MPa", "threshold": "无硬性阈值", "sampleSize": 75, "testMethod": "T 0715 沥青混合料弯曲试验", "note": "回归任务" }
   ]
 }
