@@ -171,7 +171,8 @@ function onEnterKey(event: KeyboardEvent): void {
 
 .chat-bubble {
   max-width: 80%;
-  padding: 8px 12px;
+  padding: 10px 14px;
+  font-size: 14.5px;
   border-radius: 10px;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -237,5 +238,6 @@ function onEnterKey(event: KeyboardEvent): void {
   display: flex;
   gap: 8px;
   align-items: flex-end;
+  min-height: 88px;
 }
 </style>

@@ -11,9 +11,9 @@ import ChatPanel from '@/components/ChatPanel.vue'
 const props = defineProps<{ report: RecommendationReport | null }>()
 
 type DockState = 'closed' | 'open' | 'docked'
-const DOCK_MIN_WIDTH = 420
-const DOCK_MAX_WIDTH = 860
-const DOCK_DEFAULT_WIDTH = 560
+const DOCK_MIN_WIDTH = 480
+const DOCK_MAX_WIDTH = 960
+const DOCK_DEFAULT_WIDTH = 680
 const DOCK_STORAGE_KEY = 'chat-dock-width'
 
 const dockState = shallowRef<DockState>('closed')
@@ -194,6 +194,10 @@ onBeforeUnmount(() => {
   right: 0;
   bottom: 0;
   z-index: 2000;
+  height: fit-content;
+  max-height: 78vh;
+  margin: auto 0;
+  border-radius: 16px 0 0 16px;
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -267,7 +271,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  width: 48px;
+  width: 44px;
   padding: 12px 0;
   border: 1px solid var(--app-border-strong);
   border-right: none;
@@ -282,7 +286,7 @@ onBeforeUnmount(() => {
     box-shadow var(--motion-base) var(--ease-out);
 }
 
-/* 灵动层：竖条 hover 宽度 48→52 + translateX(-2px) + 主色微光 */
+/* 灵动层：竖条 hover 宽度 44→52 + translateX(-2px) + 主色微光 */
 .chat-rail:hover {
   width: 52px;
   transform: translateY(-50%) translateX(-2px);

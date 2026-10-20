@@ -1197,7 +1197,7 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.find('[data-testid="chat-dock"]').classes()).toContain('dock-enter')
     expect(wrapper.find('[data-testid="chat-fab"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="chat-input"]').exists()).toBe(true)
-    expect(dockWidthOf(wrapper)).toBe('560px')
+    expect(dockWidthOf(wrapper)).toBe('680px')
 
     // 收起 → docked：右缘竖条
     await wrapper.find('[data-testid="chat-dock-dock"]').trigger('click')
@@ -1211,7 +1211,7 @@ describe('RecommendView 推荐工作台', () => {
     // 竖条 → open 与胶囊 → open 走同一动画（重新挂载即重新播放）
     expect(wrapper.find('[data-testid="chat-dock"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="chat-dock"]').classes()).toContain('dock-enter')
-    expect(dockWidthOf(wrapper)).toBe('560px')
+    expect(dockWidthOf(wrapper)).toBe('680px')
 
     // 头部关闭 → closed，胶囊回归
     await wrapper.find('[data-testid="chat-dock-close"]').trigger('click')
@@ -1232,22 +1232,22 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.find('[data-testid="chat-rail"]').exists()).toBe(true)
   })
 
-  it('拖拽柄调整宽度并 clamp 到 420–860', async () => {
+  it('拖拽柄调整宽度并 clamp 到 480–960', async () => {
     const wrapper = await mountView()
     await openChatDock(wrapper)
 
     const handle = wrapper.find('[data-testid="chat-dock-handle"]')
     await handle.trigger('mousedown', { clientX: 600 })
 
-    // 向左拖 400px：560+400=960 → clamp 860
+    // 向左拖 400px：680+400=1080 → clamp 960
     window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200 }))
     await flushPromises()
-    expect(dockWidthOf(wrapper)).toBe('860px')
+    expect(dockWidthOf(wrapper)).toBe('960px')
 
-    // 向右拖到极端：600-1200=-600 → 560-600=-40 → clamp 420
+    // 向右拖到极端：600-1200=-600 → 680-600=80 → clamp 480
     window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1200 }))
     await flushPromises()
-    expect(dockWidthOf(wrapper)).toBe('420px')
+    expect(dockWidthOf(wrapper)).toBe('480px')
 
     window.dispatchEvent(new MouseEvent('mouseup'))
     await flushPromises()
@@ -1800,6 +1800,17 @@ describe('RecommendView 推荐工作台', () => {
     expect(wrapper.findAll('[data-testid="evidence-item"]')[0].attributes('aria-expanded')).toBe(
       'true',
     )
+  })
+
+  it('UI7 追问面板规格：78vh/输入区 88px/字号 14.5px/竖条 44px（源文件断言）', () => {
+    const dock = readFileSync('src/components/ChatDock.vue', 'utf8')
+    expect(dock).toContain('max-height: 78vh')
+    expect(dock).toContain('width: 44px')
+    expect(dock).toContain('width: 52px')
+
+    const panel = readFileSync('src/components/ChatPanel.vue', 'utf8')
+    expect(panel).toContain('min-height: 88px')
+    expect(panel).toContain('14.5px')
   })
 
   it('灵动层：追问发送按钮 pressable class（微动效）', async () => {
