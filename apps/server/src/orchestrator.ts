@@ -26,6 +26,7 @@ import { predictFormulas } from './adapters/c';
 import type { AdapterMode } from './adapters/a';
 import { generateStructured, readPrompt } from './llm/client';
 import { rerankHits } from './rag/rerank';
+import type { RerankItem } from './rag/rerank';
 import type { LlmCall, LlmStatus } from './llm/client';
 import { buildReportSections, generateReportSection, SECTION_SPECS } from './report/fallback';
 import type { ReportBase } from './report/fallback';
@@ -601,6 +602,95 @@ function isLegacyLitfull(h: SearchHit): boolean {
   return h.docType === 'literature' && h.chunkId.startsWith(LITFULL_PREFIX);
 }
 
+/** B5 MMR：轻量文本相似度（中文 2-gram Jaccard；同 docId 视为高冗余 sim=1，避免额外嵌入调用） */
+function chineseBigrams(text: string): Set<string> {
+  const chars = Array.from(text.replace(/\s+/g, ''));
+  const set = new Set<string>();
+  for (let i = 0; i + 1 < chars.length; i++) set.add(chars[i] + chars[i + 1]);
+  return set;
+}
+
+export function evidenceSimilarity(a: SearchHit, b: SearchHit): number {
+  if (a.provenance.sourceDocId === b.provenance.sourceDocId) return 1;
+  const A = chineseBigrams(a.text);
+  const B = chineseBigrams(b.text);
+  if (A.size === 0 || B.size === 0) return 0;
+  let inter = 0;
+  for (const g of A) if (B.has(g)) inter += 1;
+  return inter / (A.size + B.size - inter);
+}
+
+export interface MmrPoolItem {
+  hit: SearchHit;
+  rel: number;
+}
+
+/**
+ * B5 MMR 迭代选择：MMR(d) = λ·rel(d) − (1−λ)·max_sim(d, 已选)，λ=0.7。
+ * 硬约束在内部执行：旧 litfull 排除、chunk 全局 ≤3、同 docId 每候选 ≤1、知识 ≤2。
+ */
+export function selectMmrHits(
+  items: MmrPoolItem[],
+  globalChunkCount: Map<string, number>,
+  opts: { lambda?: number; slots?: number } = {},
+): SearchHit[] {
+  const lambda = opts.lambda ?? 0.7;
+  const slots = opts.slots ?? EVIDENCE_SLOTS;
+  const remaining = items.filter(
+    (it) => !isLegacyLitfull(it.hit) && (globalChunkCount.get(it.hit.chunkId) ?? 0) < GLOBAL_CHUNK_LIMIT,
+  );
+  const chosen: SearchHit[] = [];
+  const seenDocKeys = new Set<string>();
+  let knowledgeCount = 0;
+
+  while (chosen.length < slots && remaining.length > 0) {
+    let bestIdx = -1;
+    let bestScore = -Infinity;
+    for (let i = 0; i < remaining.length; i++) {
+      const it = remaining[i];
+      if (seenDocKeys.has(docKeyOf(it.hit))) continue;
+      if (it.hit.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) continue;
+      const maxSim = chosen.length
+        ? Math.max(...chosen.map((c) => evidenceSimilarity(it.hit, c)))
+        : 0;
+      const score = lambda * it.rel - (1 - lambda) * maxSim;
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    }
+    if (bestIdx < 0) break;
+    const hit = remaining[bestIdx].hit;
+    chosen.push(hit);
+    seenDocKeys.add(docKeyOf(hit));
+    if (hit.docType === 'knowledge') knowledgeCount += 1;
+    remaining.splice(bestIdx, 1);
+  }
+  return chosen;
+}
+
+/** B5：MMR 池 = 重排 top-6（rel 用重排分，无重排按位置衰减）+ 场景第二查询命中 */
+function buildMmrPoolItems(
+  reranked: RerankItem[] | undefined,
+  primaryHits: SearchHit[],
+  sceneHits: SearchHit[],
+): Array<MmrPoolItem & { queryIndex: number }> {
+  const items: Array<MmrPoolItem & { queryIndex: number }> = [];
+  if (reranked) {
+    reranked.slice(0, RERANK_TOP_K).forEach((r) =>
+      items.push({ hit: r.hit, rel: Math.max(r.score, 0), queryIndex: 0 }),
+    );
+  } else {
+    primaryHits.slice(0, RERANK_TOP_K).forEach((h, idx) =>
+      items.push({ hit: h, rel: 1 / (idx + 1), queryIndex: 0 }),
+    );
+  }
+  sceneHits.forEach((h, idx) =>
+    items.push({ hit: h, rel: 1 / (RERANK_TOP_K + idx + 1), queryIndex: 1 }),
+  );
+  return items;
+}
+
 /** P0-B2：table/literature-full 的 docId 各自独立（复合键），其余 docType 共享每候选 docId 唯一性 */
 function docKeyOf(h: SearchHit): string {
   return h.docType === 'table' || h.docType === 'literature-full'
@@ -859,26 +949,38 @@ async function retrieveEvidence(
         if (LIT_FAMILY_TYPES.has(old.hit.docType)) litFamilyCount -= 1;
       };
 
-      // 主查询（queryIndex 0）：重排序（top-8 重排 + 其余原序）→ 未被他人使用的命中优先 + B2 优先序
+      // 主选择（queryIndex 0/1）：MMR=on（默认）→ 池 = 重排 top-6 + 场景命中，按
+      // MMR(d)=λ·rel−(1−λ)·max_sim 迭代选 3；MMR=off → 回退原 B2 配额四遍选择
       const rerankedHits = rerankMap.get(i);
-      const primaryOrdered = rerankedHits
-        ? [...rerankedHits.map((r) => r.hit), ...primaryHitsAll[i].slice(RERANK_TOP_K)]
-        : primaryHitsAll[i];
-      const orderedPrimary = [...primaryOrdered].sort(
-        (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
-      );
-      for (const h of orderedPrimary) if (h.docType === 'literature' && !isLegacyLitfull(h)) take(h, 0);
-      for (const h of orderedPrimary) if (h.docType === 'table') take(h, 0);
-      for (const h of orderedPrimary) if (h.docType === 'literature-full') take(h, 0);
-      for (const h of orderedPrimary) take(h, 0);
-
-      // R6-1：第二查询 = 纯场景查询（病害+气候+荷载，不带候选材料）
-      if (chosen.length < EVIDENCE_SLOTS) {
+      const mmrOn = process.env.MMR !== 'off';
+      if (mmrOn) {
         const sceneHits = await searchOne(sceneQueryText, EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
         pool.push(...sceneHits);
-        for (const h of sceneHits) {
-          if (chosen.length >= EVIDENCE_SLOTS) break;
-          take(h, 1);
+        const poolItems = buildMmrPoolItems(rerankedHits, primaryHitsAll[i], sceneHits);
+        for (const h of selectMmrHits(poolItems, globalChunkCount)) {
+          const queryIndex = poolItems.find((p) => p.hit.chunkId === h.chunkId)?.queryIndex ?? 0;
+          take(h, queryIndex);
+        }
+      } else {
+        const primaryOrdered = rerankedHits
+          ? [...rerankedHits.map((r) => r.hit), ...primaryHitsAll[i].slice(RERANK_TOP_K)]
+          : primaryHitsAll[i];
+        const orderedPrimary = [...primaryOrdered].sort(
+          (a, b) => (othersUsed.has(a.chunkId) ? 1 : 0) - (othersUsed.has(b.chunkId) ? 1 : 0),
+        );
+        for (const h of orderedPrimary) if (h.docType === 'literature' && !isLegacyLitfull(h)) take(h, 0);
+        for (const h of orderedPrimary) if (h.docType === 'table') take(h, 0);
+        for (const h of orderedPrimary) if (h.docType === 'literature-full') take(h, 0);
+        for (const h of orderedPrimary) take(h, 0);
+
+        // R6-1：第二查询 = 纯场景查询（病害+气候+荷载，不带候选材料）
+        if (chosen.length < EVIDENCE_SLOTS) {
+          const sceneHits = await searchOne(sceneQueryText, EVIDENCE_FETCH_K, [...ALL_EVIDENCE_DOC_TYPES]);
+          pool.push(...sceneHits);
+          for (const h of sceneHits) {
+            if (chosen.length >= EVIDENCE_SLOTS) break;
+            take(h, 1);
+          }
         }
       }
 
@@ -928,39 +1030,76 @@ async function retrieveEvidence(
         }
       }
 
-      // R6-2：与先前候选集合完全相同 → 替换 1 条为未用命中
+      // R6-2：与先前候选集合完全相同 → 替换 1 条为未用命中；
+      // 替换后的集合必须不同于任何既有集合（防止固定替换命中与相邻候选振荡相撞）
       const mySet = new Set(chosen.map((c) => c.hit.chunkId));
+      const conflictsAny = (probe: Set<string>) => chosenSets.some((prev) => setsEqual(prev, probe));
       for (const prev of chosenSets) {
-        if (setsEqual(prev, mySet)) {
-          const lastIdx = chosen.length - 1;
-          const replacement = [...pool]
-            .sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId))
-            .find((h) => {
-              if (mySet.has(h.chunkId)) return false;
-              if (isLegacyLitfull(h)) return false;
-              if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
-              if (seenDocKeys.has(docKeyOf(h))) return false;
-              if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
-              if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) return false;
-              if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) return false;
-              if (LIT_FAMILY_TYPES.has(h.docType) && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) return false;
-              return true;
-            });
-          if (replacement) {
-            const oldHit = chosen[lastIdx].hit;
-            takeBack(lastIdx);
-            chosen[lastIdx] = { hit: replacement, queryIndex: 2 };
-            seenDocKeys.add(docKeyOf(replacement));
-            globalChunkCount.set(replacement.chunkId, (globalChunkCount.get(replacement.chunkId) ?? 0) + 1);
-            if (replacement.docType === 'knowledge') knowledgeCount += 1;
-            if (replacement.docType === 'standard') standardCount += 1;
-            if (replacement.docType === 'table') tableCount += 1;
-            if (LIT_FAMILY_TYPES.has(replacement.docType)) litFamilyCount += 1;
-            mySet.delete(oldHit.chunkId);
-            mySet.add(replacement.chunkId);
-          }
+        if (!setsEqual(prev, mySet)) continue;
+        const lastIdx = chosen.length - 1;
+        const oldHit = chosen[lastIdx].hit;
+        const baseCanTake = (h: SearchHit): boolean => {
+          if (mySet.has(h.chunkId)) return false;
+          if (isLegacyLitfull(h)) return false;
+          if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) return false;
+          if (seenDocKeys.has(docKeyOf(h))) return false;
+          if (h.docType === 'knowledge' && knowledgeCount >= MAX_KNOWLEDGE_PER_CANDIDATE) return false;
+          if (h.docType === 'standard' && standardCount >= MAX_STANDARD_PER_CANDIDATE) return false;
+          if (h.docType === 'table' && tableCount >= MAX_TABLE_PER_CANDIDATE) return false;
+          if (LIT_FAMILY_TYPES.has(h.docType) && litFamilyCount >= MAX_LIT_FAMILY_PER_CANDIDATE) return false;
+          return true;
+        };
+        const sortedPool = [...pool].sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId));
+        let applied = false;
+        for (const h of sortedPool) {
+          if (!baseCanTake(h)) continue;
+          const probe = new Set(mySet);
+          probe.delete(oldHit.chunkId);
+          probe.add(h.chunkId);
+          if (conflictsAny(probe)) continue;
+          takeBack(lastIdx);
+          chosen[lastIdx] = { hit: h, queryIndex: 2 };
+          seenDocKeys.add(docKeyOf(h));
+          globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
+          if (h.docType === 'knowledge') knowledgeCount += 1;
+          if (h.docType === 'standard') standardCount += 1;
+          if (h.docType === 'table') tableCount += 1;
+          if (LIT_FAMILY_TYPES.has(h.docType)) litFamilyCount += 1;
+          mySet.delete(oldHit.chunkId);
+          mySet.add(h.chunkId);
+          applied = true;
           break;
         }
+        if (!applied) {
+          // 兜底：腾一个知识槽（放宽配额），仍要求替换后集合不与既有集合重复
+          const kIdx = chosen.map((c) => c.hit.docType).lastIndexOf('knowledge');
+          if (kIdx >= 0) {
+            const kOld = chosen[kIdx].hit;
+            for (const h of sortedPool) {
+              if (mySet.has(h.chunkId)) continue;
+              if (isLegacyLitfull(h)) continue;
+              if ((globalChunkCount.get(h.chunkId) ?? 0) >= GLOBAL_CHUNK_LIMIT) continue;
+              if (seenDocKeys.has(docKeyOf(h))) continue;
+              const probe = new Set(mySet);
+              probe.delete(kOld.chunkId);
+              probe.add(h.chunkId);
+              if (conflictsAny(probe)) continue;
+              takeBack(kIdx);
+              chosen[kIdx] = { hit: h, queryIndex: 2 };
+              seenDocKeys.add(docKeyOf(h));
+              globalChunkCount.set(h.chunkId, (globalChunkCount.get(h.chunkId) ?? 0) + 1);
+              if (h.docType === 'knowledge') knowledgeCount += 1;
+              if (h.docType === 'standard') standardCount += 1;
+              if (h.docType === 'table') tableCount += 1;
+              if (LIT_FAMILY_TYPES.has(h.docType)) litFamilyCount += 1;
+              mySet.delete(kOld.chunkId);
+              mySet.add(h.chunkId);
+              applied = true;
+              break;
+            }
+          }
+        }
+        break;
       }
       chosenSets.push(new Set(chosen.map((c) => c.hit.chunkId)));
 

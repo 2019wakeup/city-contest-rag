@@ -94,10 +94,19 @@ describe('T9 LLM 报告生成 + 对话面板', () => {
   }
 
   it('R4 报告证据跨节去重：第二节不与第一节重复，不足时顺延补充', async () => {
-    // 预置 7 个独立 docId 的知识条目（保证证据池 ≥6）
-    const seed = Array.from({ length: 7 }, (_, i) =>
-      makeChunk(`r4-${i}:0:v1`, `知识条目 ${i} SBS 改性沥青 高温 车辙 疲劳 水稳 碳排 低温 寿命 施工`),
-    );
+    vi.stubEnv('MMR', 'off'); // R4 测章节去重逻辑，与 MMR 无关（off 保持证据池规模可控）
+    // 预置 8 个独立 docId、内容各异的知识条目（保证证据池 ≥6）
+    const topics = [
+      'SBS 改性沥青 高温抗车辙性能研究',
+      '橡胶粉改性沥青 低温抗裂性能研究',
+      '水损害防治与抗剥落剂应用',
+      '疲劳开裂机理与寿命预测',
+      '低碳再生沥青混合料技术',
+      'SMA 级配设计与施工控制',
+      '排水降噪路面结构研究',
+      '环氧沥青桥面铺装性能',
+    ];
+    const seed = topics.map((t, i) => makeChunk(`r4-${i}:0:v1`, `知识条目 ${i}：${t}`));
     await store.add(seed, seed.map(() => [1, 0]));
     const base = await makeBase();
     expect(base.evidence.length).toBeGreaterThanOrEqual(6);
