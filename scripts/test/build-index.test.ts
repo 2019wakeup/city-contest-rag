@@ -486,4 +486,108 @@ describe('buildIndex（fake embedder + SqliteVectorStore 全流程）', () => {
     expect(t2!.tags).toContain('水稳');
     store.close();
   });
+
+  it('enterprise 源：binders/additives/catalog 入库（docType=enterprise，chunkId=id:0，lab-indicators 不入块）', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'corpus-ent-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'idx-ent-'));
+    fs.mkdirSync(path.join(dir, 'enterprise'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, 'enterprise/binders.json'),
+      JSON.stringify([
+        {
+          schemaVersion: '1',
+          id: 'ent-binder-001',
+          category: 'binder',
+          type: '胶结料（沥青）',
+          name: '70# 直馏沥青',
+          specs: { 针入度: '72 (0.1mm)' },
+          sourceRef: '企业数据',
+          text: '70# 直馏沥青：针入度 72。',
+          tags: ['enterprise', 'binder'],
+          relations: [
+            {
+              property: '高温PG',
+              effect: '低标号高粘度，高温等级相对更优',
+              direction: '+',
+              magnitude: '针入度 72、软化点 47.6℃',
+              applicableScene: ['t-heavy'],
+              sourceRef: '企业数据：70# 实测指标',
+            },
+          ],
+        },
+        {
+          schemaVersion: '1',
+          id: 'ent-binder-002',
+          category: 'binder',
+          type: '胶结料（沥青）',
+          name: '90# 再生专用沥青',
+          specs: {},
+          sourceRef: '企业数据',
+          text: '90# 再生专用沥青：针入度 91。',
+          tags: ['enterprise'],
+          relations: [],
+        },
+      ]),
+    );
+    fs.writeFileSync(
+      path.join(dir, 'enterprise/additives.json'),
+      JSON.stringify([
+        {
+          schemaVersion: '1',
+          id: 'ent-additive-001',
+          category: 'additive',
+          type: '再生添加剂',
+          name: '90（基准）',
+          specs: {},
+          sourceRef: '企业数据',
+          text: '再生添加剂 90（基准）。',
+          tags: ['enterprise'],
+          relations: [],
+        },
+      ]),
+    );
+    fs.writeFileSync(
+      path.join(dir, 'enterprise/catalog.json'),
+      JSON.stringify([
+        {
+          schemaVersion: '1',
+          id: 'ent-catalog-001',
+          category: 'catalog',
+          type: '料源',
+          name: '拌合站/料源 A',
+          specs: { 代号: 'A' },
+          sourceRef: '企业数据',
+          text: '企业数据料源代号 A。',
+          tags: ['enterprise', 'catalog'],
+          relations: [],
+        },
+      ]),
+    );
+    fs.writeFileSync(
+      path.join(dir, 'enterprise/lab-indicators.json'),
+      JSON.stringify({ schemaVersion: '1', indicators: [{ key: 'vv', label: '空隙率', group: '体积', unit: '%', threshold: '3~6', sampleSize: 116, testMethod: 'T 0705' }] }),
+    );
+
+    const store = new SqliteVectorStore(path.join(tmp, 'test.db'));
+    const r = await buildIndex({
+      corpusDir: dir,
+      store: store as unknown as VectorStore,
+      embedder: makeFakeEmbedder(),
+      manifestPath: path.join(tmp, 'manifest.json'),
+      pipelineRev: 'testrev1',
+    });
+    // binders 2 + additives 1 + catalog 1 = 4；lab-indicators 不入块
+    expect(r.total).toBe(4);
+    const hits = await store.search({ text: '70#', topK: 10 });
+    const b1 = hits.find((h) => h.chunkId === 'ent-binder-001:0');
+    expect(b1).toBeDefined();
+    expect(b1!.docType).toBe('enterprise');
+    expect(b1!.provenance.sourceDocId).toBe('ent-binder-001');
+    expect(b1!.text).toContain('高温PG'); // text 含关系摘要（entry.text 自带）
+    expect(b1!.tags).toContain('enterprise');
+    const hitAll = await store.search({ text: '企业数据', topK: 20 });
+    expect(hitAll.filter((h) => h.docType === 'enterprise').length).toBe(4);
+    expect(hitAll.some((h) => h.chunkId.includes('lab-indicators'))).toBe(false);
+    store.close();
+  });
 });

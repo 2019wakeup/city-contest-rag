@@ -201,6 +201,38 @@ function collectPlanned(corpusDir: string): PlannedChunk[] {
     });
   }
 
+  // 6. 企业数据（RAG P1·E1：binders/additives/catalog 三份条目 JSON；lab-indicators 为
+  //    backend 的 LAB_INDICATOR_META 真相源，不入块）
+  const entDir = path.join(corpusDir, 'enterprise');
+  if (fs.existsSync(entDir)) {
+    interface EnterpriseEntry {
+      id?: string;
+      name?: string;
+      sourceRef?: string;
+      tags?: string[];
+      specs?: Record<string, unknown>;
+      relations?: Array<{ property?: string; effect?: string; magnitude?: string }>;
+    }
+    for (const f of ['binders.json', 'additives.json', 'catalog.json']) {
+      const p = path.join(entDir, f);
+      if (!fs.existsSync(p)) continue;
+      const entries = JSON.parse(fs.readFileSync(p, 'utf-8')) as EnterpriseEntry[];
+      entries.forEach((e, i) => {
+        if (!e.id || !e.name) throw new Error(`enterprise/${f} 第 ${i} 条缺 id/name`);
+        const specsStr = Object.entries(e.specs ?? {})
+          .map(([k, v]) => `${k} ${Array.isArray(v) ? v.join('/') : String(v)}`)
+          .join('，');
+        const relStr = (e.relations ?? [])
+          .map((r) => `${r.property ?? ''}${r.effect ?? ''}；${r.magnitude ?? ''}`)
+          .join('。');
+        // E3 口径：text = 名称 + 规格 + 关系摘要（+ 依据）
+        const head = specsStr ? `${e.name}（${specsStr}）` : e.name;
+        const text = `${head}${relStr ? `｜${relStr}` : ''}。依据：${e.sourceRef ?? '企业数据'}`;
+        planned.push(makeChunk(`${e.id}:0`, e.id, text, 'enterprise', e.tags ?? []));
+      });
+    }
+  }
+
   return planned;
 }
 
