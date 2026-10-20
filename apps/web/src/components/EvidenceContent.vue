@@ -2,15 +2,18 @@
 import { computed } from 'vue'
 
 import { parseRichText, TABLE_ROW_LIMIT } from '@/utils/richText'
+import type { Block, TableCell } from '@/utils/richText'
 
 const props = defineProps<{ text: string }>()
 
 const blocks = computed(() => parseRichText(props.text ?? ''))
 
-const visibleRows = (rows: Array<Array<{ text: string }>>) => rows.slice(0, TABLE_ROW_LIMIT)
-
-const colCountOf = (block: { header: unknown[][] }): number =>
-  Math.max(1, ...(block.header[0] ?? block.header).map((r) => r.length), 1)
+const headerRowsOf = (block: Block): TableCell[][] => block.table?.header ?? []
+const bodyRowsOf = (block: Block): TableCell[][] => block.table?.rows ?? []
+const visibleRows = (rows: TableCell[][]): TableCell[][] => rows.slice(0, TABLE_ROW_LIMIT)
+const totalRowsOf = (block: Block): number => block.table?.totalRows ?? 0
+const colCountOf = (block: Block): number =>
+  Math.max(1, ...headerRowsOf(block).map((r) => r.length))
 </script>
 
 <template>
@@ -27,8 +30,8 @@ const colCountOf = (block: { header: unknown[][] }): number =>
       </ul>
       <div v-else-if="block.type === 'table' && block.table" class="evidence-table-wrap">
         <table class="evidence-table" data-testid="evidence-table">
-          <thead v-if="(block.table.header ?? []).length > 0">
-            <tr v-for="(row, ri) in block.table.header" :key="ri">
+          <thead v-if="headerRowsOf(block).length > 0">
+            <tr v-for="(row, ri) in headerRowsOf(block)" :key="ri">
               <th
                 v-for="(cell, ci) in row"
                 :key="ci"
@@ -40,7 +43,7 @@ const colCountOf = (block: { header: unknown[][] }): number =>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, ri) in visibleRows(block.table.rows)" :key="ri">
+            <tr v-for="(row, ri) in visibleRows(bodyRowsOf(block))" :key="ri">
               <td
                 v-for="(cell, ci) in row"
                 :key="ci"
@@ -50,9 +53,9 @@ const colCountOf = (block: { header: unknown[][] }): number =>
                 {{ cell.text }}
               </td>
             </tr>
-            <tr v-if="(block.table.totalRows ?? 0) > TABLE_ROW_LIMIT">
-              <td :colspan="colCountOf({ header: block.table.header ?? [] })" class="evidence-table-more">
-                …（共 {{ block.table.totalRows }} 行）
+            <tr v-if="totalRowsOf(block) > TABLE_ROW_LIMIT">
+              <td :colspan="colCountOf(block)" class="evidence-table-more">
+                …（共 {{ totalRowsOf(block) }} 行）
               </td>
             </tr>
           </tbody>
