@@ -60,7 +60,7 @@ async function recommend(scene: unknown): Promise<{ status: number; report: Repo
 function canonicalize(report: Report): string {
   // 确定性校验：只比较数值管线（候选/目标/基准/告警/模式）。
   // 剔除 LLM 影响面：sections 文案、steps 耗时、evidence（LLM 重排会改变排序与分数）、
-  // evidence* 调试透传字段（rerankMs/queries/slotSources）。
+  // evidence* 调试透传字段（rerankMs/queries/slotSources）、llmStatus（LLM 可用性随负载波动）。
   const {
     steps: _steps,
     sections: _sections,
@@ -68,14 +68,26 @@ function canonicalize(report: Report): string {
     evidenceRerankMs: _rerankMs,
     evidenceQueries: _queries,
     evidenceSlotSources: _slotSources,
+    llmStatus: _llmStatus,
     ...rest
   } = report as Report & {
     sections?: unknown;
     evidenceRerankMs?: unknown;
     evidenceQueries?: unknown;
     evidenceSlotSources?: unknown;
+    llmStatus?: unknown;
   };
-  return JSON.stringify(rest);
+  // candidates[].evidenceIds 也受 LLM 重排影响（证据选择/排序），数值红线不含它
+  const normalized = {
+    ...rest,
+    candidates: (rest as { candidates?: Array<Record<string, unknown>> }).candidates?.map(
+      (c) => {
+        const { evidenceIds: _eids, ...core } = c;
+        return core;
+      },
+    ),
+  };
+  return JSON.stringify(normalized);
 }
 
 function signature(candidates: Candidate[]): string {
