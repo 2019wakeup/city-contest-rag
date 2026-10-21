@@ -112,7 +112,14 @@ function onEnterKey(event: KeyboardEvent): void {
         <div v-if="msg.role === 'user'" class="chat-bubble">{{ msg.content }}</div>
         <div v-else class="chat-bubble chat-md">
           <template v-for="(block, bi) in parseChatMarkdown(msg.content)" :key="bi">
-            <p v-if="block.type === 'paragraph'" class="chat-md-p">
+            <h4 v-if="block.type === 'heading'" class="chat-md-h4">
+              <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
+                <strong v-if="tok.bold">{{ tok.text }}</strong>
+                <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                <template v-else>{{ tok.text }}</template>
+              </template>
+            </h4>
+            <p v-else-if="block.type === 'paragraph'" class="chat-md-p">
               <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
                 <strong v-if="tok.bold">{{ tok.text }}</strong>
                 <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
@@ -143,7 +150,14 @@ function onEnterKey(event: KeyboardEvent): void {
       <div v-if="streaming" class="chat-row chat-assistant">
         <div class="chat-bubble chat-md">
           <template v-for="(block, bi) in parseChatMarkdown(streaming)" :key="bi">
-            <p v-if="block.type === 'paragraph'" class="chat-md-p">
+            <h4 v-if="block.type === 'heading'" class="chat-md-h4">
+              <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
+                <strong v-if="tok.bold">{{ tok.text }}</strong>
+                <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                <template v-else>{{ tok.text }}</template>
+              </template>
+            </h4>
+            <p v-else-if="block.type === 'paragraph'" class="chat-md-p">
               <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
                 <strong v-if="tok.bold">{{ tok.text }}</strong>
                 <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
@@ -299,6 +313,13 @@ function onEnterKey(event: KeyboardEvent): void {
 }
 
 /* 助手消息轻量 Markdown：列表缩进 16px、加粗 600、行高 1.6 */
+.chat-md-h4 {
+  margin: 8px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 .chat-md-p {
   margin: 0 0 4px;
   line-height: 1.6;

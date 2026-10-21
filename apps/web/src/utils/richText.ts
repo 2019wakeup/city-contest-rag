@@ -242,7 +242,7 @@ export interface InlineToken {
 }
 
 export interface ChatBlock {
-  type: 'paragraph' | 'list' | 'olist'
+  type: 'paragraph' | 'list' | 'olist' | 'heading'
   runs?: InlineToken[]
   items?: InlineToken[][]
 }
@@ -285,6 +285,13 @@ export function parseChatMarkdown(text: string): ChatBlock[] {
 
   for (const raw of lines) {
     const line = raw.trimEnd()
+    const heading = line.match(/^#{1,6}\s+(.*)$/)
+    if (heading) {
+      flushList()
+      flushParagraph()
+      blocks.push({ type: 'heading', runs: tokenizeInline(heading[1].trim()) })
+      continue
+    }
     const unordered = line.match(/^\s*[-*]\s+(.*)$/)
     const ordered = line.match(/^\s*\d+[.、]\s+(.*)$/)
     if (unordered) {

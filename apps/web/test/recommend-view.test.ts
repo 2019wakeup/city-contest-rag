@@ -440,6 +440,23 @@ describe('RecommendView 推荐工作台', () => {
     expect(bubble.text()).not.toContain('**')
   })
 
+  it('UI7 修复：助手消息 ## 标题行渲染 h4 且无字面 ##', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.chat.push({
+      role: 'assistant',
+      content: '## 方案3（cand-3）低温优势与适用场景\n正文段落。',
+    })
+    const wrapper = mount(ChatPanel, { props: { report: null } })
+    await flushPromises()
+
+    const h4 = wrapper.find('.chat-md-h4')
+    expect(h4.exists()).toBe(true)
+    expect(h4.text()).toBe('方案3（cand-3）低温优势与适用场景')
+    expect(wrapper.find('.chat-md').text()).not.toContain('##')
+  })
+
   it('ChatPanel 发送问题后展示流式回复', async () => {
     postChatMock.mockImplementation(async (_req, onDelta) => {
       onDelta?.('推荐')
