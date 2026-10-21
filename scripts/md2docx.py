@@ -83,6 +83,42 @@ def heading(doc, text: str, level: int):
     return p
 
 
+def split_table_row(line: str) -> list:
+    return [c.strip() for c in line.strip().strip('|').split('|')]
+
+
+def is_separator_row(line: str) -> bool:
+    cells = split_table_row(line)
+    return bool(cells) and all(re.fullmatch(r':?-{3,}:?', c) for c in cells)
+
+
+def add_table(doc, rows: list) -> None:
+    """rows[0] 为表头；其余为数据行。"""
+    cols = max(len(r) for r in rows)
+    table = doc.add_table(rows=len(rows), cols=cols)
+    table.style = 'Table Grid'
+    table.autofit = True
+    for ri, row in enumerate(rows):
+        for ci in range(cols):
+            cell = table.cell(ri, ci)
+            cell.text = ''
+            para = cell.paragraphs[0]
+            cell_text = row[ci] if ci < len(row) else ''
+            parts = re.split(r'\*\*(.+?)\*\*', cell_text)
+            for pi, part in enumerate(parts):
+                if not part:
+                    continue
+                run = para.add_run(part)
+                set_eastasia(run, BODY_FONT)
+                run.font.size = Pt(10.5)
+                run.bold = (ri == 0) or (pi % 2 == 1)
+            para.paragraph_format.space_after = Pt(0)
+            para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    # 表格后留白
+    after = doc.add_paragraph()
+    after.paragraph_format.space_after = Pt(6)
+
+
 def convert(md_path: str, docx_path: str, title: Optional[str] = None) -> None:
     doc = Document()
     # 页面设置：A4 + 2.54cm 页边距
@@ -96,9 +132,28 @@ def convert(md_path: str, docx_path: str, title: Optional[str] = None) -> None:
         lines = f.read().splitlines()
 
     first_heading_seen = False
-    for raw in lines:
-        line = raw.rstrip()
+    i = 0
+    while i < len(lines):
+        line = lines[i].rstrip()
         if not line.strip():
+            i += 1
+            continue
+        # markdown 表格：连续 | 行
+        if re.fullmatch(r'[-*_]{3,}', line.strip()):
+            i += 1
+            continue
+        if line.lstrip().startswith('|'):
+            block = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                block.append(lines[i].strip())
+                i += 1
+            if len(block) >= 2 and is_separator_row(block[1]):
+                header = split_table_row(block[0])
+                body = [split_table_row(r) for r in block[2:] if not is_separator_row(r)]
+                add_table(doc, [header] + body)
+            else:
+                for row in block:
+                    body_paragraph(doc, row)
             continue
         if line.startswith('#'):
             text = re.sub(r'^#+\s*', '', line)
@@ -108,11 +163,13 @@ def convert(md_path: str, docx_path: str, title: Optional[str] = None) -> None:
                 heading(doc, title or text, 1)
             else:
                 heading(doc, text, 2 if level >= 2 else 1)
+            i += 1
             continue
         if line.startswith('- '):
             body_paragraph(doc, line, indent=False, bullet=True)
         else:
             body_paragraph(doc, line)
+        i += 1
 
     doc.save(docx_path)
     print(f'saved: {docx_path}')
