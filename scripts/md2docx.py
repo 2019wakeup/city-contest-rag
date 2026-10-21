@@ -38,12 +38,21 @@ def set_eastasia(run, font: str) -> None:
 
 
 def add_inline(paragraph, text: str) -> None:
-    """处理 **加粗** 行内标记。"""
-    for i, part in enumerate(re.split(r'\*\*(.+?)\*\*', text)):
+    """处理 **加粗** 与 `代码` 行内标记。"""
+    pattern = re.compile(r'(\*\*.+?\*\*|`[^`]+`)')
+    for part in pattern.split(text):
         if not part:
             continue
-        run = paragraph.add_run(part)
-        run.bold = i % 2 == 1
+        if part.startswith('`') and part.endswith('`') and len(part) > 2:
+            run = paragraph.add_run(part[1:-1])
+            run.font.name = 'Consolas'
+            run.bold = False
+            set_eastasia(run, BODY_FONT)
+            run.font.size = Pt(11)
+            continue
+        bold = part.startswith('**') and part.endswith('**') and len(part) > 4
+        run = paragraph.add_run(part[2:-2] if bold else part)
+        run.bold = bold
         set_eastasia(run, BODY_FONT)
         run.font.size = BODY_SIZE
 
@@ -104,6 +113,7 @@ def add_table(doc, rows: list) -> None:
             cell.text = ''
             para = cell.paragraphs[0]
             cell_text = row[ci] if ci < len(row) else ''
+            cell_text = cell_text.replace('`', '')
             parts = re.split(r'\*\*(.+?)\*\*', cell_text)
             for pi, part in enumerate(parts):
                 if not part:
