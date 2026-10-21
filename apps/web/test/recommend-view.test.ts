@@ -1805,6 +1805,43 @@ describe('RecommendView 推荐工作台', () => {
     )
   })
 
+  it('UI7 修复：追问侧板高度约束链与消息区滚动（源文件断言+长对话回归）', async () => {
+    const dock = readFileSync('src/components/ChatDock.vue', 'utf8')
+    expect(dock).toContain('overflow: hidden')
+    expect(dock).toContain('.chat-dock > .chat-panel')
+    expect(dock).toContain('flex: 1 1 auto')
+    expect(dock).toContain('min-height: 0')
+    expect(dock).toContain('flex-shrink: 0')
+
+    const panel = readFileSync('src/components/ChatPanel.vue', 'utf8')
+    expect(panel).not.toContain('height: 100%')
+    expect(panel).toContain('flex: 1 1 auto')
+    expect(panel).toContain('min-height: 0')
+    expect(panel).toContain('overflow: hidden')
+    expect(panel).toContain('overflow-y: auto')
+    expect(panel).toContain('overscroll-behavior: contain')
+
+    // 长对话回归：30 条消息后 DOM 结构链存在（dock 组装时 panel→messages→input）
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    for (let i = 0; i < 30; i++) {
+      store.chat.push({ role: i % 2 ? 'assistant' : 'user', content: `第 ${i + 1} 条消息` })
+    }
+    const wrapper = mount(ChatPanel, { props: { report: null } })
+    await flushPromises()
+
+    expect(wrapper.find('.chat-panel').exists()).toBe(true)
+    const messages = wrapper.find('[data-testid="chat-messages"]')
+    expect(messages.exists()).toBe(true)
+    expect(wrapper.findAll('.chat-bubble').length).toBe(30)
+    // 滚动容器属性（happy-dom 布局有限 → 以可滚动语义断言）
+    Object.defineProperty(messages.element, 'scrollHeight', { value: 2000, configurable: true })
+    Object.defineProperty(messages.element, 'clientHeight', { value: 300, configurable: true })
+    expect(messages.element.scrollHeight).toBeGreaterThan(messages.element.clientHeight)
+    expect(wrapper.find('.chat-input-row').exists()).toBe(true)
+  })
+
   it('UI7 追问面板规格：78vh/输入区 88px/字号 14.5px/竖条 44px（源文件断言）', () => {
     const dock = readFileSync('src/components/ChatDock.vue', 'utf8')
     expect(dock).toContain('max-height: 78vh')

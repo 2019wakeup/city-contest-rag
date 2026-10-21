@@ -198,6 +198,7 @@ onBeforeUnmount(() => {
   max-height: 78vh;
   margin: auto 0;
   border-radius: 16px 0 0 16px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -243,9 +244,16 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
   padding-bottom: 12px;
   margin-bottom: 12px;
   border-bottom: 1px solid var(--app-border);
+}
+
+/* 修复：高度约束链——面板可收缩，消息区在内部滚动 */
+.chat-dock > .chat-panel {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .chat-dock-title {

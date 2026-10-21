@@ -146,12 +146,16 @@ function onEnterKey(event: KeyboardEvent): void {
 .chat-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .chat-messages {
-  flex: 1;
-  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin-bottom: 12px;
   padding-right: 4px;
 }
@@ -229,6 +233,7 @@ function onEnterKey(event: KeyboardEvent): void {
 }
 
 .chat-hint {
+  flex-shrink: 0;
   margin-bottom: 8px;
   font-size: 13px;
   color: var(--el-text-color-secondary);
@@ -238,6 +243,7 @@ function onEnterKey(event: KeyboardEvent): void {
   display: flex;
   gap: 8px;
   align-items: flex-end;
+  flex-shrink: 0;
   min-height: 88px;
 }
 </style>
