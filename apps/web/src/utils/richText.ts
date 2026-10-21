@@ -232,3 +232,88 @@ export function parseRichText(text: string): Block[] {
 }
 
 export { TABLE_ROW_LIMIT }
+
+// ---- 聊天轻量 Markdown（**加粗**、`code`、- 列表、1. 有序列表，段落换行保留） ----
+
+export interface InlineToken {
+  text: string
+  bold?: boolean
+  code?: boolean
+}
+
+export interface ChatBlock {
+  type: 'paragraph' | 'list' | 'olist'
+  runs?: InlineToken[]
+  items?: InlineToken[][]
+}
+
+function tokenizeInline(line: string): InlineToken[] {
+  const tokens: InlineToken[] = []
+  const re = /(\*\*[^*]+\*\*|`[^`]+`)/g
+  let last = 0
+  for (const m of line.matchAll(re)) {
+    const index = m.index ?? 0
+    if (index > last) tokens.push({ text: line.slice(last, index) })
+    if (m[0].startsWith('**')) tokens.push({ text: m[0].slice(2, -2), bold: true })
+    else tokens.push({ text: m[0].slice(1, -1), code: true })
+    last = index + m[0].length
+  }
+  if (last < line.length) tokens.push({ text: line.slice(last) })
+  return tokens
+}
+
+export function parseChatMarkdown(text: string): ChatBlock[] {
+  const lines = (text ?? '').split('\n')
+  const blocks: ChatBlock[] = []
+  let listType: 'list' | 'olist' | null = null
+  let items: InlineToken[][] = []
+  let paragraphRuns: InlineToken[] = []
+
+  const flushList = (): void => {
+    if (items.length > 0 && listType) {
+      blocks.push({ type: listType, items })
+      items = []
+      listType = null
+    }
+  }
+  const flushParagraph = (): void => {
+    if (paragraphRuns.length > 0) {
+      blocks.push({ type: 'paragraph', runs: paragraphRuns })
+      paragraphRuns = []
+    }
+  }
+
+  for (const raw of lines) {
+    const line = raw.trimEnd()
+    const unordered = line.match(/^\s*[-*]\s+(.*)$/)
+    const ordered = line.match(/^\s*\d+[.、]\s+(.*)$/)
+    if (unordered) {
+      flushParagraph()
+      if (listType !== 'list') {
+        flushList()
+        listType = 'list'
+      }
+      items.push(tokenizeInline(unordered[1]))
+      continue
+    }
+    if (ordered) {
+      flushParagraph()
+      if (listType !== 'olist') {
+        flushList()
+        listType = 'olist'
+      }
+      items.push(tokenizeInline(ordered[1]))
+      continue
+    }
+    flushList()
+    paragraphRuns.push(...tokenizeInline(line))
+    paragraphRuns.push({ text: '\n' })
+  }
+  // 去除段尾多余换行 token
+  while (paragraphRuns.length > 0 && paragraphRuns[paragraphRuns.length - 1].text === '\n') {
+    paragraphRuns.pop()
+  }
+  flushList()
+  flushParagraph()
+  return blocks
+}

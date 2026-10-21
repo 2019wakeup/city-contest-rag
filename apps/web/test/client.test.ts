@@ -227,6 +227,29 @@ describe('api client - 对话（SSE）', () => {
     expect(onDelta.mock.calls.map((c) => c[0])).toEqual(['你', '好'])
   })
 
+  it('修复：event: done 的 {"done":true} 载荷不泄漏进正文', async () => {
+    fetchMock.mockResolvedValueOnce(
+      sseResponse([
+        'event: delta\ndata: {"delta":"推荐"}\n\n',
+        'event: delta\ndata: {"delta":"方案一"}\n\n',
+        'event: done\ndata: {"done":true}\n\n',
+      ]),
+    )
+    const onDelta = vi.fn()
+
+    await expect(postChat({ schemaVersion: '1', question: 'x' }, onDelta)).resolves.toBe(
+      '推荐方案一',
+    )
+    expect(onDelta.mock.calls.map((c) => c[0])).toEqual(['推荐', '方案一'])
+  })
+
+  it('修复：JSON 含 done:true 的 data 行同样被忽略', async () => {
+    fetchMock.mockResolvedValueOnce(
+      sseResponse(['data: {"delta":"方案"}\n\n', 'data: {"done":true}\n\n']),
+    )
+    await expect(postChat({ schemaVersion: '1', question: 'x' })).resolves.toBe('方案')
+  })
+
   it('容忍非 JSON 与 [DONE] 事件行', async () => {
     fetchMock.mockResolvedValueOnce(
       sseResponse(['data: {"delta":"方案"}\n\n', 'data: 值得\n\n', 'data: [DONE]\n\n']),

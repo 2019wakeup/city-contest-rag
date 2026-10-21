@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { postChat } from '@/api/client'
+import { parseChatMarkdown } from '@/utils/richText'
 import { useRecommendStore } from '@/stores/recommend'
 import type { RecommendationReport } from '@road-rec/contracts'
 
@@ -107,10 +108,68 @@ function onEnterKey(event: KeyboardEvent): void {
         class="chat-row"
         :class="msg.role === 'user' ? 'chat-user' : 'chat-assistant'"
       >
-        <div class="chat-bubble">{{ msg.content }}</div>
+        <!-- 用户消息纯文本；助手消息轻量 Markdown -->
+        <div v-if="msg.role === 'user'" class="chat-bubble">{{ msg.content }}</div>
+        <div v-else class="chat-bubble chat-md">
+          <template v-for="(block, bi) in parseChatMarkdown(msg.content)" :key="bi">
+            <p v-if="block.type === 'paragraph'" class="chat-md-p">
+              <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
+                <strong v-if="tok.bold">{{ tok.text }}</strong>
+                <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                <template v-else>{{ tok.text }}</template>
+              </template>
+            </p>
+            <ul v-else-if="block.type === 'list'" class="chat-md-list">
+              <li v-for="(item, li) in block.items ?? []" :key="li">
+                <template v-for="(tok, ti) in item" :key="ti">
+                  <strong v-if="tok.bold">{{ tok.text }}</strong>
+                  <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                  <template v-else>{{ tok.text }}</template>
+                </template>
+              </li>
+            </ul>
+            <ol v-else class="chat-md-list">
+              <li v-for="(item, li) in block.items ?? []" :key="li">
+                <template v-for="(tok, ti) in item" :key="ti">
+                  <strong v-if="tok.bold">{{ tok.text }}</strong>
+                  <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                  <template v-else>{{ tok.text }}</template>
+                </template>
+              </li>
+            </ol>
+          </template>
+        </div>
       </div>
       <div v-if="streaming" class="chat-row chat-assistant">
-        <div class="chat-bubble">{{ streaming }}</div>
+        <div class="chat-bubble chat-md">
+          <template v-for="(block, bi) in parseChatMarkdown(streaming)" :key="bi">
+            <p v-if="block.type === 'paragraph'" class="chat-md-p">
+              <template v-for="(tok, ti) in block.runs ?? []" :key="ti">
+                <strong v-if="tok.bold">{{ tok.text }}</strong>
+                <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                <template v-else>{{ tok.text }}</template>
+              </template>
+            </p>
+            <ul v-else-if="block.type === 'list'" class="chat-md-list">
+              <li v-for="(item, li) in block.items ?? []" :key="li">
+                <template v-for="(tok, ti) in item" :key="ti">
+                  <strong v-if="tok.bold">{{ tok.text }}</strong>
+                  <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                  <template v-else>{{ tok.text }}</template>
+                </template>
+              </li>
+            </ul>
+            <ol v-else class="chat-md-list">
+              <li v-for="(item, li) in block.items ?? []" :key="li">
+                <template v-for="(tok, ti) in item" :key="ti">
+                  <strong v-if="tok.bold">{{ tok.text }}</strong>
+                  <code v-else-if="tok.code" class="chat-md-code">{{ tok.text }}</code>
+                  <template v-else>{{ tok.text }}</template>
+                </template>
+              </li>
+            </ol>
+          </template>
+        </div>
       </div>
       <div v-if="typing" class="chat-row chat-assistant">
         <div class="chat-bubble chat-typing" data-testid="typing-dots" aria-label="正在回复">
@@ -237,6 +296,38 @@ function onEnterKey(event: KeyboardEvent): void {
   margin-bottom: 8px;
   font-size: 13px;
   color: var(--el-text-color-secondary);
+}
+
+/* 助手消息轻量 Markdown：列表缩进 16px、加粗 600、行高 1.6 */
+.chat-md-p {
+  margin: 0 0 4px;
+  line-height: 1.6;
+}
+
+.chat-md-p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-md-list {
+  margin: 0 0 4px;
+  padding-left: 16px;
+  line-height: 1.6;
+}
+
+.chat-md-list li {
+  margin: 2px 0;
+}
+
+.chat-md strong {
+  font-weight: 600;
+}
+
+.chat-md-code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(110, 123, 242, 0.14);
+  font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
 }
 
 .chat-input-row {

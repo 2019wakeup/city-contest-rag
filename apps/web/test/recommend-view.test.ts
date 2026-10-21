@@ -421,6 +421,25 @@ describe('RecommendView 推荐工作台', () => {
     holder.remove()
   })
 
+  it('UI7 修复：助手消息 Markdown 渲染（加粗/列表无字面星号）', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRecommendStore()
+    store.chat.push({
+      role: 'assistant',
+      content: '**1. 综合评分更高**\n- **疲劳性能**：提升明显\n- 低温韧性改善\n1. 第一点\n2. 第二点',
+    })
+    const wrapper = mount(ChatPanel, { props: { report: null } })
+    await flushPromises()
+
+    const bubble = wrapper.find('.chat-md')
+    expect(bubble.exists()).toBe(true)
+    expect(bubble.find('strong').text()).toContain('1. 综合评分更高')
+    expect(bubble.findAll('ul li').length).toBe(2)
+    expect(bubble.findAll('ol li').length).toBe(2)
+    expect(bubble.text()).not.toContain('**')
+  })
+
   it('ChatPanel 发送问题后展示流式回复', async () => {
     postChatMock.mockImplementation(async (_req, onDelta) => {
       onDelta?.('推荐')

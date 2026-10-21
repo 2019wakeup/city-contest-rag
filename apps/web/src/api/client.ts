@@ -192,14 +192,31 @@ export async function postChat(
     return data.reply ?? ''
   }
   let result = ''
-  await parseSseStream(res.body, (_event, data) => {
+  await parseSseStream(res.body, (event, data) => {
+    // 修复：event: done 的载荷（{"done":true} 等）不进入正文
+    if (event === 'done') return
+    if (event === 'error') {
+      let message = '对话失败'
+      try {
+        const parsed = JSON.parse(data) as { message?: string }
+        if (typeof parsed.message === 'string' && parsed.message) message = parsed.message
+      } catch {
+        // 保留默认 message
+      }
+      throw new Error(message)
+    }
     if (data === '[DONE]') return
     let text = data
     try {
       const parsed = JSON.parse(data) as Record<string, unknown>
+      if (parsed.done === true) return
       if (typeof parsed.delta === 'string') text = parsed.delta
       else if (typeof parsed.reply === 'string') text = parsed.reply
       else if (typeof parsed.content === 'string') text = parsed.content
+      else {
+        // 未知 JSON 载荷（无文本字段）忽略，避免原始载荷泄漏进正文
+        return
+      }
     } catch {
       // 非 JSON 的 data 行按纯文本处理
     }
