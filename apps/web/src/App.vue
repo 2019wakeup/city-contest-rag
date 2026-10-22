@@ -50,10 +50,10 @@ onMounted(() => {
           class="app-logo-mark"
           aria-label="回到首页"
           @click="goHome"
-        >材</button>
+        >方</button>
         <div v-if="!collapsed" class="app-brand-text">
-          <div class="app-logo">数智选材</div>
-          <div class="app-subtitle">沥青材料智能推荐</div>
+          <div class="app-logo">路有良方</div>
+          <div class="app-subtitle">道路养护智能决策与材料推荐</div>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ onMounted(() => {
           </svg>
         </button>
 
-        <div v-if="!collapsed" class="app-version">数智选材 v0.2</div>
+        <div v-if="!collapsed" class="app-version">路有良方 v0.2</div>
       </div>
     </el-aside>
     <el-main class="app-main">

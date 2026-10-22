@@ -77,9 +77,9 @@ onMounted(async () => {
     <!-- 01 Hero -->
     <section class="narrative-sec" data-testid="narrative-section">
       <div class="welcome-hero">
-        <div class="welcome-mark" aria-hidden="true">材</div>
-        <h1 class="welcome-title">数智选材</h1>
-        <p class="welcome-tagline">AI 驱动的道路养护决策与沥青材料方案智能推荐</p>
+        <div class="welcome-mark" aria-hidden="true">方</div>
+        <h1 class="welcome-title">路有良方</h1>
+        <p class="welcome-tagline">面向道路养护的智能决策与沥青材料推荐平台</p>
         <div class="welcome-ctas">
           <el-button
             type="primary"
@@ -231,6 +231,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 720px;
+  margin: 0 auto;
   padding: 48px 16px 32px;
   text-align: center;
 }
@@ -270,7 +272,14 @@ html:not(.dark) .welcome-title {
 .welcome-tagline {
   margin: 0 0 32px;
   font-size: 16px;
+  line-height: 1.7;
   color: var(--el-text-color-secondary);
+}
+
+@media (max-width: 480px) {
+  .welcome-tagline {
+    font-size: 14px;
+  }
 }
 
 .magnetic {

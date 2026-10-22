@@ -145,8 +145,8 @@ describe('WelcomeView 欢迎页', () => {
     const wrapper = mount(WelcomeView, { global: { plugins: [router] } })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('数智选材')
-    expect(wrapper.text()).toContain('AI 驱动的道路养护决策与沥青材料方案智能推荐')
+    expect(wrapper.text()).toContain('路有良方')
+    expect(wrapper.text()).toContain('面向道路养护的智能决策与沥青材料推荐平台')
     expect(wrapper.text()).toContain('场景输入')
     expect(wrapper.text()).toContain('智能推荐')
     expect(wrapper.text()).toContain('证据溯源')
@@ -559,8 +559,8 @@ describe('App 侧栏品牌（UI#10）', () => {
 
     const wrapper = mount(App, { global: { plugins: [router] } })
     expect(wrapper.find('[data-testid="app-logo-mark"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('数智选材')
-    expect(wrapper.text()).toContain('沥青材料智能推荐')
+    expect(wrapper.text()).toContain('路有良方')
+    expect(wrapper.text()).toContain('道路养护智能决策与材料推荐')
   })
 })
 
